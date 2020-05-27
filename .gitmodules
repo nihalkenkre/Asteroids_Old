@@ -1,0 +1,9 @@
+[submodule "stb"]
+	path = External/stb
+	url = git@github.com:nothings/stb.git
+[submodule "cgltf"]
+	path = External/cgltf
+	url = git@github.com:jkuhlmann/cgltf.git
+[submodule "glm"]
+	path = External/glm
+	url = git@github.com:g-truc/glm.git

@@ -1,5 +1,9 @@
 #include <Windows.h>
 #include <cstdlib>
+#include <memory>
+#include "Game.hpp"
+
+std::unique_ptr<Game> G = nullptr;
 
 LRESULT CALLBACK WindowProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -53,7 +57,7 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc = WindowProc;
 	wc.hInstance = hInstance;
-	wc.lpszClassName = L"Against";
+	wc.lpszClassName = L"Asteroids";
 	wc.hCursor = LoadCursor (hInstance, IDC_ARROW);
 
 	if (!RegisterClass (&wc))
@@ -61,16 +65,26 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 		return EXIT_FAILURE;
 	}
 
-	HWND hWnd = CreateWindow (L"Against", L"Against", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, NULL, NULL, hInstance, NULL);
+	HWND hWnd = CreateWindow (L"Asteroids", L"Asteroids", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, NULL, NULL, hInstance, NULL);
 
 	if (!hWnd)
 	{
 		return EXIT_FAILURE;
 	}
 
-
 	ShowWindow (hWnd, cmd_show);
 	UpdateWindow (hWnd);
+
+	G = std::make_unique<Game> ();
+	ERR Err = G->Start ();
+
+	if (Err != ERR::SUCCESS)
+	{
+		DestroyWindow (hWnd);
+		G->Stop ();
+
+		return EXIT_FAILURE;
+	}
 
 	MSG msg;
 	ZeroMemory (&msg, sizeof (msg));
@@ -85,6 +99,7 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	}
 
 	DestroyWindow (hWnd);
+	G->Stop ();
 
     return EXIT_SUCCESS;
 }
