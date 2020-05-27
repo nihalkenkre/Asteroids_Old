@@ -1,0 +1,31 @@
+# CMakeList.txt : CMake project for AsteroidsCMake, include source and define
+# project specific logic here.
+#
+cmake_minimum_required (VERSION 3.8)
+
+add_compile_options ($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+add_compile_options ($<$<CXX_COMPILER_ID:MSVC>:/GR->)
+add_compile_options ($<$<CXX_COMPILER_ID:MSVC>:/EHs-c->)
+
+include_directories (${CMAKE_SOURCE_DIR})
+include_directories ($ENV{VULKAN_SDK}/Include)
+include_directories (${CMAKE_SOURCE_DIR}/External/glm)
+include_directories (${CMAKE_SOURCE_DIR}/External/cgltf)
+include_directories (${CMAKE_SOURCE_DIR}/External/cglm)
+include_directories (${CMAKE_SOURCE_DIR}/External/stb)
+
+link_directories ($ENV{VULKAN_SDK}/Lib32)
+link_directories ($ENV{VULKAN_SDK}/Lib)
+
+set (H "")
+set (C "Main.cpp")
+set (GLSL "Assets/pbr_opaque.vert" "Assets/pbr_opaque.frag")
+
+source_group (${GLSL})
+
+add_executable (Asteroids WIN32 ${H} ${C})
+add_compile_definitions (Asteroids _CRT_SECURE_NO_WARNINGS UNICODE WIN32_LEAN_AND_MEAN)
+target_link_libraries (Asteroids vulkan-1)
+target_link_libraries (Asteroids Shlwapi)
+
+#add_custom_command (TARGET Asteroids POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/Asteroids/Assets" $<TARGET_FILE_DIR:Asteroids>)
