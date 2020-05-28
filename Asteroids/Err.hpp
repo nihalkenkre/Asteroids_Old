@@ -1,6 +1,6 @@
 #pragma once
 
-#define CHECK_ERR (func, err) result = func; if (result != ERR::SUCCESS) return result;
+#define CHECK_ERR(Func, Err) Result = Func; if (Result != ERR::SUCCESS) return Result;
 
 enum class ERR
 {

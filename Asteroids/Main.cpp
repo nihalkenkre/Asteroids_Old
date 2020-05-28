@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <cstdlib>
 #include <memory>
+
 #include "Game.hpp"
 
 std::unique_ptr<Game> G = nullptr;

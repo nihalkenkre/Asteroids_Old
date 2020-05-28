@@ -17,8 +17,8 @@ include_directories (${CMAKE_SOURCE_DIR}/External/stb)
 link_directories ($ENV{VULKAN_SDK}/Lib32)
 link_directories ($ENV{VULKAN_SDK}/Lib)
 
-set (H "")
-set (C "Main.cpp")
+set (H "Game.hpp" "Err.hpp" "Log.hpp" "Scene.hpp" "Image.hpp" "StaticMesh.hpp" "Background.hpp")
+set (C "Main.cpp" "Game.cpp" "Log.cpp" "Scene.cpp" "Image.cpp" "StaticMesh.cpp" "Background.cpp")
 set (GLSL "Assets/pbr_opaque.vert" "Assets/pbr_opaque.frag")
 
 source_group (${GLSL})
