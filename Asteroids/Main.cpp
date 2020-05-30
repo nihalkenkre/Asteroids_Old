@@ -77,15 +77,7 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	UpdateWindow (hWnd);
 
 	G = std::make_unique<Game> ();
-	ERR Err = G->Start ();
-
-	if (Err != ERR::SUCCESS)
-	{
-		DestroyWindow (hWnd);
-		G->Stop ();
-
-		return EXIT_FAILURE;
-	}
+	G->Start ();
 
 	MSG msg;
 	ZeroMemory (&msg, sizeof (msg));

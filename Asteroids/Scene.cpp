@@ -1,6 +1,6 @@
 #include "Scene.hpp"
 
-ERR Scene::Start ()
+void Scene::Start ()
 {
     Backgrounds.push_back (Scene::ImportBackground ("Background"));
     Backgrounds.push_back (Scene::ImportBackground ("Background"));
@@ -11,14 +11,10 @@ ERR Scene::Start ()
     Images.push_back (Scene::ImportImage ("Image"));
     Images.push_back (Scene::ImportImage ("Image"));
     Images.push_back (Scene::ImportImage ("Image"));
-
- 
-    return ERR::SUCCESS;
 }
 
-ERR Scene::Stop ()
+void Scene::Stop ()
 {
-    return ERR::SUCCESS;
 }
 
 std::unique_ptr<Image> Scene::ImportImage (std::string AssetName)
@@ -36,7 +32,6 @@ std::unique_ptr<StaticMesh> Scene::ImportStaticMesh (std::string AssetName)
     return std::unique_ptr<StaticMesh> ();
 }
 
-ERR Scene::CommitAssets ()
+void Scene::CommitAssets ()
 {
-    return ERR::SUCCESS;
 }

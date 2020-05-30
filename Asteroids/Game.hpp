@@ -11,8 +11,8 @@ public:
     Game () {}
     ~Game () {}
 
-    ERR Start ();
-    ERR ProcessKeyboardInput (WPARAM WParam, LPARAM LParam);
+    void Start ();
+    void ProcessKeyboardInput (WPARAM WParam, LPARAM LParam);
     void Stop ();
 
     template<typename T>

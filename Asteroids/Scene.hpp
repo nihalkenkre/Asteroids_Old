@@ -12,14 +12,14 @@
 class Scene
 {
 public:
-    ERR Start ();
-    ERR Stop ();
+    void Start ();
+    void Stop ();
 
     static std::unique_ptr<Image> ImportImage (std::string AssetName);
     static std::unique_ptr<Background> ImportBackground (std::string AssetName);
     static std::unique_ptr<StaticMesh> ImportStaticMesh (std::string AssetName);
 
-    ERR CommitAssets ();
+    void CommitAssets ();
 
 private:
     std::vector<std::unique_ptr<Image>> Images;
