@@ -29,6 +29,7 @@ LRESULT CALLBACK WindowProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_KEYDOWN:
+		G->ProcessKeyboardInput (wParam, lParam);
 		break;
 
 	case WM_LBUTTONDOWN:
@@ -77,15 +78,6 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	UpdateWindow (hWnd);
 
 	G = std::make_unique<Game> ();
-	ERR Err = G->Start ();
-
-	if (Err != ERR::SUCCESS)
-	{
-		DestroyWindow (hWnd);
-		G->Stop ();
-
-		return EXIT_FAILURE;
-	}
 
 	MSG msg;
 	ZeroMemory (&msg, sizeof (msg));
@@ -94,13 +86,13 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	{
 		if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
 		{
+			OutputDebugString (L"PeekMessage\n");
 			TranslateMessage (&msg);
 			DispatchMessage (&msg);
 		}
 	}
 
 	DestroyWindow (hWnd);
-	G->Stop ();
 
     return EXIT_SUCCESS;
 }

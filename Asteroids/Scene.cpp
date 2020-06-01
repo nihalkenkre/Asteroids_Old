@@ -1,42 +1,18 @@
 #include "Scene.hpp"
+#include "Utils.hpp"
 
-ERR Scene::Start ()
+#include <Windows.h>
+
+Scene::Scene ()
 {
-    Backgrounds.push_back (Scene::ImportBackground ("Background"));
-    Backgrounds.push_back (Scene::ImportBackground ("Background"));
-    Backgrounds.push_back (Scene::ImportBackground ("Background"));
-    Backgrounds.push_back (Scene::ImportBackground ("Background"));
-
-    Images.push_back (Scene::ImportImage ("Image"));
-    Images.push_back (Scene::ImportImage ("Image"));
-    Images.push_back (Scene::ImportImage ("Image"));
-    Images.push_back (Scene::ImportImage ("Image"));
-
- 
-    return ERR::SUCCESS;
+    OutputDebugString (L"Scene::Scene\n");
 }
 
-ERR Scene::Stop ()
+Scene::~Scene ()
 {
-    return ERR::SUCCESS;
+    OutputDebugString (L"Scene::~Scene\n");
 }
 
-std::unique_ptr<Image> Scene::ImportImage (std::string AssetName)
+void Scene::ProcessKeyboardInput (WPARAM WParam, LPARAM LParam)
 {
-    return std::unique_ptr<Image> ();
-}
-
-std::unique_ptr<Background> Scene::ImportBackground (std::string AssetName)
-{
-    return std::unique_ptr<Background> ();
-}
-
-std::unique_ptr<StaticMesh> Scene::ImportStaticMesh (std::string AssetName)
-{
-    return std::unique_ptr<StaticMesh> ();
-}
-
-ERR Scene::CommitAssets ()
-{
-    return ERR::SUCCESS;
 }

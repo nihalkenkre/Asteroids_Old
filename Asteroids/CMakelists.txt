@@ -10,21 +10,20 @@ add_compile_options ($<$<CXX_COMPILER_ID:MSVC>:/EHs-c->)
 include_directories (${CMAKE_SOURCE_DIR})
 include_directories ($ENV{VULKAN_SDK}/Include)
 include_directories (${CMAKE_SOURCE_DIR}/External/glm)
-include_directories (${CMAKE_SOURCE_DIR}/External/cgltf)
-include_directories (${CMAKE_SOURCE_DIR}/External/cglm)
+include_directories (${CMAKE_SOURCE_DIR}/External/tinygltf)
 include_directories (${CMAKE_SOURCE_DIR}/External/stb)
 
 link_directories ($ENV{VULKAN_SDK}/Lib32)
 link_directories ($ENV{VULKAN_SDK}/Lib)
 
-set (H "Game.hpp" "Err.hpp" "Log.hpp" "Scene.hpp" "Image.hpp" "StaticMesh.hpp" "Background.hpp")
-set (C "Main.cpp" "Game.cpp" "Log.cpp" "Scene.cpp" "Image.cpp" "StaticMesh.cpp" "Background.cpp")
+set (H "Game.hpp" "Err.hpp" "Log.hpp" "Scene.hpp" "Image.hpp" "StaticMesh.hpp" "Background.hpp" "Utils.hpp")
+set (C "Main.cpp" "Game.cpp" "Log.cpp" "Scene.cpp" "Image.cpp" "StaticMesh.cpp" "Background.cpp" "Utils.cpp")
 set (GLSL "Assets/pbr_opaque.vert" "Assets/pbr_opaque.frag")
 
 source_group (${GLSL})
 
 add_executable (Asteroids WIN32 ${H} ${C})
-add_compile_definitions (Asteroids _CRT_SECURE_NO_WARNINGS UNICODE WIN32_LEAN_AND_MEAN)
+add_compile_definitions (Asteroids _CRT_SECURE_NO_WARNINGS UNICODE WIN32_LEAN_AND_MEAN JSON_NOEXCEPTION TINYGLTF_NOEXCEPTION)
 target_link_libraries (Asteroids vulkan-1)
 target_link_libraries (Asteroids Shlwapi)
 

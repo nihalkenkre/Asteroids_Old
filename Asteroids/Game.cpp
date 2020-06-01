@@ -1,23 +1,20 @@
 #include "Game.hpp"
-#include "Scene.hpp"
 
-ERR Game::Start ()
+#include "FirstScene.hpp"
+#include "SecondScene.hpp"
+
+Game::Game ()
 {
-    CurrentScene = Game::CreateScene <Scene> ();
-    
-    ERR Result = ERR::SUCCESS;
-
-    CHECK_ERR (CurrentScene->Start (), Result);
-    
-    return ERR::SUCCESS;
+    OutputDebugString (L"Game::Game\n");
 }
 
-ERR Game::ProcessKeyboardInput (WPARAM WParam, LPARAM LParam)
+Game::~Game ()
 {
-    return ERR::SUCCESS;
+    OutputDebugString (L"Game::~Game\n");
 }
 
-void Game::Stop ()
+void Game::ProcessKeyboardInput (WPARAM WParam, LPARAM LParam)
 {
-    CurrentScene->Stop ();
+    OutputDebugString (L"Game::ProcessKeyboardInput\n");
+
 }
