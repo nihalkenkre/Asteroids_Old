@@ -78,6 +78,8 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	UpdateWindow (hWnd);
 
 	G = std::make_unique<Game> ();
+	
+	G->Init ();
 
 	MSG msg;
 	ZeroMemory (&msg, sizeof (msg));
@@ -86,13 +88,14 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	{
 		if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			OutputDebugString (L"PeekMessage\n");
+			G->MainLoop ();
+
 			TranslateMessage (&msg);
 			DispatchMessage (&msg);
 		}
 	}
 
+	G->Shutdown ();
 	DestroyWindow (hWnd);
-
     return EXIT_SUCCESS;
 }

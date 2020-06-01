@@ -1,7 +1,5 @@
 #include "Game.hpp"
-
-#include "FirstScene.hpp"
-#include "SecondScene.hpp"
+#include "TestScene.hpp"
 
 Game::Game ()
 {
@@ -16,5 +14,22 @@ Game::~Game ()
 void Game::ProcessKeyboardInput (WPARAM WParam, LPARAM LParam)
 {
     OutputDebugString (L"Game::ProcessKeyboardInput\n");
+}
 
+void Game::Init ()
+{
+    OutputDebugString (L"Game::Init\n");
+    
+    CurrentScene = new TestScene ();
+    CurrentScene->Init ();
+}
+
+void Game::MainLoop ()
+{
+}
+
+void Game::Shutdown ()
+{
+    OutputDebugString (L"Game::Shutdown\n");
+    CurrentScene->Shutdown ();
 }
