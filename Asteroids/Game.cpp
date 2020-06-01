@@ -31,5 +31,7 @@ void Game::MainLoop ()
 void Game::Shutdown ()
 {
     OutputDebugString (L"Game::Shutdown\n");
+    
     CurrentScene->Shutdown ();
+    delete CurrentScene;
 }

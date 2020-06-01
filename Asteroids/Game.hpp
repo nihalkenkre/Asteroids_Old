@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Windows.h>
-#include <memory>
 
 #include "Err.hpp"
 
@@ -13,12 +12,11 @@ public:
     Game ();
     ~Game ();
 
-    void ProcessKeyboardInput (WPARAM WParam, LPARAM LParam);
-
     void Init ();
+    void ProcessKeyboardInput (WPARAM WParam, LPARAM LParam);
     void MainLoop ();
     void Shutdown ();
 
 private:
-    Scene* CurrentScene;
+    Scene* CurrentScene = nullptr;
 };

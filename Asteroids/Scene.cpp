@@ -21,10 +21,12 @@ Scene::~Scene ()
 
 void Scene::Init ()
 {
+    OutputDebugString (L"Scene::Init\n");
 }
 
 void Scene::ProcessKeyboardInput (WPARAM WParam, LPARAM LParam)
 {
+    OutputDebugString (L"Scene::ProcessKeyboardInput\n");
 }
 
 void Scene::MainLoop ()
@@ -33,6 +35,7 @@ void Scene::MainLoop ()
 
 void Scene::Shutdown ()
 {
+    OutputDebugString (L"Scene::Shutdown\n");
 }
 
 void Scene::ImportImage (std::string Name)
@@ -49,5 +52,11 @@ void Scene::CommitAssets ()
 {
     for (const auto& ImageName : ImageNames)
     {
+
+    }
+
+    for (const auto& MeshName : MeshNames)
+    {
+
     }
 }

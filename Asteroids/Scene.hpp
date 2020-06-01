@@ -15,10 +15,10 @@ public:
     Scene ();
     ~Scene ();
 
-    void Init ();
-    void ProcessKeyboardInput (WPARAM WParam, LPARAM LParam);
-    void MainLoop ();
-    void Shutdown ();
+    virtual void Init ();
+    virtual void ProcessKeyboardInput (WPARAM WParam, LPARAM LParam);
+    virtual void MainLoop ();
+    virtual void Shutdown ();
 
     void ImportImage (std::string Name);
     void ImportMesh (std::string Name);
