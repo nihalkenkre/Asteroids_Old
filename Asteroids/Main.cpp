@@ -4,7 +4,9 @@
 
 #include "Game.hpp"
 
-std::unique_ptr<Game> G = nullptr;
+
+std::unique_ptr<Game> G = std::make_unique <Game> ();
+
 
 LRESULT CALLBACK WindowProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -77,8 +79,6 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	ShowWindow (hWnd, cmd_show);
 	UpdateWindow (hWnd);
 
-	G = std::make_unique<Game> ();
-	
 	G->Init ();
 
 	MSG msg;

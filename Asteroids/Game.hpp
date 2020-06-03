@@ -1,10 +1,13 @@
 #pragma once
 
 #include <Windows.h>
+#include <memory>
 
 #include "Err.hpp"
 
+
 class Scene;
+
 
 class Game
 {
@@ -18,5 +21,5 @@ public:
     void Shutdown ();
 
 private:
-    Scene* CurrentScene = nullptr;
+    std::unique_ptr<Scene> CurrentScene = nullptr;
 };

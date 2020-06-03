@@ -1,13 +1,8 @@
 #include "Scene.hpp"
-#include "Utils.hpp"
+#include "SceneGraphics.hpp"
 
 #include <Windows.h>
 
-#define TINYGLTF_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
-#include <tiny_gltf.h>
 
 Scene::Scene ()
 {
@@ -50,13 +45,6 @@ void Scene::ImportMesh (std::string Name)
 
 void Scene::CommitAssets ()
 {
-    for (const auto& ImageName : ImageNames)
-    {
-
-    }
-
-    for (const auto& MeshName : MeshNames)
-    {
-
-    }
+    Graphics->CreateGraphicsForMeshes (MeshNames);
+    Graphics->CreateGraphicsForImages (ImageNames);
 }

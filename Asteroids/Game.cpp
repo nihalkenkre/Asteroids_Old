@@ -1,6 +1,7 @@
 #include "Game.hpp"
 #include "TestScene.hpp"
 
+
 Game::Game ()
 {
     OutputDebugString (L"Game::Game\n");
@@ -14,13 +15,14 @@ Game::~Game ()
 void Game::ProcessKeyboardInput (WPARAM WParam, LPARAM LParam)
 {
     OutputDebugString (L"Game::ProcessKeyboardInput\n");
+    CurrentScene->ProcessKeyboardInput (WParam, LParam);
 }
 
 void Game::Init ()
 {
     OutputDebugString (L"Game::Init\n");
     
-    CurrentScene = new TestScene ();
+    CurrentScene = std::make_unique<TestScene> ();
     CurrentScene->Init ();
 }
 
@@ -33,5 +35,4 @@ void Game::Shutdown ()
     OutputDebugString (L"Game::Shutdown\n");
     
     CurrentScene->Shutdown ();
-    delete CurrentScene;
 }

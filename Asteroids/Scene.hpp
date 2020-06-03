@@ -3,11 +3,13 @@
 #include <Windows.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "Err.hpp"
 
+
 class SceneGraphics;
-class ScenePhysics;
+
 
 class Scene
 {
@@ -20,6 +22,7 @@ public:
     virtual void MainLoop ();
     virtual void Shutdown ();
 
+protected:
     void ImportImage (std::string Name);
     void ImportMesh (std::string Name);
     
@@ -29,6 +32,5 @@ private:
     std::vector <std::string> ImageNames;
     std::vector <std::string> MeshNames;
 
-    SceneGraphics* Graphics = nullptr;
-    ScenePhysics* Physics = nullptr;
+    std::unique_ptr<SceneGraphics> Graphics = std::make_unique<SceneGraphics> ();
 };

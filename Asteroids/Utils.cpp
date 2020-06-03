@@ -5,6 +5,7 @@
 #include <Shlwapi.h>
 #include <strsafe.h>
 
+
 std::string Utils::GetFullFilePath (const std::string partial_file_path)
 {
 	char path[MAX_PATH];
