@@ -79,12 +79,16 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	ShowWindow (hWnd, cmd_show);
 	UpdateWindow (hWnd);
 
+<<<<<<< HEAD:Asteroids/main.cpp
 <<<<<<< HEAD:Asteroids/Main.cpp
 	G = std::make_unique<Game> ();
 	G->Start ();
 =======
 	G->init (hInstance, hWnd);
 >>>>>>> 8c62b191fdd96fd9542e8d31773cf2022f7c854b:Asteroids/main.cpp
+=======
+	G->init ();
+>>>>>>> parent of 8c62b19... lower cased files.:Asteroids/Main.cpp
 
 	MSG msg;
 	ZeroMemory (&msg, sizeof (msg));
