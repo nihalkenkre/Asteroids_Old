@@ -79,7 +79,7 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	ShowWindow (hWnd, cmd_show);
 	UpdateWindow (hWnd);
 
-	G->init ();
+	G->init (hInstance, hWnd);
 
 	MSG msg;
 	ZeroMemory (&msg, sizeof (msg));
