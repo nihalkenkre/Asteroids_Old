@@ -16,7 +16,7 @@ public:
     game ();
     ~game ();
 
-    void init ();
+    void init (HINSTANCE h_instance, HWND h_wnd);
     void process_keyboard_input (WPARAM WParam, LPARAM LParam);
     void main_loop ();
     void shutdown ();

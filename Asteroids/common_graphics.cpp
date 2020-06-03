@@ -1,6 +1,14 @@
 #include "common_graphics.hpp"
 #include <vulkan/vulkan_win32.h>
 
+vk::PhysicalDeviceMemoryProperties common_graphics::physical_device_memory_properties;
+vk::PhysicalDeviceLimits common_graphics::physical_device_limits;
+vk::Extent2D common_graphics::surface_extent;
+vk::SurfaceFormatKHR common_graphics::surface_format;
+
+size_t common_graphics::graphics_queue_family_index = -1;
+size_t common_graphics::transfer_queue_family_index = -1;
+size_t common_graphics::compute_queue_family_index = -1;
 
 PFN_vkCreateDebugUtilsMessengerEXT  pfnVkCreateDebugUtilsMessengerEXT;
 PFN_vkDestroyDebugUtilsMessengerEXT pfnVkDestroyDebugUtilsMessengerEXT;
@@ -23,7 +31,7 @@ VKAPI_ATTR void VKAPI_CALL vkDestroyDebugUtilsMessengerEXT (VkInstance instance,
 VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
     VkDebugUtilsMessageTypeFlagsEXT              message_types,
     VkDebugUtilsMessengerCallbackDataEXT const* callback_data,
-    void* /*pUserData*/)
+    void* user_data)
 {
     if (callback_data)
     {
@@ -73,7 +81,10 @@ void common_graphics::populate_instance_layers_and_extensions ()
 
 void common_graphics::create_instance ()
 {
-    instance = vk::createInstanceUnique (vk::InstanceCreateInfo ());
+    vk::ApplicationInfo application_info ("Asteroids", VK_MAKE_VERSION (1, 0, 0), "AGE", VK_MAKE_VERSION (1, 0, 0), VK_API_VERSION_1_2);
+    vk::InstanceCreateInfo instance_create_info ({}, &application_info, requested_instance_layers.size (), requested_instance_layers.data (), requested_instance_extensions.size (), requested_instance_extensions.data ());
+ 
+    instance = vk::createInstanceUnique (instance_create_info);
 }
 
 void common_graphics::setup_debug_utils_messenger ()
@@ -89,18 +100,98 @@ void common_graphics::setup_debug_utils_messenger ()
 
 void common_graphics::get_physical_device ()
 {
+    physical_device = instance->enumeratePhysicalDevices ().at (0);
+    std::vector<vk::QueueFamilyProperties> queue_family_properties = physical_device.getQueueFamilyProperties ();
+    
+    for (size_t i = 0; i < queue_family_properties.size (); ++i)
+    {
+        if (queue_family_properties.at (i).queueFlags & vk::QueueFlagBits::eGraphics)
+        {
+            graphics_queue_family_index = i;
+            break;
+        }
+    }
+
+    for (size_t i = 0; i < queue_family_properties.size (); ++i)
+    {
+        if ((queue_family_properties.at (i).queueFlags & vk::QueueFlagBits::eCompute) && (i != graphics_queue_family_index))
+        {
+            compute_queue_family_index = i;
+            break;
+        }
+    }
+
+    if (compute_queue_family_index == -1)
+	{
+		for (size_t i = 0; i < queue_family_properties.size (); ++i)
+		{
+			if (queue_family_properties.at (i).queueFlags & vk::QueueFlagBits::eCompute)
+			{
+				compute_queue_family_index = i;
+				break;
+			}
+		}	
+    }
+
+	for (size_t i = 0; i < queue_family_properties.size (); ++i)
+	{
+		if (queue_family_properties.at (i).queueFlags & vk::QueueFlagBits::eTransfer && (i != graphics_queue_family_index) && (i != compute_queue_family_index))
+		{
+			transfer_queue_family_index = i;
+			break;
+		}
+	}
+
+	if (transfer_queue_family_index == -1)
+	{
+		for (size_t i = 0; i < queue_family_properties.size (); ++i)
+		{
+			if (queue_family_properties.at (i).queueFlags & vk::QueueFlagBits::eTransfer)
+			{
+				transfer_queue_family_index = i;
+				break;
+			}
+		}	
+	}
+
+    physical_device_memory_properties = physical_device.getMemoryProperties ();
+    physical_device_limits = physical_device.getProperties ().limits;
 }
 
-void common_graphics::create_surface ()
+void common_graphics::create_surface (HINSTANCE h_instance, HWND h_wnd)
 {
+    vk::Win32SurfaceCreateInfoKHR surface_create_info ({}, h_instance, h_wnd);
+    instance->createWin32SurfaceKHR (surface_create_info);
 }
 
 void common_graphics::populate_graphics_device_extensions ()
 {
+    requested_device_extensions.reserve (1);
+    std::vector<vk::ExtensionProperties> extension_properties = physical_device.enumerateDeviceExtensionProperties ();
+
+    auto iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](vk::ExtensionProperties extension_property) { return strcmp (extension_property.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0; });
+    if (iter != extension_properties.end ())
+    {
+        requested_device_extensions.emplace_back (VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    }
 }
 
 void common_graphics::get_surface_properties ()
 {
+    bool is_supported = physical_device.getSurfaceSupportKHR (graphics_queue_family_index, surface.get ());
+
+    surface_capabilities = physical_device.getSurfaceCapabilitiesKHR (surface.get ());
+    surface_extent = surface_capabilities.currentExtent;
+
+    std::vector<vk::SurfaceFormatKHR> surface_formats = physical_device.getSurfaceFormatsKHR (surface.get ());
+
+    auto iter = std::find_if (surface_formats.begin (), surface_formats.end (), [&] (vk::SurfaceFormatKHR format) { return format == vk::Format::eB8G8R8A8Unorm; } );
+    if (iter != surface_formats.end ())
+    {
+        surface_format = *iter;
+    }
+
+    //std::vector<vk::SurfacePresentModeKHR> present_modes = physical_device.getSurfacePresentModesKHR ();
 }
 
 void common_graphics::create_graphics_device ()
@@ -119,12 +210,11 @@ void common_graphics::get_device_queues ()
 {
 }
 
-
 void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
 {
 #ifdef _DEBUG
     is_validation_needed = true;
-#endif // _DEBUG
+#endif
 
     populate_instance_layers_and_extensions ();
     create_instance ();
