@@ -1,9 +1,9 @@
-#include "Log.hpp"
+#include "log.hpp"
 
 
 namespace Log
 {
-    void LogErr (ERR Err)
+    void log_error (ERR Err)
     {
         if (Err == ERR::SUCCESS)
         {

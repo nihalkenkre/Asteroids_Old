@@ -1,4 +1,4 @@
-#include "Utils.hpp"
+#include "utils.hpp"
 
 #include <Windows.h>
 
@@ -6,7 +6,7 @@
 #include <strsafe.h>
 
 
-std::string Utils::GetFullFilePath (const std::string partial_file_path)
+std::string utils::get_full_file_path (const std::string partial_file_path)
 {
 	char path[MAX_PATH];
 

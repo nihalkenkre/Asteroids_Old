@@ -3,7 +3,7 @@
 #include <string>
 
 
-namespace Utils 
+namespace utils 
 {
-    std::string GetFullFilePath (const std::string partial_file_path);
+    std::string get_full_file_path (const std::string partial_file_path);
 }

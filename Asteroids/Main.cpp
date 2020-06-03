@@ -2,10 +2,10 @@
 #include <cstdlib>
 #include <memory>
 
-#include "Game.hpp"
+#include "game.hpp"
 
 
-std::unique_ptr<Game> G = std::make_unique <Game> ();
+std::unique_ptr<game> G = std::make_unique <game> ();
 
 
 LRESULT CALLBACK WindowProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -31,7 +31,7 @@ LRESULT CALLBACK WindowProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_KEYDOWN:
-		G->ProcessKeyboardInput (wParam, lParam);
+		G->process_keyboard_input (wParam, lParam);
 		break;
 
 	case WM_LBUTTONDOWN:
@@ -79,7 +79,7 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	ShowWindow (hWnd, cmd_show);
 	UpdateWindow (hWnd);
 
-	G->Init ();
+	G->init ();
 
 	MSG msg;
 	ZeroMemory (&msg, sizeof (msg));
@@ -88,14 +88,14 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	{
 		if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			G->MainLoop ();
+			G->main_loop ();
 
 			TranslateMessage (&msg);
 			DispatchMessage (&msg);
 		}
 	}
 
-	G->Shutdown ();
+	G->shutdown ();
 	DestroyWindow (hWnd);
     return EXIT_SUCCESS;
 }

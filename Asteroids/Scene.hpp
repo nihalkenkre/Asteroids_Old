@@ -5,32 +5,32 @@
 #include <vector>
 #include <memory>
 
-#include "Err.hpp"
+#include "err.hpp"
 
 
-class SceneGraphics;
+class scene_graphics;
 
 
-class Scene
+class scene
 {
 public:
-    Scene ();
-    ~Scene ();
+    scene ();
+    ~scene ();
 
-    virtual void Init ();
-    virtual void ProcessKeyboardInput (WPARAM WParam, LPARAM LParam);
-    virtual void MainLoop ();
-    virtual void Shutdown ();
+    virtual void init ();
+    virtual void process_keyboard_input (WPARAM WParam, LPARAM LParam);
+    virtual void main_loop ();
+    virtual void shutdown ();
 
 protected:
-    void ImportImage (std::string Name);
-    void ImportMesh (std::string Name);
+    void import_image (std::string Name);
+    void import_mesh (std::string Name);
     
-    void CommitAssets ();
+    void commit_assets ();
 
 private:
-    std::vector <std::string> ImageNames;
-    std::vector <std::string> MeshNames;
+    std::vector <std::string> image_names;
+    std::vector <std::string> mesh_names;
 
-    std::unique_ptr<SceneGraphics> Graphics = std::make_unique<SceneGraphics> ();
+    std::unique_ptr<scene_graphics> graphics = std::make_unique<scene_graphics> ();
 };

@@ -1,50 +1,50 @@
-#include "Scene.hpp"
-#include "SceneGraphics.hpp"
+#include "scene.hpp"
+#include "scene_graphics.hpp"
 
 #include <Windows.h>
 
 
-Scene::Scene ()
+scene::scene ()
 {
-    OutputDebugString (L"Scene::Scene\n");
+    OutputDebugString (L"scene::scene\n");
 }
 
-Scene::~Scene ()
+scene::~scene ()
 {
-    OutputDebugString (L"Scene::~Scene\n");
+    OutputDebugString (L"scene::~scene\n");
 }
 
-void Scene::Init ()
+void scene::init ()
 {
-    OutputDebugString (L"Scene::Init\n");
+    OutputDebugString (L"scene::init\n");
 }
 
-void Scene::ProcessKeyboardInput (WPARAM WParam, LPARAM LParam)
+void scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 {
-    OutputDebugString (L"Scene::ProcessKeyboardInput\n");
+    OutputDebugString (L"scene::process_keyboard_input\n");
 }
 
-void Scene::MainLoop ()
+void scene::main_loop ()
 {
 }
 
-void Scene::Shutdown ()
+void scene::shutdown ()
 {
-    OutputDebugString (L"Scene::Shutdown\n");
+    OutputDebugString (L"scene::shutdown\n");
 }
 
-void Scene::ImportImage (std::string Name)
+void scene::import_image (std::string Name)
 {
-    ImageNames.push_back (Name.append (".tga"));
+    image_names.push_back (Name.append (".tga"));
 }
 
-void Scene::ImportMesh (std::string Name)
+void scene::import_mesh (std::string Name)
 {
-    MeshNames.push_back (Name.append (".glb"));
+    mesh_names.push_back (Name.append (".glb"));
 }
 
-void Scene::CommitAssets ()
+void scene::commit_assets ()
 {
-    Graphics->CreateGraphicsForMeshes (MeshNames);
-    Graphics->CreateGraphicsForImages (ImageNames);
+    graphics->create_graphics_for_meshes (mesh_names);
+    graphics->create_graphics_for_images (image_names);
 }

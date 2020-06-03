@@ -3,23 +3,25 @@
 #include <Windows.h>
 #include <memory>
 
-#include "Err.hpp"
+#include "err.hpp"
+#include "common_graphics.hpp"
 
 
-class Scene;
+class scene;
 
 
-class Game
+class game
 {
 public:
-    Game ();
-    ~Game ();
+    game ();
+    ~game ();
 
-    void Init ();
-    void ProcessKeyboardInput (WPARAM WParam, LPARAM LParam);
-    void MainLoop ();
-    void Shutdown ();
+    void init ();
+    void process_keyboard_input (WPARAM WParam, LPARAM LParam);
+    void main_loop ();
+    void shutdown ();
 
 private:
-    std::unique_ptr<Scene> CurrentScene = nullptr;
+    std::unique_ptr<scene> current_scene = nullptr;
+    std::unique_ptr<common_graphics> graphics = std::make_unique<common_graphics> ();
 };

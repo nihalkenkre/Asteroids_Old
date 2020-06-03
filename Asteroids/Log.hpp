@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Err.hpp"
+#include "err.hpp"
 
 
 namespace Log
 {
-    void LogErr (ERR Err);
+    void log_error (ERR err);
 }

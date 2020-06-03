@@ -1,38 +1,38 @@
-#include "Game.hpp"
-#include "TestScene.hpp"
+#include "game.hpp"
+#include "test_scene.hpp"
 
 
-Game::Game ()
+game::game ()
 {
-    OutputDebugString (L"Game::Game\n");
+    OutputDebugString (L"game::game\n");
 }
 
-Game::~Game ()
+game::~game ()
 {
-    OutputDebugString (L"Game::~Game\n");
+    OutputDebugString (L"game::~game\n");
 }
 
-void Game::ProcessKeyboardInput (WPARAM WParam, LPARAM LParam)
+void game::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 {
-    OutputDebugString (L"Game::ProcessKeyboardInput\n");
-    CurrentScene->ProcessKeyboardInput (WParam, LParam);
+    OutputDebugString (L"game::process_keyboard_input\n");
+    current_scene->process_keyboard_input (WParam, LParam);
 }
 
-void Game::Init ()
+void game::init ()
 {
-    OutputDebugString (L"Game::Init\n");
+    OutputDebugString (L"game::init\n");
     
-    CurrentScene = std::make_unique<TestScene> ();
-    CurrentScene->Init ();
+    current_scene = std::make_unique<test_scene> ();
+    current_scene->init ();
 }
 
-void Game::MainLoop ()
+void game::main_loop ()
 {
 }
 
-void Game::Shutdown ()
+void game::shutdown ()
 {
-    OutputDebugString (L"Game::Shutdown\n");
+    OutputDebugString (L"game::shutdown\n");
     
-    CurrentScene->Shutdown ();
+    current_scene->shutdown ();
 }
