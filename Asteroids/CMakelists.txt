@@ -5,20 +5,18 @@ cmake_minimum_required (VERSION 3.8)
 
 add_compile_options ($<$<CXX_COMPILER_ID:MSVC>:/MP>)
 add_compile_options ($<$<CXX_COMPILER_ID:MSVC>:/GR->)
-add_compile_options ($<$<CXX_COMPILER_ID:MSVC>:/EHs-c->)
 
 include_directories (${CMAKE_SOURCE_DIR})
 include_directories ($ENV{VULKAN_SDK}/Include)
 include_directories (${CMAKE_SOURCE_DIR}/External/glm)
-include_directories (${CMAKE_SOURCE_DIR}/External/cgltf)
-include_directories (${CMAKE_SOURCE_DIR}/External/cglm)
+include_directories (${CMAKE_SOURCE_DIR}/External/tinygltf)
 include_directories (${CMAKE_SOURCE_DIR}/External/stb)
 
 link_directories ($ENV{VULKAN_SDK}/Lib32)
 link_directories ($ENV{VULKAN_SDK}/Lib)
 
-set (H "Game.hpp" "Err.hpp" "Log.hpp" "Scene.hpp" "Image.hpp" "StaticMesh.hpp" "Background.hpp")
-set (C "Main.cpp" "Game.cpp" "Log.cpp" "Scene.cpp" "Image.cpp" "StaticMesh.cpp" "Background.cpp")
+set (H "err.hpp" "game.hpp" "log.hpp" "utils.hpp" "test_scene.hpp" "scene.hpp" "scene_graphics.hpp" "common_graphics.hpp")
+set (C "main.cpp" "game.cpp" "log.cpp" "utils.cpp" "test_scene.cpp" "scene.cpp" "scene_graphics.cpp" "common_graphics.cpp")
 set (GLSL "Assets/pbr_opaque.vert" "Assets/pbr_opaque.frag")
 
 source_group (${GLSL})

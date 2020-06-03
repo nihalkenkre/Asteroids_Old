@@ -2,9 +2,11 @@
 #include <cstdlib>
 #include <memory>
 
-#include "Game.hpp"
+#include "game.hpp"
 
-std::unique_ptr<Game> G = nullptr;
+
+std::unique_ptr<game> G = std::make_unique <game> ();
+
 
 LRESULT CALLBACK WindowProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -29,6 +31,7 @@ LRESULT CALLBACK WindowProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_KEYDOWN:
+		G->process_keyboard_input (wParam, lParam);
 		break;
 
 	case WM_LBUTTONDOWN:
@@ -76,8 +79,12 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	ShowWindow (hWnd, cmd_show);
 	UpdateWindow (hWnd);
 
+<<<<<<< HEAD:Asteroids/Main.cpp
 	G = std::make_unique<Game> ();
 	G->Start ();
+=======
+	G->init (hInstance, hWnd);
+>>>>>>> 8c62b191fdd96fd9542e8d31773cf2022f7c854b:Asteroids/main.cpp
 
 	MSG msg;
 	ZeroMemory (&msg, sizeof (msg));
@@ -86,13 +93,14 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	{
 		if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
 		{
+			G->main_loop ();
+
 			TranslateMessage (&msg);
 			DispatchMessage (&msg);
 		}
 	}
 
+	G->shutdown ();
 	DestroyWindow (hWnd);
-	G->Stop ();
-
     return EXIT_SUCCESS;
 }
