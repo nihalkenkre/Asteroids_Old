@@ -28,23 +28,15 @@ public:
     static size_t compute_queue_family_index;
 
 private:
-    void populate_instance_layers_and_extensions ();
     void create_instance ();
     void setup_debug_utils_messenger ();
     void get_physical_device ();
     void create_surface (HINSTANCE h_instance, HWND h_wnd);
-    void populate_graphics_device_extensions ();
     void get_surface_properties ();
     void create_graphics_device ();
     void create_swapchain ();
-    void create_swapchain_imageviews ();
-    void get_device_queues ();
 
     bool is_validation_needed = false;
-
-    std::vector<const char*> requested_instance_layers;
-    std::vector<const char*> requested_instance_extensions;
-    std::vector<const char*> requested_device_extensions;
 
     vk::UniqueInstance instance;
     vk::UniqueDebugUtilsMessengerEXT debug_utils_messenger;

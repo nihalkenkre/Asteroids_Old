@@ -1,12 +1,17 @@
 #include "common_graphics.hpp"
 
 #include <cstring>
+#include <map>
 #include <vulkan/vulkan_win32.h>
 
 vk::PhysicalDeviceMemoryProperties common_graphics::physical_device_memory_properties;
 vk::PhysicalDeviceLimits common_graphics::physical_device_limits;
 vk::Extent2D common_graphics::surface_extent;
 vk::SurfaceFormatKHR common_graphics::surface_format;
+vk::UniqueDevice common_graphics::graphics_device;
+vk::Queue common_graphics::graphics_queue;
+vk::Queue common_graphics::compute_queue;
+vk::Queue common_graphics::transfer_queue;
 
 size_t common_graphics::graphics_queue_family_index = -1;
 size_t common_graphics::transfer_queue_family_index = -1;
@@ -45,33 +50,31 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeve
     return VK_FALSE;
 }
 
-void common_graphics::populate_instance_layers_and_extensions ()
+void common_graphics::create_instance ()
 {
-    std::vector<vk::LayerProperties> layer_properties = vk::enumerateInstanceLayerProperties ();
-    requested_instance_layers.reserve (1);
+    std::vector<const char*> requested_instance_layers;
+    std::vector<const char*> requested_instance_extensions;
+    requested_instance_extensions.reserve (3);
 
-    auto layer_iter = std::find_if (layer_properties.begin (), layer_properties.end (), [&](vk::LayerProperties layer_property) { return (strcmp (layer_property.layerName, "VK_LAYER_LUNARG_standard_validation") == 0); });
+    std::vector<vk::LayerProperties> layer_properties = vk::enumerateInstanceLayerProperties ();
+
+    auto layer_iter = std::find_if (layer_properties.begin (), layer_properties.end (), [&](vk::LayerProperties layer_property) { return (strcmp (layer_property.layerName, "VK_LAYER_KHRONOS_validation") == 0); });
     if (layer_iter != layer_properties.end ())
     {
-        strcpy (requested_instance_layers[requested_instance_layers.size ()], layer_iter->layerName);
-        //requested_instance_layers.emplace_back (layer_iter->layerName);
+        requested_instance_layers.push_back (layer_iter->layerName);
     }
-
-    requested_instance_extensions.reserve (3);
 
     std::vector<vk::ExtensionProperties> extension_properties = vk::enumerateInstanceExtensionProperties ();
     auto extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](vk::ExtensionProperties extension_property) { return (strcmp (extension_property.extensionName, VK_KHR_SURFACE_EXTENSION_NAME) == 0); });
     if (extension_iter != extension_properties.end ())
     {
-        strcpy (requested_instance_extensions[requested_instance_extensions.size ()], extension_iter->extensionName);
-        //requested_instance_extensions.emplace_back (extension_iter->extensionName);
+        requested_instance_extensions.push_back (extension_iter->extensionName);
     }
 
     extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](vk::ExtensionProperties extension_property) { return (strcmp (extension_property.extensionName, "VK_KHR_win32_surface") == 0); });
     if (extension_iter != extension_properties.end ())
     {
-        strcpy (requested_instance_extensions[requested_instance_extensions.size ()], extension_iter->extensionName);
-        //requested_instance_extensions.emplace_back (extension_iter->extensionName);
+        requested_instance_extensions.push_back (extension_iter->extensionName);
     }
 
     if (is_validation_needed)
@@ -79,16 +82,12 @@ void common_graphics::populate_instance_layers_and_extensions ()
         extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](vk::ExtensionProperties extension_property) { return (strcmp (extension_property.extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == 0); });
         if (extension_iter != extension_properties.end ())
         {
-            strcpy (requested_instance_extensions[requested_instance_extensions.size ()], extension_iter->extensionName);
-            //requested_instance_extensions.emplace_back (extension_iter->extensionName);
+            requested_instance_extensions.push_back (extension_iter->extensionName);
         }
     }
-}
 
-void common_graphics::create_instance ()
-{
     vk::ApplicationInfo application_info ("Asteroids", VK_MAKE_VERSION (1, 0, 0), "AGE", VK_MAKE_VERSION (1, 0, 0), VK_API_VERSION_1_2);
-    vk::InstanceCreateInfo instance_create_info ({}, &application_info, requested_instance_layers.size (), reinterpret_cast<const char* const*>(requested_instance_layers.data ()), requested_instance_extensions.size (), reinterpret_cast<const char* const*>(requested_instance_extensions.data ()));
+    vk::InstanceCreateInfo instance_create_info ({}, &application_info, requested_instance_layers.size (), requested_instance_layers.data (), requested_instance_extensions.size (), requested_instance_extensions.data ());
  
     instance = vk::createInstanceUnique (instance_create_info);
 }
@@ -101,7 +100,7 @@ void common_graphics::setup_debug_utils_messenger ()
     vk::DebugUtilsMessageSeverityFlagsEXT severity_flags (vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose);
     vk::DebugUtilsMessageTypeFlagsEXT message_type_flags (vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
     
-    instance->createDebugUtilsMessengerEXTUnique (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
+    debug_utils_messenger = instance->createDebugUtilsMessengerEXTUnique (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
 }
 
 void common_graphics::get_physical_device ()
@@ -170,18 +169,6 @@ void common_graphics::create_surface (HINSTANCE h_instance, HWND h_wnd)
     surface = instance->createWin32SurfaceKHRUnique (surface_create_info);
 }
 
-void common_graphics::populate_graphics_device_extensions ()
-{
-    requested_device_extensions.reserve (1);
-    std::vector<vk::ExtensionProperties> extension_properties = physical_device.enumerateDeviceExtensionProperties ();
-
-    auto iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](vk::ExtensionProperties extension_property) { return strcmp (extension_property.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0; });
-    if (iter != extension_properties.end ())
-    {
-        requested_device_extensions.emplace_back (VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-    }
-}
-
 void common_graphics::get_surface_properties ()
 {
     bool is_supported = physical_device.getSurfaceSupportKHR (graphics_queue_family_index, surface.get ());
@@ -208,21 +195,51 @@ void common_graphics::get_surface_properties ()
 
 void common_graphics::create_graphics_device ()
 {
-    std::vector<size_t> family_indices (3);
+    std::vector<const char*> requested_device_extensions;
+    std::vector<vk::ExtensionProperties> extension_properties = physical_device.enumerateDeviceExtensionProperties ();
 
-    /*vk::DeviceCreateInfo device_create_info ({});
-    graphics_device = physical_device.createDeviceUnique (device_create_info);*/
-}
+    auto iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](vk::ExtensionProperties extension_property) { return strcmp (extension_property.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0; });
+    if (iter != extension_properties.end ())
+    {
+        requested_device_extensions.push_back (VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+    }
 
-void common_graphics::get_device_queues ()
-{
+    std::vector<size_t> family_indices = {graphics_queue_family_index, compute_queue_family_index, transfer_queue_family_index};
+    std::map<size_t, size_t> family_indices_queue_count;
+
+    for (const auto& family_index : family_indices)
+    {
+        family_indices_queue_count[family_index] = std::count (family_indices.begin (), family_indices.end (), family_index);
+    }
+
+    std::vector<size_t> queue_indices;
+
+    for (const auto& family_index_family_count : family_indices_queue_count)
+    {
+        for (size_t i = 0; i < family_index_family_count.second; ++i)
+        {
+            queue_indices.push_back (i);
+        }
+    }
+
+    float queue_priorities = 1.f;
+
+    std::vector<vk::DeviceQueueCreateInfo> queue_create_infos;
+    queue_create_infos.reserve (3);
+    for (const auto& family_index_queue_count : family_indices_queue_count)
+    {
+       queue_create_infos.emplace_back (vk::DeviceQueueCreateInfo ({}, family_index_queue_count.first, family_index_queue_count.second, &queue_priorities));
+    }
+
+    vk::DeviceCreateInfo device_create_info ({}, queue_create_infos.size (), queue_create_infos.data (), 0, nullptr, requested_device_extensions.size (), requested_device_extensions.data ());
+    graphics_device = physical_device.createDeviceUnique (device_create_info);
+
+    graphics_queue = graphics_device->getQueue (graphics_queue_family_index, queue_indices.at (0));
+    compute_queue = graphics_device->getQueue (graphics_queue_family_index, queue_indices.at (1));
+    transfer_queue = graphics_device->getQueue (graphics_queue_family_index, queue_indices.at (2));
 }
 
 void common_graphics::create_swapchain ()
-{
-}
-
-void common_graphics::create_swapchain_imageviews ()
 {
 }
 
@@ -232,7 +249,6 @@ void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
     is_validation_needed = true;
 #endif
 
-    populate_instance_layers_and_extensions ();
     create_instance ();
 
     if (is_validation_needed)
@@ -242,12 +258,9 @@ void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
 
     get_physical_device ();
     create_surface (h_instance, h_wnd);
-    populate_graphics_device_extensions ();
     get_surface_properties ();
     create_graphics_device ();
-    get_device_queues ();
     create_swapchain ();
-    create_swapchain_imageviews ();
 }
 
 void common_graphics::shutdown ()
