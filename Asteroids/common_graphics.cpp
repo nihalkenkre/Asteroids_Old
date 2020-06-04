@@ -1,4 +1,6 @@
 #include "common_graphics.hpp"
+
+#include <cstring>
 #include <vulkan/vulkan_win32.h>
 
 vk::PhysicalDeviceMemoryProperties common_graphics::physical_device_memory_properties;
@@ -51,7 +53,8 @@ void common_graphics::populate_instance_layers_and_extensions ()
     auto layer_iter = std::find_if (layer_properties.begin (), layer_properties.end (), [&](vk::LayerProperties layer_property) { return (strcmp (layer_property.layerName, "VK_LAYER_LUNARG_standard_validation") == 0); });
     if (layer_iter != layer_properties.end ())
     {
-        requested_instance_layers.emplace_back (layer_iter->layerName);
+        strcpy (requested_instance_layers[requested_instance_layers.size ()], layer_iter->layerName);
+        //requested_instance_layers.emplace_back (layer_iter->layerName);
     }
 
     requested_instance_extensions.reserve (3);
@@ -60,13 +63,15 @@ void common_graphics::populate_instance_layers_and_extensions ()
     auto extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](vk::ExtensionProperties extension_property) { return (strcmp (extension_property.extensionName, VK_KHR_SURFACE_EXTENSION_NAME) == 0); });
     if (extension_iter != extension_properties.end ())
     {
-        requested_instance_extensions.emplace_back (extension_iter->extensionName);
+        strcpy (requested_instance_extensions[requested_instance_extensions.size ()], extension_iter->extensionName);
+        //requested_instance_extensions.emplace_back (extension_iter->extensionName);
     }
 
     extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](vk::ExtensionProperties extension_property) { return (strcmp (extension_property.extensionName, "VK_KHR_win32_surface") == 0); });
     if (extension_iter != extension_properties.end ())
     {
-        requested_instance_extensions.emplace_back (extension_iter->extensionName);
+        strcpy (requested_instance_extensions[requested_instance_extensions.size ()], extension_iter->extensionName);
+        //requested_instance_extensions.emplace_back (extension_iter->extensionName);
     }
 
     if (is_validation_needed)
@@ -74,7 +79,8 @@ void common_graphics::populate_instance_layers_and_extensions ()
         extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](vk::ExtensionProperties extension_property) { return (strcmp (extension_property.extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == 0); });
         if (extension_iter != extension_properties.end ())
         {
-            requested_instance_extensions.emplace_back (extension_iter->extensionName);
+            strcpy (requested_instance_extensions[requested_instance_extensions.size ()], extension_iter->extensionName);
+            //requested_instance_extensions.emplace_back (extension_iter->extensionName);
         }
     }
 }
@@ -82,7 +88,7 @@ void common_graphics::populate_instance_layers_and_extensions ()
 void common_graphics::create_instance ()
 {
     vk::ApplicationInfo application_info ("Asteroids", VK_MAKE_VERSION (1, 0, 0), "AGE", VK_MAKE_VERSION (1, 0, 0), VK_API_VERSION_1_2);
-    vk::InstanceCreateInfo instance_create_info ({}, &application_info, requested_instance_layers.size (), requested_instance_layers.data (), requested_instance_extensions.size (), requested_instance_extensions.data ());
+    vk::InstanceCreateInfo instance_create_info ({}, &application_info, requested_instance_layers.size (), reinterpret_cast<const char* const*>(requested_instance_layers.data ()), requested_instance_extensions.size (), reinterpret_cast<const char* const*>(requested_instance_extensions.data ()));
  
     instance = vk::createInstanceUnique (instance_create_info);
 }
@@ -161,7 +167,7 @@ void common_graphics::get_physical_device ()
 void common_graphics::create_surface (HINSTANCE h_instance, HWND h_wnd)
 {
     vk::Win32SurfaceCreateInfoKHR surface_create_info ({}, h_instance, h_wnd);
-    instance->createWin32SurfaceKHR (surface_create_info);
+    surface = instance->createWin32SurfaceKHRUnique (surface_create_info);
 }
 
 void common_graphics::populate_graphics_device_extensions ()
@@ -185,16 +191,30 @@ void common_graphics::get_surface_properties ()
 
     std::vector<vk::SurfaceFormatKHR> surface_formats = physical_device.getSurfaceFormatsKHR (surface.get ());
 
-    auto iter = std::find_if (surface_formats.begin (), surface_formats.end (), [&] (vk::SurfaceFormatKHR format) { return format == vk::Format::eB8G8R8A8Unorm; } );
-    if (iter != surface_formats.end ())
+    auto format_iter = std::find_if (surface_formats.begin (), surface_formats.end (), [&] (vk::SurfaceFormatKHR format) { return format == vk::Format::eB8G8R8A8Unorm; } );
+    if (format_iter != surface_formats.end ())
     {
-        surface_format = *iter;
+        surface_format = *format_iter;
     }
 
-    //std::vector<vk::SurfacePresentModeKHR> present_modes = physical_device.getSurfacePresentModesKHR ();
+    std::vector<vk::PresentModeKHR> present_modes = physical_device.getSurfacePresentModesKHR (surface.get ());
+
+    auto present_mode_iter = std::find_if (present_modes.begin (), present_modes.end (), [&](vk::PresentModeKHR present_mode) { return present_mode == vk::PresentModeKHR::eMailbox; });
+    if (present_mode_iter != present_modes.end ())
+    {
+        present_mode = *present_mode_iter;
+    }
 }
 
 void common_graphics::create_graphics_device ()
+{
+    std::vector<size_t> family_indices (3);
+
+    /*vk::DeviceCreateInfo device_create_info ({});
+    graphics_device = physical_device.createDeviceUnique (device_create_info);*/
+}
+
+void common_graphics::get_device_queues ()
 {
 }
 
@@ -203,10 +223,6 @@ void common_graphics::create_swapchain ()
 }
 
 void common_graphics::create_swapchain_imageviews ()
-{
-}
-
-void common_graphics::get_device_queues ()
 {
 }
 
@@ -219,6 +235,19 @@ void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
     populate_instance_layers_and_extensions ();
     create_instance ();
 
+    if (is_validation_needed)
+    {
+        setup_debug_utils_messenger ();
+    }
+
+    get_physical_device ();
+    create_surface (h_instance, h_wnd);
+    populate_graphics_device_extensions ();
+    get_surface_properties ();
+    create_graphics_device ();
+    get_device_queues ();
+    create_swapchain ();
+    create_swapchain_imageviews ();
 }
 
 void common_graphics::shutdown ()

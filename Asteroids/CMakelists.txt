@@ -22,7 +22,7 @@ set (GLSL "Assets/pbr_opaque.vert" "Assets/pbr_opaque.frag")
 source_group (${GLSL})
 
 add_executable (Asteroids WIN32 ${H} ${C})
-add_compile_definitions (Asteroids _CRT_SECURE_NO_WARNINGS UNICODE WIN32_LEAN_AND_MEAN)
+add_compile_definitions (Asteroids _CRT_SECURE_NO_WARNINGS UNICODE WIN32_LEAN_AND_MEAN VK_USE_PLATFORM_WIN32_KHR)
 target_link_libraries (Asteroids vulkan-1)
 target_link_libraries (Asteroids Shlwapi)
 
