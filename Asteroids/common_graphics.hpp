@@ -15,8 +15,8 @@ public:
     static vk::SurfaceFormatKHR surface_format;
     static vk::Extent2D surface_extent;
     static vk::UniqueSwapchainKHR swapchain;
-    static std::vector<vk::UniqueImage> swapchain_images;
-    static std::vector<vk::UniqueImageView> swapchain_image_views;;
+    static std::vector<vk::Image> swapchain_images;
+    static std::vector<vk::UniqueImageView> swapchain_image_views;
     static size_t num_swapchain_images;
     static vk::Queue graphics_queue;
     static vk::Queue transfer_queue;

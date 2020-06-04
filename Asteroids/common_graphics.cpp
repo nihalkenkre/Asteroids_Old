@@ -12,6 +12,9 @@ vk::UniqueDevice common_graphics::graphics_device;
 vk::Queue common_graphics::graphics_queue;
 vk::Queue common_graphics::compute_queue;
 vk::Queue common_graphics::transfer_queue;
+vk::UniqueSwapchainKHR common_graphics::swapchain;
+std::vector<vk::Image> common_graphics::swapchain_images;
+std::vector<vk::UniqueImageView> common_graphics::swapchain_image_views;
 
 size_t common_graphics::graphics_queue_family_index;
 size_t common_graphics::transfer_queue_family_index;
@@ -97,7 +100,7 @@ void common_graphics::setup_debug_utils_messenger ()
     pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance->getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
     pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance->getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
     
-    vk::DebugUtilsMessageSeverityFlagsEXT severity_flags (vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose);
+    vk::DebugUtilsMessageSeverityFlagsEXT severity_flags (vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose);
     vk::DebugUtilsMessageTypeFlagsEXT message_type_flags (vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
     
     debug_utils_messenger = instance->createDebugUtilsMessengerEXTUnique (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
@@ -213,6 +216,20 @@ void common_graphics::create_graphics_device ()
 
 void common_graphics::create_swapchain ()
 {
+    vk::SwapchainCreateInfoKHR swapchain_create_info ({}, surface.get (), surface_capabilities.minImageCount + 1, surface_format.format, surface_format.colorSpace, surface_extent, 1, surface_capabilities.supportedUsageFlags, vk::SharingMode::eExclusive, 0, {}, surface_capabilities.currentTransform, vk::CompositeAlphaFlagBitsKHR::eOpaque, present_mode);
+    swapchain = graphics_device->createSwapchainKHRUnique (swapchain_create_info);
+    swapchain_images = graphics_device->getSwapchainImagesKHR (swapchain.get ());
+
+    vk::ComponentMapping component_mapping (vk::ComponentSwizzle::eIdentity);
+    vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
+    vk::ImageViewCreateInfo image_view_create_info ({}, {}, vk::ImageViewType::e2D, surface_format.format, component_mapping, subresource_range);
+
+    swapchain_image_views.reserve (swapchain_images.size ());
+    for (auto& image : swapchain_images)
+    {
+        image_view_create_info.image = image;
+        swapchain_image_views.emplace_back (graphics_device->createImageViewUnique (image_view_create_info));
+    }
 }
 
 void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
