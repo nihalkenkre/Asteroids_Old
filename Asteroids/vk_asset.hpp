@@ -6,10 +6,15 @@
 class vk_image
 {
 public:
+    vk_image ();
+    vk_image (vk::Image* image_, vk::ImageView* image_view_);
+
+    ~vk_image ();
+
     std::string name;
 
-    vk::UniqueImage* image;
-    vk::UniqueImageView* image_view;
+    vk::Image* image;
+    vk::ImageView* image_view;
 };
 
 class vk_animation

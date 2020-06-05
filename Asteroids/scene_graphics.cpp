@@ -1,4 +1,5 @@
 #include "scene_graphics.hpp"
+#include "common_graphics.hpp"
 #include "utils.hpp"
 
 #define TINYGLTF_IMPLEMENTATION
@@ -53,7 +54,8 @@ void scene_graphics::import_images (const std::vector<tinygltf::Model>& models)
     {
         for (const auto& image : model.images)
         {
-            
+            vk::ImageCreateInfo create_info ({}, vk::ImageType::e2D, vk::Format::eR8G8B8A8Unorm, { (uint32_t)image.width, (uint32_t)image.height, 1 }, 1, 0, vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst, vk::SharingMode::eExclusive);
+            images.emplace (common_graphics::graphics_device->createImageUnique (create_info));
         }
     }
 }
