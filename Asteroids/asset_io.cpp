@@ -1,5 +1,6 @@
-#define TINYGLTF_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "asset_io.hpp"
 
-#include <tiny_gltf.h>
+std::vector<vk_image> asset_io::import_images (const std::string& file_path)
+{
+    return std::vector<vk_image> ();
+}

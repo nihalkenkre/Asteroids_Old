@@ -1,8 +1,10 @@
 #pragma once
 
-#include <vulkan/vulkan.hpp>
+#include "vk_asset.hpp"
 
-class vk_image;
+#include <vulkan/vulkan.hpp>
+#include <tiny_gltf.h>
+
 
 class scene_graphics
 {
@@ -14,6 +16,8 @@ public:
     void create_graphics_for_images (const std::vector<std::string>& file_paths);
 
 private:
+    void import_images (const std::vector<tinygltf::Model>& models);
+
     vk::UniqueBuffer vertex_index_buffer;
     vk::UniqueDeviceMemory vertex_index_buffer_memory;
 
