@@ -1,14 +1,6 @@
 #include "test_scene.hpp"
 
 
-test_scene::test_scene ()
-{
-}
-
-test_scene::~test_scene ()
-{
-}
-
 void test_scene::init ()
 {
     OutputDebugString (L"test_scene::init\n");
