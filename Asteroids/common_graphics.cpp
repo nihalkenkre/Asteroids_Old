@@ -1,4 +1,5 @@
 #include "common_graphics.hpp"
+#include "vk_utils.hpp"
 
 #include <cstring>
 #include <map>
@@ -15,6 +16,7 @@ vk::Queue common_graphics::transfer_queue;
 vk::UniqueSwapchainKHR common_graphics::swapchain;
 std::vector<vk::Image> common_graphics::swapchain_images;
 std::vector<vk::UniqueImageView> common_graphics::swapchain_image_views;
+vk::UniqueCommandPool common_graphics::transfer_command_pool;
 
 size_t common_graphics::graphics_queue_family_index;
 size_t common_graphics::transfer_queue_family_index;
@@ -209,9 +211,11 @@ void common_graphics::create_graphics_device ()
     vk::DeviceCreateInfo device_create_info ({}, queue_create_infos.size (), queue_create_infos.data (), 0, nullptr, requested_device_extensions.size (), requested_device_extensions.data ());
     graphics_device = physical_device.createDeviceUnique (device_create_info);
 
-    graphics_queue = graphics_device->getQueue (graphics_queue_family_index, queue_indices.at (0));
-    compute_queue = graphics_device->getQueue (compute_queue_family_index, queue_indices.at (1));
-    transfer_queue = graphics_device->getQueue (transfer_queue_family_index, queue_indices.at (2));
+    std::vector<vk::QueueFamilyProperties> queue_family_properties = physical_device.getQueueFamilyProperties ();
+
+    graphics_queue = graphics_device->getQueue (graphics_queue_family_index, queue_indices.at (0) > queue_family_properties.at (graphics_queue_family_index).queueCount ? queue_family_properties.at (graphics_queue_family_index).queueCount - 1 : queue_indices.at (0));
+    compute_queue = graphics_device->getQueue (compute_queue_family_index, queue_indices.at (1) > queue_family_properties.at (compute_queue_family_index).queueCount ? queue_family_properties.at (compute_queue_family_index).queueCount - 1 : queue_indices.at (1));
+    transfer_queue = graphics_device->getQueue (transfer_queue_family_index, queue_indices.at (2) > queue_family_properties.at (transfer_queue_family_index).queueCount ? queue_family_properties.at (transfer_queue_family_index).queueCount - 1 : queue_indices.at (2));
 }
 
 void common_graphics::create_swapchain ()
@@ -232,6 +236,11 @@ void common_graphics::create_swapchain ()
     }
 }
 
+void common_graphics::create_transfer_command_pool ()
+{
+    transfer_command_pool = vk_utils::create_command_pool (transfer_queue_family_index, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
+}
+
 void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
 {
 #ifdef _DEBUG
@@ -250,6 +259,7 @@ void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
     get_surface_properties ();
     create_graphics_device ();
     create_swapchain ();
+    create_transfer_command_pool ();
 }
 
 void common_graphics::shutdown ()

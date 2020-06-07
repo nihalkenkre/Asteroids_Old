@@ -21,5 +21,7 @@ private:
     vk::UniqueBuffer vertex_index_buffer;
     vk::UniqueDeviceMemory vertex_index_buffer_memory;
     
-    std::map <vk::UniqueImage, vk::UniqueImageView> images;
+    std::vector <vk::UniqueImage> images;
+    std::vector <vk::UniqueImageView> image_views;
+    vk::UniqueDeviceMemory images_memory;
 };

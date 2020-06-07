@@ -35,6 +35,7 @@ private:
     void get_surface_properties ();
     void create_graphics_device ();
     void create_swapchain ();
+    void create_transfer_command_pool ();
 
     bool is_validation_needed = false;
 
