@@ -70,7 +70,7 @@ void scene_graphics::import_images (const std::vector<tinygltf::Model>& models)
         {
             vk_utils::map_data_to_device_memory (staging_buffer_memory.get (), current_offset, image.image.size (), (void*)image.image.data ());
 
-            vk::ImageCreateInfo image_create_info ({}, vk::ImageType::e2D, vk::Format::eR8G8B8A8Unorm, { (uint32_t)image.width, (uint32_t)image.height, 1 }, 1, 0, vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::SharingMode::eExclusive);
+            vk::ImageCreateInfo image_create_info ({}, vk::ImageType::e2D, vk::Format::eR8G8B8A8Unorm, { (uint32_t)image.width, (uint32_t)image.height, 1 }, 1, 1, vk::SampleCountFlagBits::e1, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::SharingMode::eExclusive);
             vk::UniqueImage img = common_graphics::graphics_device->createImageUnique (image_create_info);
             images.emplace_back (std::move (img));
 
@@ -82,6 +82,6 @@ void scene_graphics::import_images (const std::vector<tinygltf::Model>& models)
 
     for (const auto& image : images)
     {
-
+        vk_utils::change_image_layout (image.get (), 1, common_graphics::transfer_queue_family_index, common_graphics::transfer_queue_family_index, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, vk::AccessFlagBits::eHostRead, vk::AccessFlagBits::eTransferWrite, vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer);
     }
 }

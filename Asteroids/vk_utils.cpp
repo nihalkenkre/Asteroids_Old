@@ -21,8 +21,7 @@ vk::UniqueDeviceMemory vk_utils::create_memory_for_buffer (vk::Buffer buffer, vk
 
 void vk_utils::map_data_to_device_memory (vk::DeviceMemory memory, vk::DeviceSize offset, vk::DeviceSize size, void* data_source)
 {
-    void* data = nullptr;
-    common_graphics::graphics_device->mapMemory (memory, offset, size);
+    void* data = common_graphics::graphics_device->mapMemory (memory, offset, size);
     std::memcpy (data, data_source, (size_t)size);
     common_graphics::graphics_device->unmapMemory (memory);
 }
