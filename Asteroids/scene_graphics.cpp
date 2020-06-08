@@ -14,22 +14,26 @@ scene_graphics::scene_graphics ()
 {
     OutputDebugString (L"scene_graphics::scene_graphics\n");
 
-    images.reserve (5);
-    image_views.reserve (5);
+    static_meshes.reserve (5);
+
+    //images.reserve (5);
+    //image_views.reserve (5);
 }
 
 scene_graphics::~scene_graphics ()
 {
     OutputDebugString (L"scene_graphics::~scene_graphics\n");
 
-    for (auto& image : images)
+    /*for (auto& image : images)
     {
         common_graphics::graphics_device.destroyImage (image);
     }
+
     for (auto& image_view : image_views)
     {
         common_graphics::graphics_device.destroyImageView (image_view);
-    }
+    }*/
+
     common_graphics::graphics_device.freeMemory (images_memory);
 
     common_graphics::graphics_device.destroyBuffer (vertex_index_buffer);
@@ -39,7 +43,7 @@ scene_graphics::~scene_graphics ()
 void scene_graphics::create_graphics_for_meshes (const std::vector<std::string>& file_paths)
 {
     std::vector<tinygltf::Model> models;
-    models.reserve (4);
+    models.reserve (5);
 
     tinygltf::TinyGLTF loader;
     
@@ -54,18 +58,92 @@ void scene_graphics::create_graphics_for_meshes (const std::vector<std::string>&
         models.push_back (model);
     }
 
-    import_images (models);
-    //import_materials (model.materials);
-    //link_images_to_materials ();
-    //import_graphics_primitives (model.nodes);
-    //link_materials_to_graphics_primitives ();
+    import_static_meshes (models);
 }
 
 void scene_graphics::create_graphics_for_images (const std::vector<std::string>& file_paths)
 {
 }
 
-void scene_graphics::import_images (const std::vector<tinygltf::Model>& models)
+void scene_graphics::import_static_meshes (const std::vector<tinygltf::Model>& models)
+{
+    std::vector<unsigned char> all_image_data;
+    std::vector<unsigned char> all_mesh_data;
+
+    for (const auto& model : models)
+    {
+        for (const auto& node : model.nodes)
+        {
+            if (node.name.find ("CS_") == 0)
+            {
+                continue;
+            }
+
+            if (node.skin > 0)
+            {
+                continue;
+            }
+
+            static_meshes.emplace_back (create_static_mesh (node.mesh, model));
+        }
+    }
+}
+
+vk_static_mesh scene_graphics::create_static_mesh (int mesh_index, const tinygltf::Model& model)
+{
+    vk_static_mesh out_static_mesh ({});
+    auto current_static_mesh = model.meshes[mesh_index];
+    out_static_mesh.name = current_static_mesh.name;
+
+    out_static_mesh.opaque_graphics_primitives.reserve (1);
+    out_static_mesh.alpha_graphics_primitives.reserve (1);
+    out_static_mesh.blend_graphics_primitives.reserve (1);
+
+    for (const auto& primitive : current_static_mesh.primitives)
+    {
+        auto current_material = model.materials[primitive.material];
+
+        if (current_material.name.find ("OPAQUE") == 0)
+        {
+            out_static_mesh.opaque_graphics_primitives.emplace_back (create_static_primitive (primitive, model));
+        }
+        else if (current_material.name.find ("ALPHA") == 0) 
+        {
+            out_static_mesh.alpha_graphics_primitives.emplace_back (create_static_primitive (primitive, model));
+        }
+        else if (current_material.name.find ("BLEND") == 0)
+        {
+            out_static_mesh.blend_graphics_primitives.emplace_back (create_static_primitive (primitive, model));
+        }
+    }
+
+    return out_static_mesh;
+}
+
+vk_static_primitive scene_graphics::create_static_primitive (const tinygltf::Primitive& primitive, const tinygltf::Model& model)
+{
+    vk_static_primitive out_static_primitive ({});
+
+    return out_static_primitive;
+}
+
+vk_material scene_graphics::create_material (int material_index, const tinygltf::Model& model)
+{
+    vk_material out_material ({});
+    auto current_material = model.materials[material_index];
+    out_material.name = current_material.name;
+    return out_material;
+}
+
+vk_image scene_graphics::create_image (int image_index, const tinygltf::Model& model)
+{
+    vk_image out_image ({});
+    auto current_image = model.images[image_index];
+    out_image.name = current_image.name;
+    return out_image;
+}
+
+/*void scene_graphics::import_images (const std::vector<tinygltf::Model>& models)
 {
     std::vector <tinygltf::Image> model_images;
     model_images.reserve (5);
@@ -93,6 +171,7 @@ void scene_graphics::import_images (const std::vector<tinygltf::Model>& models)
             vk::Image img = common_graphics::graphics_device.createImage (image_create_info);
             images.emplace_back (img);
 
+
             current_offset += image.image.size ();
             model_images.emplace_back (image);
         }
@@ -113,3 +192,8 @@ void scene_graphics::import_images (const std::vector<tinygltf::Model>& models)
         ++current_index;
     }
 }
+
+void scene_graphics::import_materials (const std::vector<tinygltf::Model>& models)
+{
+}
+*/
