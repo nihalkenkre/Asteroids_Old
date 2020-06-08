@@ -95,7 +95,6 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 		}
 	}
 
-	G->shutdown ();
 	DestroyWindow (hWnd);
 
     return EXIT_SUCCESS;

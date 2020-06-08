@@ -2,31 +2,31 @@
 
 #include "common_graphics.hpp"
 
-vk::UniqueBuffer vk_utils::create_buffer (vk::DeviceSize size, vk::BufferUsageFlags usage)
+vk::Buffer vk_utils::create_buffer (vk::DeviceSize size, vk::BufferUsageFlags usage)
 {
     vk::BufferCreateInfo create_info ({}, size, usage, vk::SharingMode::eExclusive);
 
-    return common_graphics::graphics_device->createBufferUnique (create_info);
+    return common_graphics::graphics_device.createBuffer (create_info);
 }
 
-vk::UniqueDeviceMemory vk_utils::create_memory_for_buffer (vk::Buffer buffer, vk::MemoryPropertyFlags required_memory_types)
+vk::DeviceMemory vk_utils::create_memory_for_buffer (vk::Buffer buffer, vk::MemoryPropertyFlags required_memory_types)
 {
-    vk::MemoryRequirements memory_requirements = common_graphics::graphics_device->getBufferMemoryRequirements (buffer);
+    vk::MemoryRequirements memory_requirements = common_graphics::graphics_device.getBufferMemoryRequirements (buffer);
     vk::MemoryAllocateInfo allocate_info (memory_requirements.size, get_memory_type_index (memory_requirements, required_memory_types));
-    vk::UniqueDeviceMemory out_device_memory = common_graphics::graphics_device->allocateMemoryUnique (allocate_info);
-    common_graphics::graphics_device->bindBufferMemory (buffer, out_device_memory.get (), 0);
+    vk::DeviceMemory out_device_memory = common_graphics::graphics_device.allocateMemory (allocate_info);
+    common_graphics::graphics_device.bindBufferMemory (buffer, out_device_memory, 0);
 
-    return out_device_memory;
+    return std::move (out_device_memory);
 }
 
-void vk_utils::map_data_to_device_memory (vk::DeviceMemory memory, vk::DeviceSize offset, vk::DeviceSize size, void* data_source)
+void vk_utils::map_data_to_device_memory (vk::DeviceMemory& memory, vk::DeviceSize offset, vk::DeviceSize size, void* data_source)
 {
-    void* data = common_graphics::graphics_device->mapMemory (memory, offset, size);
+    void* data = common_graphics::graphics_device.mapMemory (memory, offset, size);
     std::memcpy (data, data_source, (size_t)size);
-    common_graphics::graphics_device->unmapMemory (memory);
+    common_graphics::graphics_device.unmapMemory (memory);
 }
 
-vk::UniqueDeviceMemory vk_utils::create_memory_for_images (const std::vector<vk::UniqueImage>& images, vk::MemoryPropertyFlags required_memory_types)
+vk::DeviceMemory vk_utils::create_memory_for_images (const std::vector<vk::Image>& images, vk::MemoryPropertyFlags required_memory_types)
 {
     vk::MemoryAllocateInfo allocate_info = {};
 
@@ -36,41 +36,62 @@ vk::UniqueDeviceMemory vk_utils::create_memory_for_images (const std::vector<vk:
     for (const auto& image : images)
     {
         offsets.push_back (allocate_info.allocationSize);
-        vk::MemoryRequirements memory_requirements = common_graphics::graphics_device->getImageMemoryRequirements (image.get ());
+        vk::MemoryRequirements memory_requirements = common_graphics::graphics_device.getImageMemoryRequirements (image);
         allocate_info.allocationSize += memory_requirements.size;
         allocate_info.memoryTypeIndex = get_memory_type_index (memory_requirements, required_memory_types);
     }
 
-    vk::UniqueDeviceMemory out_device_memory = common_graphics::graphics_device->allocateMemoryUnique (allocate_info);
+    vk::DeviceMemory out_device_memory = common_graphics::graphics_device.allocateMemory (allocate_info);
 
     size_t current_index = 0;
     for (const auto& image : images)
     {
-        common_graphics::graphics_device->bindImageMemory (image.get (), out_device_memory.get (), offsets.at (current_index));
+        common_graphics::graphics_device.bindImageMemory (image, out_device_memory, offsets.at (current_index));
         ++current_index;
     }
 
-    return out_device_memory;
+    return std::move (out_device_memory);
 }
 
-void vk_utils::change_image_layout (vk::Image image, uint32_t num_layers, uint32_t src_family_queue_index, uint32_t dst_family_queue_index, vk::ImageLayout old_layout, vk::ImageLayout new_layout, vk::AccessFlags src_access, vk::AccessFlags dst_access, vk::PipelineStageFlags src_stage, vk::PipelineStageFlags dst_stage)
+void vk_utils::change_image_layout (vk::Image& image, uint32_t num_layers, uint32_t src_family_queue_index, uint32_t dst_family_queue_index, vk::ImageLayout old_layout, vk::ImageLayout new_layout, vk::AccessFlags src_access, vk::AccessFlags dst_access, vk::PipelineStageFlags src_stage, vk::PipelineStageFlags dst_stage)
 {
-    vk::UniqueCommandBuffer one_time_command_buffer = get_one_time_command_buffer (common_graphics::transfer_command_pool.get ());
-
     vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
     vk::ImageMemoryBarrier image_memory_barrier (src_access, dst_access, old_layout, new_layout, common_graphics::transfer_queue_family_index, common_graphics::transfer_queue_family_index, image, subresource_range);
 
-    one_time_command_buffer->pipelineBarrier (src_stage, dst_stage, vk::DependencyFlagBits::eDeviceGroup, 0, 0, image_memory_barrier);
-    one_time_command_buffer->end ();
+    vk::CommandBuffer one_time_command_buffer = get_one_time_command_buffer (common_graphics::transfer_command_pool);
+    one_time_command_buffer.pipelineBarrier (src_stage, dst_stage, vk::DependencyFlagBits::eDeviceGroup, 0, 0, image_memory_barrier);
+    one_time_command_buffer.end ();
 
-    submit_one_time_command_buffer (common_graphics::transfer_queue, one_time_command_buffer.get ());
-    common_graphics::graphics_device->freeCommandBuffers (common_graphics::transfer_command_pool.get (), one_time_command_buffer.get ());
+    submit_one_time_command_buffer (common_graphics::transfer_queue, one_time_command_buffer);
+    common_graphics::graphics_device.freeCommandBuffers (common_graphics::transfer_command_pool, one_time_command_buffer);
 }
 
-vk::UniqueCommandPool vk_utils::create_command_pool (size_t queue_family_index, vk::CommandPoolCreateFlags flags)
+void vk_utils::copy_buffer_to_image (vk::Buffer buffer, vk::Image& image, vk::DeviceSize offset, vk::Extent3D extent)
+{
+    vk::ImageSubresourceLayers subresource_layers (vk::ImageAspectFlagBits::eColor, 0, 0, 1);
+    vk::BufferImageCopy buffer_image_copy (offset, {}, {}, subresource_layers, 0, extent);
+    vk::CommandBuffer one_time_command_buffer = get_one_time_command_buffer (common_graphics::transfer_command_pool);
+    one_time_command_buffer.copyBufferToImage (buffer, image, vk::ImageLayout::eTransferDstOptimal, buffer_image_copy);
+    one_time_command_buffer.end ();
+    submit_one_time_command_buffer (common_graphics::transfer_queue, one_time_command_buffer);
+    common_graphics::graphics_device.freeCommandBuffers (common_graphics::transfer_command_pool, one_time_command_buffer);
+}
+
+vk::ImageView vk_utils::create_image_view (vk::Image& image)
+{
+    vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
+    vk::ImageViewCreateInfo create_info ({}, image, vk::ImageViewType::e2D, vk::Format::eR8G8B8A8Unorm, {}, subresource_range);
+    return common_graphics::graphics_device.createImageView (create_info);
+}
+
+vk::CommandPool vk_utils::create_command_pool (size_t queue_family_index, vk::CommandPoolCreateFlags flags)
 {
     vk::CommandPoolCreateInfo create_info (flags, queue_family_index);
-    return common_graphics::graphics_device->createCommandPoolUnique (create_info);
+    return common_graphics::graphics_device.createCommandPool (create_info);
+}
+
+void vk_utils::destroy_command_pool_and_buffers (vk::CommandPool command_pool)
+{
 }
 
 uint32_t vk_utils::get_memory_type_index (vk::MemoryRequirements memory_requirements, vk::MemoryPropertyFlags required_memory_types)
@@ -86,13 +107,13 @@ uint32_t vk_utils::get_memory_type_index (vk::MemoryRequirements memory_requirem
     return -1;
 }
 
-vk::UniqueCommandBuffer vk_utils::get_one_time_command_buffer (vk::CommandPool command_pool)
+vk::CommandBuffer vk_utils::get_one_time_command_buffer (vk::CommandPool command_pool)
 {
     vk::CommandBufferAllocateInfo allocate_info (command_pool, vk::CommandBufferLevel::ePrimary, 1);
-    vk::UniqueCommandBuffer out_command_buffer = std::move (common_graphics::graphics_device->allocateCommandBuffersUnique (allocate_info).at (0));
+    vk::CommandBuffer out_command_buffer = std::move (common_graphics::graphics_device.allocateCommandBuffers (allocate_info).at (0));
 
     vk::CommandBufferBeginInfo begin_info (vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
-    out_command_buffer->begin (begin_info);
+    out_command_buffer.begin (begin_info);
 
     return out_command_buffer;
 }

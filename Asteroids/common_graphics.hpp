@@ -6,22 +6,22 @@
 class common_graphics
 {
 public:
+    ~common_graphics ();
     void init (HINSTANCE h_instance, HWND h_wnd);
-    void shutdown ();
 
-    static vk::UniqueDevice graphics_device;
+    static vk::Device graphics_device;
     static vk::PhysicalDeviceMemoryProperties physical_device_memory_properties;
     static vk::PhysicalDeviceLimits physical_device_limits;
     static vk::SurfaceFormatKHR surface_format;
     static vk::Extent2D surface_extent;
-    static vk::UniqueSwapchainKHR swapchain;
+    static vk::SwapchainKHR swapchain;
     static std::vector<vk::Image> swapchain_images;
-    static std::vector<vk::UniqueImageView> swapchain_image_views;
+    static std::vector<vk::ImageView> swapchain_image_views;
     static size_t num_swapchain_images;
     static vk::Queue graphics_queue;
     static vk::Queue transfer_queue;
     static vk::Queue compute_queue;
-    static vk::UniqueCommandPool transfer_command_pool;
+    static vk::CommandPool transfer_command_pool;
 
     static size_t graphics_queue_family_index;
     static size_t transfer_queue_family_index;
@@ -39,10 +39,10 @@ private:
 
     bool is_validation_needed = false;
 
-    vk::UniqueInstance instance;
-    vk::UniqueDebugUtilsMessengerEXT debug_utils_messenger;
+    vk::Instance instance;
+    vk::DebugUtilsMessengerEXT debug_utils_messenger;
     vk::PhysicalDevice physical_device;
-    vk::UniqueSurfaceKHR surface;
+    vk::SurfaceKHR surface;
     vk::PresentModeKHR present_mode;
     vk::SurfaceCapabilitiesKHR surface_capabilities;
 };

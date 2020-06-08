@@ -20,7 +20,6 @@ public:
     virtual void init ();
     virtual void process_keyboard_input (WPARAM WParam, LPARAM LParam);
     virtual void main_loop ();
-    virtual void shutdown ();
 
 protected:
     void import_image (std::string Name);

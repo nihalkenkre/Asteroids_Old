@@ -28,11 +28,6 @@ void scene::main_loop ()
 {
 }
 
-void scene::shutdown ()
-{
-    OutputDebugString (L"scene::shutdown\n");
-}
-
 void scene::import_image (std::string Name)
 {
     image_names.push_back (Name.append (".tga"));

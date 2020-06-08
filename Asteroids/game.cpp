@@ -31,11 +31,3 @@ void game::init (HINSTANCE h_instance, HWND h_wnd)
 void game::main_loop ()
 {
 }
-
-void game::shutdown ()
-{
-    OutputDebugString (L"game::shutdown\n");
-    
-    current_scene->shutdown ();
-    graphics->shutdown ();
-}

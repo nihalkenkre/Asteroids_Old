@@ -18,10 +18,10 @@ public:
 private:
     void import_images (const std::vector<tinygltf::Model>& models);
 
-    vk::UniqueBuffer vertex_index_buffer;
-    vk::UniqueDeviceMemory vertex_index_buffer_memory;
+    vk::Buffer vertex_index_buffer;
+    vk::DeviceMemory vertex_index_buffer_memory;
     
-    std::vector <vk::UniqueImage> images;
-    std::vector <vk::UniqueImageView> image_views;
-    vk::UniqueDeviceMemory images_memory;
+    std::vector <vk::Image> images;
+    std::vector <vk::ImageView> image_views;
+    vk::DeviceMemory images_memory;
 };

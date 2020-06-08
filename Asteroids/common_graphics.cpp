@@ -9,14 +9,14 @@ vk::PhysicalDeviceMemoryProperties common_graphics::physical_device_memory_prope
 vk::PhysicalDeviceLimits common_graphics::physical_device_limits;
 vk::Extent2D common_graphics::surface_extent;
 vk::SurfaceFormatKHR common_graphics::surface_format;
-vk::UniqueDevice common_graphics::graphics_device;
+vk::Device common_graphics::graphics_device;
 vk::Queue common_graphics::graphics_queue;
 vk::Queue common_graphics::compute_queue;
 vk::Queue common_graphics::transfer_queue;
-vk::UniqueSwapchainKHR common_graphics::swapchain;
+vk::SwapchainKHR common_graphics::swapchain;
 std::vector<vk::Image> common_graphics::swapchain_images;
-std::vector<vk::UniqueImageView> common_graphics::swapchain_image_views;
-vk::UniqueCommandPool common_graphics::transfer_command_pool;
+std::vector<vk::ImageView> common_graphics::swapchain_image_views;
+vk::CommandPool common_graphics::transfer_command_pool;
 
 size_t common_graphics::graphics_queue_family_index;
 size_t common_graphics::transfer_queue_family_index;
@@ -94,23 +94,23 @@ void common_graphics::create_instance ()
     vk::ApplicationInfo application_info ("Asteroids", VK_MAKE_VERSION (1, 0, 0), "AGE", VK_MAKE_VERSION (1, 0, 0), VK_API_VERSION_1_2);
     vk::InstanceCreateInfo instance_create_info ({}, &application_info, requested_instance_layers.size (), requested_instance_layers.data (), requested_instance_extensions.size (), requested_instance_extensions.data ());
  
-    instance = vk::createInstanceUnique (instance_create_info);
+    instance = vk::createInstance (instance_create_info);
 }
 
 void common_graphics::setup_debug_utils_messenger ()
 {
-    pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance->getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
-    pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance->getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
+    pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance.getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
+    pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance.getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
 
     vk::DebugUtilsMessageSeverityFlagsEXT severity_flags (vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose);
     vk::DebugUtilsMessageTypeFlagsEXT message_type_flags (vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
 
-    debug_utils_messenger = instance->createDebugUtilsMessengerEXTUnique (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
+    debug_utils_messenger = instance.createDebugUtilsMessengerEXT (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
 }
 
 void common_graphics::get_physical_device ()
 {
-    physical_device = instance->enumeratePhysicalDevices ().at (0);
+    physical_device = instance.enumeratePhysicalDevices ().at (0);
     
     physical_device_memory_properties = physical_device.getMemoryProperties ();
     physical_device_limits = physical_device.getProperties ().limits;
@@ -119,7 +119,7 @@ void common_graphics::get_physical_device ()
 void common_graphics::create_surface (HINSTANCE h_instance, HWND h_wnd)
 {
     vk::Win32SurfaceCreateInfoKHR surface_create_info ({}, h_instance, h_wnd);
-    surface = instance->createWin32SurfaceKHRUnique (surface_create_info);
+    surface = instance.createWin32SurfaceKHR (surface_create_info);
 }
 
 void common_graphics::get_surface_properties ()
@@ -148,12 +148,12 @@ void common_graphics::get_surface_properties ()
         transfer_queue_family_index = std::distance (queue_family_properties.begin (), std::find_if (queue_family_properties.begin (), queue_family_properties.end (), [&](const vk::QueueFamilyProperties& family_property) { return (family_property.queueFlags & vk::QueueFlagBits::eTransfer); }));
     }
 
-    bool is_supported = physical_device.getSurfaceSupportKHR (graphics_queue_family_index, surface.get ());
+    bool is_supported = physical_device.getSurfaceSupportKHR (graphics_queue_family_index, surface);
 
-    surface_capabilities = physical_device.getSurfaceCapabilitiesKHR (surface.get ());
+    surface_capabilities = physical_device.getSurfaceCapabilitiesKHR (surface);
     surface_extent = surface_capabilities.currentExtent;
 
-    std::vector<vk::SurfaceFormatKHR> surface_formats = physical_device.getSurfaceFormatsKHR (surface.get ());
+    std::vector<vk::SurfaceFormatKHR> surface_formats = physical_device.getSurfaceFormatsKHR (surface);
 
     auto format_iter = std::find_if (surface_formats.begin (), surface_formats.end (), [&](vk::SurfaceFormatKHR format) { return format == vk::Format::eB8G8R8A8Unorm; });
     if (format_iter != surface_formats.end ())
@@ -161,7 +161,7 @@ void common_graphics::get_surface_properties ()
         surface_format = *format_iter;
     }
 
-    std::vector<vk::PresentModeKHR> present_modes = physical_device.getSurfacePresentModesKHR (surface.get ());
+    std::vector<vk::PresentModeKHR> present_modes = physical_device.getSurfacePresentModesKHR (surface);
 
     auto present_mode_iter = std::find_if (present_modes.begin (), present_modes.end (), [&](const vk::PresentModeKHR& present_mode) { return present_mode == vk::PresentModeKHR::eMailbox; });
     if (present_mode_iter != present_modes.end ())
@@ -209,20 +209,20 @@ void common_graphics::create_graphics_device ()
     }
 
     vk::DeviceCreateInfo device_create_info ({}, queue_create_infos.size (), queue_create_infos.data (), 0, nullptr, requested_device_extensions.size (), requested_device_extensions.data ());
-    graphics_device = physical_device.createDeviceUnique (device_create_info);
+    graphics_device = physical_device.createDevice (device_create_info);
 
     std::vector<vk::QueueFamilyProperties> queue_family_properties = physical_device.getQueueFamilyProperties ();
 
-    graphics_queue = graphics_device->getQueue (graphics_queue_family_index, queue_indices.at (0) > queue_family_properties.at (graphics_queue_family_index).queueCount ? queue_family_properties.at (graphics_queue_family_index).queueCount - 1 : queue_indices.at (0));
-    compute_queue = graphics_device->getQueue (compute_queue_family_index, queue_indices.at (1) > queue_family_properties.at (compute_queue_family_index).queueCount ? queue_family_properties.at (compute_queue_family_index).queueCount - 1 : queue_indices.at (1));
-    transfer_queue = graphics_device->getQueue (transfer_queue_family_index, queue_indices.at (2) > queue_family_properties.at (transfer_queue_family_index).queueCount ? queue_family_properties.at (transfer_queue_family_index).queueCount - 1 : queue_indices.at (2));
+    graphics_queue = graphics_device.getQueue (graphics_queue_family_index, queue_indices.at (0) > queue_family_properties.at (graphics_queue_family_index).queueCount ? queue_family_properties.at (graphics_queue_family_index).queueCount - 1 : queue_indices.at (0));
+    compute_queue = graphics_device.getQueue (compute_queue_family_index, queue_indices.at (1) > queue_family_properties.at (compute_queue_family_index).queueCount ? queue_family_properties.at (compute_queue_family_index).queueCount - 1 : queue_indices.at (1));
+    transfer_queue = graphics_device.getQueue (transfer_queue_family_index, queue_indices.at (2) > queue_family_properties.at (transfer_queue_family_index).queueCount ? queue_family_properties.at (transfer_queue_family_index).queueCount - 1 : queue_indices.at (2));
 }
 
 void common_graphics::create_swapchain ()
 {
-    vk::SwapchainCreateInfoKHR swapchain_create_info ({}, surface.get (), surface_capabilities.minImageCount + 1, surface_format.format, surface_format.colorSpace, surface_extent, 1, surface_capabilities.supportedUsageFlags, vk::SharingMode::eExclusive, 0, {}, surface_capabilities.currentTransform, vk::CompositeAlphaFlagBitsKHR::eOpaque, present_mode);
-    swapchain = graphics_device->createSwapchainKHRUnique (swapchain_create_info);
-    swapchain_images = graphics_device->getSwapchainImagesKHR (swapchain.get ());
+    vk::SwapchainCreateInfoKHR swapchain_create_info ({}, surface, surface_capabilities.minImageCount + 1, surface_format.format, surface_format.colorSpace, surface_extent, 1, surface_capabilities.supportedUsageFlags, vk::SharingMode::eExclusive, 0, {}, surface_capabilities.currentTransform, vk::CompositeAlphaFlagBitsKHR::eOpaque, present_mode);
+    swapchain = graphics_device.createSwapchainKHR (swapchain_create_info);
+    swapchain_images = graphics_device.getSwapchainImagesKHR (swapchain);
 
     vk::ComponentMapping component_mapping (vk::ComponentSwizzle::eIdentity);
     vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
@@ -232,7 +232,7 @@ void common_graphics::create_swapchain ()
     for (auto& image : swapchain_images)
     {
         image_view_create_info.image = image;
-        swapchain_image_views.emplace_back (graphics_device->createImageViewUnique (image_view_create_info));
+        swapchain_image_views.emplace_back (graphics_device.createImageView (image_view_create_info));
     }
 }
 
@@ -241,8 +241,32 @@ void common_graphics::create_transfer_command_pool ()
     transfer_command_pool = vk_utils::create_command_pool (transfer_queue_family_index, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
 }
 
+common_graphics::~common_graphics ()
+{
+    OutputDebugString (L"common_graphics::~common_graphics\n");
+
+    graphics_device.destroyCommandPool (transfer_command_pool);
+    graphics_device.destroySwapchainKHR (swapchain);
+
+    for (auto& image_view : swapchain_image_views)
+    {
+        graphics_device.destroyImageView (image_view);
+    };
+
+    graphics_device.destroy ();
+    instance.destroySurfaceKHR (surface);
+
+    if (is_validation_needed)
+    {
+        instance.destroyDebugUtilsMessengerEXT (debug_utils_messenger);
+    }
+
+    instance.destroy ();
+}
+
 void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
 {
+    OutputDebugString (L"common_graphics::init\n");
 #ifdef _DEBUG
     is_validation_needed = true;
 #endif
@@ -260,8 +284,4 @@ void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
     create_graphics_device ();
     create_swapchain ();
     create_transfer_command_pool ();
-}
-
-void common_graphics::shutdown ()
-{
 }

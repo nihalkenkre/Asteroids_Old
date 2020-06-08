@@ -1,6 +1,11 @@
 #include "test_scene.hpp"
 
 
+test_scene::~test_scene ()
+{
+    OutputDebugString (L"test_scene::~test_scene\n");
+}
+
 void test_scene::init ()
 {
     OutputDebugString (L"test_scene::init\n");
@@ -19,9 +24,4 @@ void test_scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 
 void test_scene::main_loop ()
 {
-}
-
-void test_scene::shutdown ()
-{
-    OutputDebugString (L"test_scene::shutdown\n");
 }
