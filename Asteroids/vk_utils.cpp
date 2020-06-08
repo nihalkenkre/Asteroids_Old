@@ -26,6 +26,18 @@ void vk_utils::map_data_to_device_memory (vk::DeviceMemory& memory, vk::DeviceSi
     common_graphics::graphics_device.unmapMemory (memory);
 }
 
+void vk_utils::copy_buffer_to_buffer (vk::Buffer& src_buffer, vk::Buffer& dst_buffer, vk::DeviceSize size)
+{
+    vk::BufferCopy buffer_copy (0, 0, size);
+
+    vk::CommandBuffer one_time_command_buffer = get_one_time_command_buffer (common_graphics::transfer_command_pool);
+    one_time_command_buffer.copyBuffer (src_buffer, dst_buffer, buffer_copy);
+    one_time_command_buffer.end ();
+    
+    submit_one_time_command_buffer (common_graphics::transfer_queue, one_time_command_buffer);
+    common_graphics::graphics_device.freeCommandBuffers (common_graphics::transfer_command_pool, one_time_command_buffer);
+}
+
 vk::DeviceMemory vk_utils::create_memory_for_images (const std::vector<vk::Image>& images, vk::MemoryPropertyFlags required_memory_types)
 {
     vk::MemoryAllocateInfo allocate_info = {};
@@ -92,6 +104,12 @@ vk::CommandPool vk_utils::create_command_pool (size_t queue_family_index, vk::Co
 
 void vk_utils::destroy_command_pool_and_buffers (vk::CommandPool command_pool)
 {
+}
+
+void vk_utils::destroy_buffer_and_memory (vk::Buffer buffer, vk::DeviceMemory buffer_memory)
+{
+    common_graphics::graphics_device.destroyBuffer (buffer);
+    common_graphics::graphics_device.freeMemory (buffer_memory);
 }
 
 uint32_t vk_utils::get_memory_type_index (vk::MemoryRequirements memory_requirements, vk::MemoryPropertyFlags required_memory_types)

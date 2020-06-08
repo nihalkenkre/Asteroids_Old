@@ -58,11 +58,115 @@ void scene_graphics::create_graphics_for_meshes (const std::vector<std::string>&
         models.push_back (model);
     }
 
+    std::vector <unsigned char> all_mesh_data = get_static_mesh_data (models);
+    std::vector <unsigned char> all_image_data = get_image_data (models);
+
+    vk::Buffer staging_buffer = vk_utils::create_buffer (all_mesh_data.size (), vk::BufferUsageFlagBits::eTransferSrc);
+    vk::DeviceMemory staging_buffer_memory = vk_utils::create_memory_for_buffer (staging_buffer, vk::MemoryPropertyFlagBits::eHostVisible);
+    vk_utils::map_data_to_device_memory (staging_buffer_memory, 0, all_mesh_data.size (), (void*)all_mesh_data.data ());
+
+    vertex_index_buffer = vk_utils::create_buffer (all_mesh_data.size (), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eIndexBuffer);
+    vertex_index_buffer_memory = vk_utils::create_memory_for_buffer (vertex_index_buffer, vk::MemoryPropertyFlagBits::eDeviceLocal);
+    vk_utils::copy_buffer_to_buffer (staging_buffer, vertex_index_buffer, all_mesh_data.size ());
+
+    vk_utils::free_buffer_and_memory (staging_buffer, staging_buffer_memory);
+
+    staging_buffer = vk_utils::create_buffer (all_image_data.size (), vk::BufferUsageFlagBits::eTransferSrc);
+    staging_buffer_memory = vk_utils::create_memory_for_buffer (staging_buffer, vk::MemoryPropertyFlagBits::eHostVisible);
+    vk_utils::map_data_to_device_memory (staging_buffer_memeory, 0, all_image_data.size (), (void*) all_image_data.data ());
+
+    vk_utils::free_buffer_and_memory (staging_buffer, staging_buffer_memory);
     import_static_meshes (models);
 }
 
 void scene_graphics::create_graphics_for_images (const std::vector<std::string>& file_paths)
 {
+}
+
+std::vector <unsigned char> scene_graphics::get_static_mesh_data (const std::vector<tinygltf::Model>& models)
+{
+    std::vector <unsigned char> data;
+
+    for (const auto& model : models)
+    {
+        for (const auto& node : model.nodes)
+        {
+            if (node.name.find ("CS_") == 0)
+            {
+                continue;
+            }
+
+            if (node.skin > 0)
+            {
+                continue;
+            }
+
+            auto current_mesh = model.meshes[node.mesh];
+
+            for (const auto& primitive : current_mesh.primitives)
+            {
+                auto position_attribute = primitive.attributes.find ("POSITION");
+                if (position_attribute != primitive.attributes.end ())
+                {
+                    auto accessor = model.accessors[position_attribute->second];
+                    auto buffer_view = model.bufferViews[accessor.bufferView];
+                    data.reserve (data.capacity () + buffer_view.byteLength);
+                    data.insert (data.end (), model.buffers[buffer_view.buffer].data.begin() + accessor.byteOffset + buffer_view.byteOffset, model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset + buffer_view.byteLength);
+                }
+                
+                auto normal_attribute = primitive.attributes.find ("NORMAL");
+                if (normal_attribute != primitive.attributes.end ())
+                {
+                    auto accessor = model.accessors[normal_attribute->second];
+                    auto buffer_view = model.bufferViews[accessor.bufferView];
+                    data.reserve (data.capacity () + buffer_view.byteLength);
+                    data.insert (data.end (), model.buffers[buffer_view.buffer].data.begin() + accessor.byteOffset + buffer_view.byteOffset, model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset + buffer_view.byteLength);
+                }
+
+                auto uv0_attribute = primitive.attributes.find ("TEXCOORD_0");
+                if (uv0_attribute != primitive.attributes.end ())
+                {
+                    auto accessor = model.accessors[uv0_attribute->second];
+                    auto buffer_view = model.bufferViews[accessor.bufferView];
+                    data.reserve (data.capacity () + buffer_view.byteLength);
+                    data.insert (data.end (), model.buffers[buffer_view.buffer].data.begin() + accessor.byteOffset + buffer_view.byteOffset, model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset + buffer_view.byteLength);
+                }
+            
+                auto uv1_attribute = primitive.attributes.find ("TEXCOORD_1");
+                if (uv1_attribute != primitive.attributes.end ())
+                {
+                    auto accessor = model.accessors[uv1_attribute->second];
+                    auto buffer_view = model.bufferViews[accessor.bufferView];
+                    data.reserve (data.capacity () + buffer_view.byteLength);
+                    data.insert (data.end (), model.buffers[buffer_view.buffer].data.begin() + accessor.byteOffset + buffer_view.byteOffset, model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset + buffer_view.byteLength);
+                }
+                
+                auto accessor = model.accessors[primitive.indices];
+                auto buffer_view = model.bufferViews[accessor.bufferView];
+
+                data.reserve (data.capacity() + buffer_view.byteLength);
+                data.insert (data.end (), model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset, model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset + buffer_view.byteLength);
+            }
+        }
+    }
+
+    return data;
+}
+
+std::vector <unsigned char> scene_graphics::get_image_data (const std::vector<tinygltf::Model>& models)
+{
+    std::vector <unsigned char> data;
+
+    for (const auto& model : models)
+    {
+        for (const auto& image : model.images)
+        {
+            data.reserve (data.capacity () + image.image.size ());
+            data.insert (data.end (), image.image.begin(), image.image.end ());
+        }
+    }
+
+    return data;
 }
 
 void scene_graphics::import_static_meshes (const std::vector<tinygltf::Model>& models)
@@ -115,6 +219,10 @@ vk_static_mesh scene_graphics::create_static_mesh (int mesh_index, const tinyglt
         {
             out_static_mesh.blend_graphics_primitives.emplace_back (create_static_primitive (primitive, model));
         }
+        else
+        {
+            out_static_mesh.opaque_graphics_primitives.emplace_back (create_static_primitive (primitive, model));
+        }
     }
 
     return out_static_mesh;
@@ -123,7 +231,7 @@ vk_static_mesh scene_graphics::create_static_mesh (int mesh_index, const tinyglt
 vk_static_primitive scene_graphics::create_static_primitive (const tinygltf::Primitive& primitive, const tinygltf::Model& model)
 {
     vk_static_primitive out_static_primitive ({});
-
+    
     return out_static_primitive;
 }
 
@@ -142,6 +250,7 @@ vk_image scene_graphics::create_image (int image_index, const tinygltf::Model& m
     out_image.name = current_image.name;
     return out_image;
 }
+
 
 /*void scene_graphics::import_images (const std::vector<tinygltf::Model>& models)
 {
@@ -191,6 +300,8 @@ vk_image scene_graphics::create_image (int image_index, const tinygltf::Model& m
         current_offset += model_image.image.size ();
         ++current_index;
     }
+
+    vk_utils::destroy_buffer_and_memory (staging_buffer, staging_buffer_memory);
 }
 
 void scene_graphics::import_materials (const std::vector<tinygltf::Model>& models)

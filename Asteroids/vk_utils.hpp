@@ -8,6 +8,7 @@ public:
     static vk::Buffer create_buffer (vk::DeviceSize size, vk::BufferUsageFlags usage);
     static vk::DeviceMemory create_memory_for_buffer (vk::Buffer buffer, vk::MemoryPropertyFlags required_memory_types);
     static void map_data_to_device_memory (vk::DeviceMemory& memory, vk::DeviceSize offset, vk::DeviceSize size, void* data_source);
+    static void copy_buffer_to_buffer (vk::Buffer& src_buffer, vk::Buffer& dst_buffer, vk::DeviceSize size);
 
     static vk::DeviceMemory create_memory_for_images (const std::vector<vk::Image>& images, vk::MemoryPropertyFlags required_memory_types);
     static void change_image_layout (vk::Image& image, uint32_t num_layers, uint32_t src_family_queue_index, uint32_t dst_family_queue_index, vk::ImageLayout old_layout, vk::ImageLayout new_layout, vk::AccessFlags src_access, vk::AccessFlags dst_access, vk::PipelineStageFlags src_stage, vk::PipelineStageFlags dst_stage);
@@ -16,6 +17,8 @@ public:
     
     static vk::CommandPool create_command_pool (size_t queue_family_index, vk::CommandPoolCreateFlags flags);
     static void destroy_command_pool_and_buffers (vk::CommandPool command_pool);
+
+    static void destroy_buffer_and_memory (vk::Buffer buffer, vk::DeviceMemory buffer_memory);
 
 private:
     static uint32_t get_memory_type_index (vk::MemoryRequirements memory_requirements, vk::MemoryPropertyFlags required_memory_types);

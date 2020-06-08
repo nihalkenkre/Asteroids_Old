@@ -25,6 +25,9 @@ private:
     vk_material create_material (int material_index, const tinygltf::Model& model);
     vk_image create_image (int material_index, const tinygltf::Model& model);
 
+    std::vector <unsigned char> get_static_mesh_data (const std::vector<tinygltf::Model>& models);
+    std::vector <unsigned char> get_image_data (const std::vector<tinygltf::Model>& models);
+
     std::vector<vk_static_mesh> static_meshes;
 
     vk::Buffer vertex_index_buffer;
