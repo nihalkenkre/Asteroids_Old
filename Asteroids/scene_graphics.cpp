@@ -69,13 +69,14 @@ void scene_graphics::create_graphics_for_meshes (const std::vector<std::string>&
     vertex_index_buffer_memory = vk_utils::create_memory_for_buffer (vertex_index_buffer, vk::MemoryPropertyFlagBits::eDeviceLocal);
     vk_utils::copy_buffer_to_buffer (staging_buffer, vertex_index_buffer, all_mesh_data.size ());
 
-    vk_utils::free_buffer_and_memory (staging_buffer, staging_buffer_memory);
+    vk_utils::destroy_buffer_and_memory (staging_buffer, staging_buffer_memory);
 
     staging_buffer = vk_utils::create_buffer (all_image_data.size (), vk::BufferUsageFlagBits::eTransferSrc);
     staging_buffer_memory = vk_utils::create_memory_for_buffer (staging_buffer, vk::MemoryPropertyFlagBits::eHostVisible);
-    vk_utils::map_data_to_device_memory (staging_buffer_memeory, 0, all_image_data.size (), (void*) all_image_data.data ());
+    vk_utils::map_data_to_device_memory (staging_buffer_memory, 0, all_image_data.size (), (void*) all_image_data.data ());
 
-    vk_utils::free_buffer_and_memory (staging_buffer, staging_buffer_memory);
+    vk_utils::destroy_buffer_and_memory (staging_buffer, staging_buffer_memory);
+ 
     import_static_meshes (models);
 }
 
@@ -171,9 +172,6 @@ std::vector <unsigned char> scene_graphics::get_image_data (const std::vector<ti
 
 void scene_graphics::import_static_meshes (const std::vector<tinygltf::Model>& models)
 {
-    std::vector<unsigned char> all_image_data;
-    std::vector<unsigned char> all_mesh_data;
-
     for (const auto& model : models)
     {
         for (const auto& node : model.nodes)
