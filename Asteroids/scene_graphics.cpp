@@ -42,7 +42,7 @@ void scene_graphics::create_graphics_for_meshes (const std::vector<std::string>&
     
     vk::Buffer staging_buffer = vk_utils::create_buffer (all_mesh_data.first.size (), vk::BufferUsageFlagBits::eTransferSrc);
     vk::DeviceMemory staging_buffer_memory = vk_utils::create_memory_for_buffer (staging_buffer, vk::MemoryPropertyFlagBits::eHostVisible);
-    vk_utils::map_data_to_device_memory (staging_buffer_memory, 0, all_mesh_data.first.size (), (void*)all_mesh_data.first.data ());
+    vk_utils::map_data_to_device_memory (staging_buffer_memory, 0, all_mesh_data.first.size (), static_cast<void*> (all_mesh_data.first.data ()));
 
     vertex_index_buffer = vk_utils::create_buffer (all_mesh_data.first.size (), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eIndexBuffer);
     vertex_index_buffer_memory = vk_utils::create_memory_for_buffer (vertex_index_buffer, vk::MemoryPropertyFlagBits::eDeviceLocal);

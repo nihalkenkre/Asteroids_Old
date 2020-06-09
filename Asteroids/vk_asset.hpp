@@ -8,8 +8,6 @@ class vk_image
 {
 public:
     vk_image ();
-    vk_image (vk::Image image_, vk::ImageView image_view_);
-
     ~vk_image ();
 
     std::string name;
@@ -75,7 +73,7 @@ class vk_static_mesh
 public:
     std::string name;
 
-    std::vector<vk_static_primitive> opaque_graphics_primitives;
-    std::vector<vk_static_primitive> alpha_graphics_primitives;
-    std::vector<vk_static_primitive> blend_graphics_primitives;
+    std::vector<vk_static_primitive> opaque_primitives;
+    std::vector<vk_static_primitive> alpha_primitives;
+    std::vector<vk_static_primitive> blend_primitives;
 };
