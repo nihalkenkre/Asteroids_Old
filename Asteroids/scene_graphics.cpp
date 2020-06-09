@@ -2,12 +2,7 @@
 #include "common_graphics.hpp"
 #include "utils.hpp"
 #include "vk_utils.hpp"
-
-#define TINYGLTF_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
-#include <tiny_gltf.h>
+#include "asset_io.hpp"
 
 
 scene_graphics::scene_graphics ()
@@ -42,48 +37,24 @@ scene_graphics::~scene_graphics ()
 
 void scene_graphics::create_graphics_for_meshes (const std::vector<std::string>& file_paths)
 {
-    std::vector<tinygltf::Model> models;
-    models.reserve (5);
-
-    tinygltf::TinyGLTF loader;
+    asset_io importer (file_paths);
+    std::pair<std::vector <unsigned char>, std::vector<vk_static_mesh>> all_mesh_data = importer.get_static_mesh_data ();
     
-    for (const auto& file_path : file_paths)
-    {
-        tinygltf::Model model;
-        if (!loader.LoadBinaryFromFile (&model, nullptr, nullptr, utils::get_full_file_path (file_path)))
-        {
-            return;
-        }
-
-        models.push_back (model);
-    }
-
-    std::vector <unsigned char> all_mesh_data = get_static_mesh_data (models);
-    std::vector <unsigned char> all_image_data = get_image_data (models);
-
-    vk::Buffer staging_buffer = vk_utils::create_buffer (all_mesh_data.size (), vk::BufferUsageFlagBits::eTransferSrc);
+    vk::Buffer staging_buffer = vk_utils::create_buffer (all_mesh_data.first.size (), vk::BufferUsageFlagBits::eTransferSrc);
     vk::DeviceMemory staging_buffer_memory = vk_utils::create_memory_for_buffer (staging_buffer, vk::MemoryPropertyFlagBits::eHostVisible);
-    vk_utils::map_data_to_device_memory (staging_buffer_memory, 0, all_mesh_data.size (), (void*)all_mesh_data.data ());
+    vk_utils::map_data_to_device_memory (staging_buffer_memory, 0, all_mesh_data.first.size (), (void*)all_mesh_data.first.data ());
 
-    vertex_index_buffer = vk_utils::create_buffer (all_mesh_data.size (), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eIndexBuffer);
+    vertex_index_buffer = vk_utils::create_buffer (all_mesh_data.first.size (), vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eIndexBuffer);
     vertex_index_buffer_memory = vk_utils::create_memory_for_buffer (vertex_index_buffer, vk::MemoryPropertyFlagBits::eDeviceLocal);
-    vk_utils::copy_buffer_to_buffer (staging_buffer, vertex_index_buffer, all_mesh_data.size ());
+    vk_utils::copy_buffer_to_buffer (staging_buffer, vertex_index_buffer, all_mesh_data.first.size ());
 
     vk_utils::destroy_buffer_and_memory (staging_buffer, staging_buffer_memory);
-
-    staging_buffer = vk_utils::create_buffer (all_image_data.size (), vk::BufferUsageFlagBits::eTransferSrc);
-    staging_buffer_memory = vk_utils::create_memory_for_buffer (staging_buffer, vk::MemoryPropertyFlagBits::eHostVisible);
-    vk_utils::map_data_to_device_memory (staging_buffer_memory, 0, all_image_data.size (), (void*) all_image_data.data ());
-
-    vk_utils::destroy_buffer_and_memory (staging_buffer, staging_buffer_memory);
- 
-    import_static_meshes (models);
 }
 
 void scene_graphics::create_graphics_for_images (const std::vector<std::string>& file_paths)
 {
 }
-
+/*
 std::vector <unsigned char> scene_graphics::get_static_mesh_data (const std::vector<tinygltf::Model>& models)
 {
     std::vector <unsigned char> data;
@@ -229,7 +200,42 @@ vk_static_mesh scene_graphics::create_static_mesh (int mesh_index, const tinyglt
 vk_static_primitive scene_graphics::create_static_primitive (const tinygltf::Primitive& primitive, const tinygltf::Model& model)
 {
     vk_static_primitive out_static_primitive ({});
-    
+ 
+    vk::DeviceSize current_offset = 0;
+
+    auto position_attribute = primitive.attributes.find ("POSITION");
+    if (position_attribute != primitive.attributes.end ())
+    {
+        auto accessor = model.accessors[position_attribute->second];
+        auto buffer_view = model.bufferViews[accessor.bufferView];
+        out_static_primitive.positions_offset = current_offset;
+        current_offset += byte
+    }
+
+    auto normal_attribute = primitive.attributes.find ("NORMAL");
+    if (normal_attribute != primitive.attributes.end ())
+    {
+        auto accessor = model.accessors[normal_attribute->second];
+        auto buffer_view = model.bufferViews[accessor.bufferView];
+    }
+
+    auto uv0_attribute = primitive.attributes.find ("TEXCOORD_0");
+    if (uv0_attribute != primitive.attributes.end ())
+    {
+        auto accessor = model.accessors[uv0_attribute->second];
+        auto buffer_view = model.bufferViews[accessor.bufferView];
+    }
+
+    auto uv1_attribute = primitive.attributes.find ("TEXCOORD_1");
+    if (uv1_attribute != primitive.attributes.end ())
+    {
+        auto accessor = model.accessors[uv1_attribute->second];
+        auto buffer_view = model.bufferViews[accessor.bufferView];
+    }
+
+    auto accessor = model.accessors[primitive.indices];
+    auto buffer_view = model.bufferViews[accessor.bufferView];
+
     return out_static_primitive;
 }
 

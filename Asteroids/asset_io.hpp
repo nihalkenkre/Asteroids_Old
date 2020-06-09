@@ -3,11 +3,16 @@
 #include "vk_asset.hpp"
 #include <vector>
 
+#include <tiny_gltf.h>
 
 class asset_io
 {
 public:
-    static std::vector<vk_image> import_images (const std::string& file_path);
+    asset_io (const std::vector<std::string>& file_paths);
+    ~asset_io ();
+
+    std::pair<std::vector<unsigned char>, std::vector<vk_static_mesh>> get_static_mesh_data ();
 
 private:
+    std::vector<tinygltf::Model> models;
 };
