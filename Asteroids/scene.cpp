@@ -42,4 +42,10 @@ void scene::commit_assets ()
 {
     graphics->create_graphics_for_meshes (mesh_names);
     graphics->create_graphics_for_images (image_names);
+    graphics->bake_data_buffers ();
+
+    image_names.clear ();
+    mesh_names.clear ();
+    image_names.shrink_to_fit ();
+    mesh_names.shrink_to_fit ();
 }

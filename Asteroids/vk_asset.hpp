@@ -1,10 +1,12 @@
 #pragma once
 
+#include "vk_image.hpp"
+
 #include <string>
 #include <memory>
 #include <vulkan/vulkan.hpp>
 
-class vk_image
+/*class vk_image
 {
 public:
     vk_image ();
@@ -12,9 +14,15 @@ public:
 
     std::string name;
 
+    std::vector<unsigned char> image_data;
+    vk::DeviceSize image_data_offset;
+
+    vk::DeviceSize width;
+    vk::DeviceSize height;
+
     vk::Image image;
     vk::ImageView image_view;
-};
+};*/
 
 class vk_animation
 {
@@ -55,6 +63,12 @@ class vk_static_primitive
 {
 public:
     std::string name;
+
+    std::vector<unsigned char> positions;
+    std::vector<unsigned char> normals;
+    std::vector<unsigned char> uv0s;
+    std::vector<unsigned char> uv1s;
+    std::vector<unsigned char> indices;
 
     vk::DeviceSize positions_offset;
     vk::DeviceSize normals_offset;

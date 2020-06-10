@@ -1,9 +1,11 @@
 #pragma once
 
+#include "vk_image.hpp" 
 #include "vk_asset.hpp"
 #include <vector>
 
 #include <tiny_gltf.h>
+
 
 class asset_io
 {
@@ -11,15 +13,18 @@ public:
     asset_io (const std::vector<std::string>& file_paths);
     ~asset_io ();
 
-    std::pair<std::vector<unsigned char>, std::vector<vk_static_mesh>> get_static_mesh_data ();
+    std::vector<vk_image> get_images ();
+    std::vector<vk_material> get_materials ();
+    std::vector<vk_static_mesh> get_static_meshes ();
 
 private:
-    std::vector<unsigned char> get_static_mesh_raw_data ();
-    std::vector<vk_static_mesh> get_vk_static_meshes ();
-
-    vk_static_primitive create_primitive (const tinygltf::Primitive& primitive, const tinygltf::Model& model);
-    vk_material create_material (const tinygltf::Material& material);
-
+    void create_images ();
+    void create_materials ();
+    void create_static_meshes ();
+    
     std::vector<tinygltf::Model> models;
-    vk::DeviceSize current_static_mesh_data_offset;
+  
+    std::vector<vk_image> images;
+    std::vector<vk_material> materials;
+    std::vector<vk_static_mesh> static_meshes;
 };
