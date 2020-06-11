@@ -2,6 +2,58 @@
 
 #include "common_graphics.hpp"
 
+vk_instance::vk_instance (const bool& is_validation_needed)
+{
+    OutputDebugString (L"vk_instance::vk_instance\n");
+
+    std::vector<const char*> requested_instance_layers;
+    std::vector<const char*> requested_instance_extensions;
+    requested_instance_extensions.reserve (3);
+
+    std::vector<vk::LayerProperties> layer_properties = vk::enumerateInstanceLayerProperties ();
+
+    auto layer_iter = std::find_if (layer_properties.begin (), layer_properties.end (), [&](const vk::LayerProperties& layer_property) { return (strcmp (layer_property.layerName, "VK_LAYER_KHRONOS_validation") == 0); });
+    if (layer_iter != layer_properties.end ())
+    {
+        requested_instance_layers.push_back (layer_iter->layerName);
+    }
+
+    std::vector<vk::ExtensionProperties> extension_properties = vk::enumerateInstanceExtensionProperties ();
+    auto extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](const vk::ExtensionProperties& extension_property) { return (strcmp (extension_property.extensionName, VK_KHR_SURFACE_EXTENSION_NAME) == 0); });
+    if (extension_iter != extension_properties.end ())
+    {
+        requested_instance_extensions.push_back (extension_iter->extensionName);
+    }
+
+    extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](const vk::ExtensionProperties& extension_property) { return (strcmp (extension_property.extensionName, "VK_KHR_win32_surface") == 0); });
+    if (extension_iter != extension_properties.end ())
+    {
+        requested_instance_extensions.push_back (extension_iter->extensionName);
+    }
+
+    if (is_validation_needed)
+    {
+        extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](const vk::ExtensionProperties& extension_property) { return (strcmp (extension_property.extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == 0); });
+        if (extension_iter != extension_properties.end ())
+        {
+            requested_instance_extensions.push_back (extension_iter->extensionName);
+        }
+    }
+
+    vk::ApplicationInfo application_info ("Asteroids", VK_MAKE_VERSION (1, 0, 0), "AGE", VK_MAKE_VERSION (1, 0, 0), VK_API_VERSION_1_2);
+    vk::InstanceCreateInfo instance_create_info ({}, &application_info, requested_instance_layers.size (), requested_instance_layers.data (), requested_instance_extensions.size (), requested_instance_extensions.data ());
+ 
+    instance = vk::createInstance (instance_create_info);
+}
+
+vk_instance::~vk_instance ()
+{
+    OutputDebugString (L"vk_instance::vk_instance\n");
+
+    instance.destroy ();
+}
+
+
 vk::Buffer vk_utils::create_buffer (vk::DeviceSize size, vk::BufferUsageFlags usage)
 {
     vk::BufferCreateInfo create_info ({}, size, usage, vk::SharingMode::eExclusive);

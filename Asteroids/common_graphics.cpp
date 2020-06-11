@@ -55,7 +55,18 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeve
     return VK_FALSE;
 }
 
-void common_graphics::create_instance ()
+common_graphics::common_graphics ()
+{
+    OutputDebugString (L"common_graphics::common_graphics\n");
+
+#ifdef _DEBUG
+    is_validation_needed = true;
+#endif
+
+    instance = std::make_unique<vk_instance> (is_validation_needed);
+}
+
+/*void common_graphics::create_instance ()
 {
     std::vector<const char*> requested_instance_layers;
     std::vector<const char*> requested_instance_extensions;
@@ -95,22 +106,22 @@ void common_graphics::create_instance ()
     vk::InstanceCreateInfo instance_create_info ({}, &application_info, requested_instance_layers.size (), requested_instance_layers.data (), requested_instance_extensions.size (), requested_instance_extensions.data ());
  
     instance = vk::createInstance (instance_create_info);
-}
+}*/
 
 void common_graphics::setup_debug_utils_messenger ()
 {
-    pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance.getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
-    pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance.getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
+    pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance->get ().getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
+    pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance->get ().getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
 
     vk::DebugUtilsMessageSeverityFlagsEXT severity_flags (vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose);
     vk::DebugUtilsMessageTypeFlagsEXT message_type_flags (vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
 
-    debug_utils_messenger = instance.createDebugUtilsMessengerEXT (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
+    debug_utils_messenger = instance->get ().createDebugUtilsMessengerEXT (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
 }
 
 void common_graphics::get_physical_device ()
 {
-    physical_device = instance.enumeratePhysicalDevices ().at (0);
+    physical_device = instance->get ().enumeratePhysicalDevices ().at (0);
     
     physical_device_memory_properties = physical_device.getMemoryProperties ();
     physical_device_limits = physical_device.getProperties ().limits;
@@ -119,7 +130,7 @@ void common_graphics::get_physical_device ()
 void common_graphics::create_surface (HINSTANCE h_instance, HWND h_wnd)
 {
     vk::Win32SurfaceCreateInfoKHR surface_create_info ({}, h_instance, h_wnd);
-    surface = instance.createWin32SurfaceKHR (surface_create_info);
+    surface = instance->get ().createWin32SurfaceKHR (surface_create_info);
 }
 
 void common_graphics::get_surface_properties ()
@@ -163,7 +174,7 @@ void common_graphics::get_surface_properties ()
 
     std::vector<vk::PresentModeKHR> present_modes = physical_device.getSurfacePresentModesKHR (surface);
 
-    auto present_mode_iter = std::find_if (present_modes.begin (), present_modes.end (), [&](const vk::PresentModeKHR& present_mode) { return present_mode == vk::PresentModeKHR::eMailbox; });
+    auto present_mode_iter = std::find_if (present_modes.begin (), present_modes.end (), [&](const vk::PresentModeKHR& present_mode) { return present_mode == vk::PresentModeKHR::eMailbox || present_mode == vk::PresentModeKHR::eFifo; });
     if (present_mode_iter != present_modes.end ())
     {
         present_mode = *present_mode_iter;
@@ -254,24 +265,17 @@ common_graphics::~common_graphics ()
     };
 
     graphics_device.destroy ();
-    instance.destroySurfaceKHR (surface);
+    instance->get ().destroySurfaceKHR (surface);
 
     if (is_validation_needed)
     {
-        instance.destroyDebugUtilsMessengerEXT (debug_utils_messenger);
+        instance->get ().destroyDebugUtilsMessengerEXT (debug_utils_messenger);
     }
-
-    instance.destroy ();
 }
 
 void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
 {
     OutputDebugString (L"common_graphics::init\n");
-#ifdef _DEBUG
-    is_validation_needed = true;
-#endif
-
-    create_instance ();
 
     if (is_validation_needed)
     {

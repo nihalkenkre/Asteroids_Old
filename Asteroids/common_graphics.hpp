@@ -1,11 +1,16 @@
 #pragma once
 
 #include <Windows.h>
+#include <memory>
 #include <vulkan/vulkan.hpp>
+
+class vk_instance;
+
 
 class common_graphics
 {
 public:
+    common_graphics ();
     ~common_graphics ();
     void init (HINSTANCE h_instance, HWND h_wnd);
 
@@ -28,7 +33,7 @@ public:
     static size_t compute_queue_family_index;
 
 private:
-    void create_instance ();
+    //void create_instance ();
     void setup_debug_utils_messenger ();
     void get_physical_device ();
     void create_surface (HINSTANCE h_instance, HWND h_wnd);
@@ -39,10 +44,10 @@ private:
 
     bool is_validation_needed = false;
 
-    vk::Instance instance;
     vk::DebugUtilsMessengerEXT debug_utils_messenger;
     vk::PhysicalDevice physical_device;
     vk::SurfaceKHR surface;
     vk::PresentModeKHR present_mode;
     vk::SurfaceCapabilitiesKHR surface_capabilities;
+    std::unique_ptr<vk_instance> instance = nullptr;
 };

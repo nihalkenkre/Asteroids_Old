@@ -2,6 +2,22 @@
 
 #include <vulkan/vulkan.hpp>
 
+class vk_instance
+{
+public:
+    vk_instance (const bool& is_validation_needed);
+    ~vk_instance ();
+
+    inline vk::Instance get ()
+    {
+        return instance;
+    }
+
+private:
+    vk::Instance instance;
+};
+
+
 class vk_utils
 {
 public:
