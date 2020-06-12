@@ -56,7 +56,7 @@ private:
 class vk_graphics_device
 {
 public:
-    vk_graphics_device ();
+    vk_graphics_device (const vk::PhysicalDevice& physical_device, const std::vector<vk::DeviceQueueCreateInfo>& queue_create_infos);
     ~vk_graphics_device ();
 
     inline vk::Device get_obj ()
@@ -68,7 +68,41 @@ private:
     vk::Device graphics_device;
 };
 
-class vk_utils
+
+class vk_swapchain
+{
+public:
+    vk_swapchain (const vk::Device& graphics_device, const vk::SurfaceKHR& surface, const vk::SurfaceCapabilitiesKHR& surface_capabilities, const vk::SurfaceFormatKHR& surface_format, const vk::Extent2D& surface_extent, const vk::PresentModeKHR& present_mode);
+    ~vk_swapchain ();
+
+    inline vk::SwapchainKHR get_obj ()
+    {
+        return swapchain;
+    }
+
+private:
+    vk::SwapchainKHR swapchain;
+    vk::Device graphics_device;
+};
+
+
+class vk_command_pool
+{
+public:
+    vk_command_pool (const vk::Device& graphics_device, const size_t& queue_family_index, const vk::CommandPoolCreateFlags& flags);
+    ~vk_command_pool ();
+
+    inline vk::CommandPool get_obj ()
+    {
+        return command_pool;
+    }
+
+private:
+    vk::CommandPool command_pool;
+    vk::Device graphics_device;
+};
+
+/*class vk_utils
 {
 public:
     static vk::Buffer create_buffer (vk::DeviceSize size, vk::BufferUsageFlags usage);
@@ -90,4 +124,4 @@ private:
     static uint32_t get_memory_type_index (vk::MemoryRequirements memory_requirements, vk::MemoryPropertyFlags required_memory_types);
     static vk::CommandBuffer get_one_time_command_buffer (vk::CommandPool command_pool);
     static void submit_one_time_command_buffer (vk::Queue queue, vk::CommandBuffer command_buffer);
-};
+};*/

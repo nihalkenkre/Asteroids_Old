@@ -19,10 +19,10 @@ scene_graphics::~scene_graphics ()
 {
     OutputDebugString (L"scene_graphics::~scene_graphics\n");
 
-    common_graphics::graphics_device.freeMemory (images_memory);
+    /*common_graphics::graphics_device->get_obj ().freeMemory (images_memory);
 
-    common_graphics::graphics_device.destroyBuffer (vertex_index_buffer);
-    common_graphics::graphics_device.freeMemory (vertex_index_buffer_memory);
+    common_graphics::graphics_device->get_obj ().destroyBuffer (vertex_index_buffer);
+    common_graphics::graphics_device->get_obj ().freeMemory (vertex_index_buffer_memory);*/
 }
 
 void scene_graphics::create_graphics_for_meshes (const std::vector<std::string>& file_paths)
