@@ -79,7 +79,14 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	ShowWindow (hWnd, cmd_show);
 	UpdateWindow (hWnd);
 
-	G = std::make_unique <game> (hInstance, hWnd);
+	try
+	{
+		G = std::make_unique <game> (hInstance, hWnd);
+	}
+	catch (...)
+	{
+		OutputDebugString (L"Caught something\n");
+	}
 	G->init (hInstance, hWnd);
 
 	MSG msg;

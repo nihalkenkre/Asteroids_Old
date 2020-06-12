@@ -12,8 +12,6 @@ vk::SurfaceFormatKHR common_graphics::surface_format;
 vk::Queue common_graphics::graphics_queue;
 vk::Queue common_graphics::compute_queue;
 vk::Queue common_graphics::transfer_queue;
-std::vector<vk::Image> common_graphics::swapchain_images;
-std::vector<vk::ImageView> common_graphics::swapchain_image_views;
 
 size_t common_graphics::graphics_queue_family_index;
 size_t common_graphics::transfer_queue_family_index;
@@ -174,6 +172,13 @@ common_graphics::common_graphics (HINSTANCE h_instance, HWND h_wnd)
     get_device_queues (queue_info.second);
 
     swapchain = std::make_unique<vk_swapchain> (graphics_device->get_obj (), surface->get_obj (), surface_capabilities, surface_format, surface_extent, present_mode);
+    swapchain_images = graphics_device->get_obj ().getSwapchainImagesKHR (swapchain->get_obj ());
+    swapchain_image_views.reserve (swapchain_images.size ());
+    for (const auto& image : swapchain_images)
+    {
+        swapchain_image_views.emplace_back (std::make_unique<vk_image_view> (graphics_device->get_obj (), image, surface_format.format));
+    }
+
     transfer_command_pool = std::make_unique<vk_command_pool> (graphics_device->get_obj (), transfer_queue_family_index, vk::CommandPoolCreateFlagBits::eTransient);
 }
 
@@ -285,11 +290,6 @@ void common_graphics::get_device_queues (const std::vector<size_t>& queue_indice
 common_graphics::~common_graphics ()
 {
     OutputDebugString (L"common_graphics::~common_graphics\n");
-
-    for (auto& image_view : swapchain_image_views)
-    {
-        graphics_device->get_obj ().destroyImageView (image_view);
-    };
 }
 
 void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)

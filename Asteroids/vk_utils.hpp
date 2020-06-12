@@ -102,6 +102,23 @@ private:
     vk::Device graphics_device;
 };
 
+
+class vk_image_view
+{
+public:
+    vk_image_view (const vk::Device& graphics_device, const vk::Image& image, const vk::Format& format);
+    ~vk_image_view ();
+
+    inline vk::ImageView get_obj ()
+    {
+        return image_view;
+    }
+
+private:
+    vk::ImageView image_view;
+    vk::Device graphics_device;
+};
+
 /*class vk_utils
 {
 public:

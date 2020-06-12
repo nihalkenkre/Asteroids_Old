@@ -10,6 +10,7 @@ class vk_surface;
 class vk_graphics_device;
 class vk_swapchain;
 class vk_command_pool;
+class vk_image_view;
 
 
 class common_graphics
@@ -24,13 +25,14 @@ public:
     std::unique_ptr<vk_debug_utils_messenger> debug_utils_messenger = nullptr;
     std::unique_ptr<vk_surface> surface = nullptr;
     std::unique_ptr<vk_swapchain> swapchain = nullptr;
+    std::vector<vk::Image> swapchain_images;
+    std::vector<std::unique_ptr<vk_image_view>> swapchain_image_views;
     std::unique_ptr<vk_command_pool> transfer_command_pool = nullptr;
+
     static vk::PhysicalDeviceMemoryProperties physical_device_memory_properties;
     static vk::PhysicalDeviceLimits physical_device_limits;
     static vk::SurfaceFormatKHR surface_format;
     static vk::Extent2D surface_extent;
-    static std::vector<vk::Image> swapchain_images;
-    static std::vector<vk::ImageView> swapchain_image_views;
     static size_t num_swapchain_images;
     static vk::Queue graphics_queue;
     static vk::Queue transfer_queue;

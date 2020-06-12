@@ -329,3 +329,22 @@ vk_command_pool::~vk_command_pool ()
 
     graphics_device.destroyCommandPool (command_pool);
 }
+
+vk_image_view::vk_image_view (const vk::Device& graphics_device, const vk::Image& image, const vk::Format& format)
+{
+    OutputDebugString (L"vk_image_view::vk_image_view\n");
+
+    vk::ComponentMapping component_mapping (vk::ComponentSwizzle::eIdentity);
+    vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
+    vk::ImageViewCreateInfo create_info ({}, image, vk::ImageViewType::e2D, format, component_mapping, subresource_range);
+
+    image_view = graphics_device.createImageView (create_info);
+    this->graphics_device = graphics_device;
+}
+
+vk_image_view::~vk_image_view ()
+{
+    OutputDebugString (L"vk_image_view::~vk_image_view\n");
+
+    graphics_device.destroyImageView (image_view);
+}
