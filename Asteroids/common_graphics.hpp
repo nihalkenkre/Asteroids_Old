@@ -18,7 +18,6 @@ class common_graphics
 public:
     common_graphics (HINSTANCE h_instance, HWND h_wnd);
     ~common_graphics ();
-    void init (HINSTANCE h_instance, HWND h_wnd);
 
     std::unique_ptr<vk_instance> instance = nullptr;
     std::unique_ptr<vk_graphics_device> graphics_device = nullptr;
@@ -29,18 +28,18 @@ public:
     std::vector<std::unique_ptr<vk_image_view>> swapchain_image_views;
     std::unique_ptr<vk_command_pool> transfer_command_pool = nullptr;
 
-    static vk::PhysicalDeviceMemoryProperties physical_device_memory_properties;
-    static vk::PhysicalDeviceLimits physical_device_limits;
-    static vk::SurfaceFormatKHR surface_format;
-    static vk::Extent2D surface_extent;
-    static size_t num_swapchain_images;
-    static vk::Queue graphics_queue;
-    static vk::Queue transfer_queue;
-    static vk::Queue compute_queue;
+    vk::PhysicalDeviceMemoryProperties physical_device_memory_properties;
+    vk::PhysicalDeviceLimits physical_device_limits;
+    vk::SurfaceFormatKHR surface_format;
+    vk::Extent2D surface_extent;
+    size_t num_swapchain_images;
+    vk::Queue graphics_queue;
+    vk::Queue transfer_queue;
+    vk::Queue compute_queue;
 
-    static size_t graphics_queue_family_index;
-    static size_t transfer_queue_family_index;
-    static size_t compute_queue_family_index;
+    size_t graphics_queue_family_index;
+    size_t transfer_queue_family_index;
+    size_t compute_queue_family_index;
 
 private:
     void get_physical_device ();

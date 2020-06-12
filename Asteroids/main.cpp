@@ -82,7 +82,6 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	try
 	{
 		G = std::make_unique <game> (hInstance, hWnd);
-		G->init (hInstance, hWnd);
 
 		MSG msg;
 		ZeroMemory (&msg, sizeof (msg));

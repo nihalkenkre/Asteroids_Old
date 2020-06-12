@@ -5,18 +5,6 @@
 #include <map>
 #include <vulkan/vulkan_win32.h>
 
-vk::PhysicalDeviceMemoryProperties common_graphics::physical_device_memory_properties;
-vk::PhysicalDeviceLimits common_graphics::physical_device_limits;
-vk::Extent2D common_graphics::surface_extent;
-vk::SurfaceFormatKHR common_graphics::surface_format;
-vk::Queue common_graphics::graphics_queue;
-vk::Queue common_graphics::compute_queue;
-vk::Queue common_graphics::transfer_queue;
-
-size_t common_graphics::graphics_queue_family_index;
-size_t common_graphics::transfer_queue_family_index;
-size_t common_graphics::compute_queue_family_index;
-
 /*PFN_vkCreateDebugUtilsMessengerEXT  pfnVkCreateDebugUtilsMessengerEXT;
 PFN_vkDestroyDebugUtilsMessengerEXT pfnVkDestroyDebugUtilsMessengerEXT;
 
@@ -290,9 +278,4 @@ void common_graphics::get_device_queues (const std::vector<size_t>& queue_indice
 common_graphics::~common_graphics ()
 {
     OutputDebugString (L"common_graphics::~common_graphics\n");
-}
-
-void common_graphics::init (HINSTANCE h_instance, HWND h_wnd)
-{
-    OutputDebugString (L"common_graphics::init\n");
 }
