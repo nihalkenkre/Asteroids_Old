@@ -7,6 +7,7 @@ game::game (HINSTANCE h_instance, HWND h_wnd)
     OutputDebugString (L"game::game\n");
 
     graphics = std::make_unique<common_graphics> (h_instance, h_wnd);
+    current_scene = std::make_unique<test_scene> ();
 }
 
 game::~game ()

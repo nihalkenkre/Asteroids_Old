@@ -7,16 +7,12 @@
 scene::scene ()
 {
     OutputDebugString (L"scene::scene\n");
+    graphics = std::make_unique<scene_graphics> ();
 }
 
 scene::~scene ()
 {
     OutputDebugString (L"scene::~scene\n");
-}
-
-void scene::init ()
-{
-    OutputDebugString (L"scene::init\n");
 }
 
 void scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)
@@ -26,26 +22,4 @@ void scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 
 void scene::main_loop ()
 {
-}
-
-void scene::import_image (std::string Name)
-{
-    image_names.push_back (Name.append (".tga"));
-}
-
-void scene::import_mesh (std::string Name)
-{
-    mesh_names.push_back (Name.append (".glb"));
-}
-
-void scene::commit_assets ()
-{
-    graphics->create_graphics_for_meshes (mesh_names);
-    graphics->create_graphics_for_images (image_names);
-    graphics->bake_data_buffers ();
-
-    image_names.clear ();
-    mesh_names.clear ();
-    image_names.shrink_to_fit ();
-    mesh_names.shrink_to_fit ();
 }
