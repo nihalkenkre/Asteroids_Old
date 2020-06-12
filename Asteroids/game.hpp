@@ -13,7 +13,7 @@ class scene;
 class game
 {
 public:
-    game ();
+    game (HINSTANCE h_instance, HWND h_wnd);
     ~game ();
 
     void init (HINSTANCE h_instance, HWND h_wnd);
@@ -21,6 +21,6 @@ public:
     void main_loop ();
 
 private:
-    std::unique_ptr<common_graphics> graphics = std::make_unique<common_graphics> ();
+    std::unique_ptr<common_graphics> graphics = nullptr;
     std::unique_ptr<scene> current_scene = nullptr;
 };

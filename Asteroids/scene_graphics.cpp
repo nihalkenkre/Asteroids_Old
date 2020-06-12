@@ -37,7 +37,7 @@ void scene_graphics::create_graphics_for_images (const std::vector<std::string>&
 {
     asset_io importer (file_paths);
 
-    std::vector<vk_image> solo_images = importer.get_images ();
+    std::vector<vk_texture> solo_images = importer.get_images ();
     images.insert (images.end (), solo_images.begin (), solo_images.end ());
 }
 

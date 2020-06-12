@@ -5,12 +5,13 @@
 #include <vulkan/vulkan.hpp>
 
 class vk_instance;
-
+class vk_debug_utils_messenger;
+class vk_surface;
 
 class common_graphics
 {
 public:
-    common_graphics ();
+    common_graphics (HINSTANCE h_instance, HWND h_wnd);
     ~common_graphics ();
     void init (HINSTANCE h_instance, HWND h_wnd);
 
@@ -34,20 +35,21 @@ public:
 
 private:
     //void create_instance ();
-    void setup_debug_utils_messenger ();
+    //void setup_debug_utils_messenger ();
+    //void create_surface (HINSTANCE h_instance, HWND h_wnd);
     void get_physical_device ();
-    void create_surface (HINSTANCE h_instance, HWND h_wnd);
     void get_surface_properties ();
     void create_graphics_device ();
+    void get_device_queues ();
     void create_swapchain ();
     void create_transfer_command_pool ();
 
     bool is_validation_needed = false;
 
-    vk::DebugUtilsMessengerEXT debug_utils_messenger;
     vk::PhysicalDevice physical_device;
-    vk::SurfaceKHR surface;
     vk::PresentModeKHR present_mode;
     vk::SurfaceCapabilitiesKHR surface_capabilities;
     std::unique_ptr<vk_instance> instance = nullptr;
+    std::unique_ptr<vk_debug_utils_messenger> debug_utils_messenger = nullptr;
+    std::unique_ptr<vk_surface> surface = nullptr;
 };

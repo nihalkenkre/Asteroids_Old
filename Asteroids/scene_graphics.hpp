@@ -17,7 +17,7 @@ public:
     void bake_data_buffers ();
     
 private:
-    std::vector<vk_image> images;
+    std::vector<vk_texture> images;
     std::vector<vk_material> materials;
     std::vector<vk_static_mesh> static_meshes;
 

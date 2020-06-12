@@ -1,6 +1,6 @@
 #include "vk_image.hpp"
 
-vk_image::vk_image (const tinygltf::Image& image)
+vk_texture::vk_texture (const tinygltf::Image& image)
 {
     name = image.name;
     image_data = image.image;
@@ -8,7 +8,7 @@ vk_image::vk_image (const tinygltf::Image& image)
     height = image.height;
 }
 
-vk_image::~vk_image ()
+vk_texture::~vk_texture ()
 {
 
 }

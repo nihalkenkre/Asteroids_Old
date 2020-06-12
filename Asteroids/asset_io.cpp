@@ -41,7 +41,7 @@ asset_io::~asset_io ()
     OutputDebugString (L"asset_io::~asset_io\n");
 }
 
-std::vector<vk_image> asset_io::get_images ()
+std::vector<vk_texture> asset_io::get_images ()
 {
     return images;
 }
@@ -64,7 +64,7 @@ void asset_io::create_images ()
     {
         for (const auto& current_image : current_model.images)
         {
-            images.push_back (vk_image (current_image));
+            images.push_back (vk_texture (current_image));
         }
     }
 }

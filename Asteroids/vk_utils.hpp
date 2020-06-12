@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Windows.h>
 #include <vulkan/vulkan.hpp>
 
 class vk_instance
@@ -8,7 +9,7 @@ public:
     vk_instance (const bool& is_validation_needed);
     ~vk_instance ();
 
-    inline vk::Instance get ()
+    inline vk::Instance get_obj ()
     {
         return instance;
     }
@@ -17,6 +18,55 @@ private:
     vk::Instance instance;
 };
 
+
+class vk_debug_utils_messenger
+{
+public:
+    vk_debug_utils_messenger (const vk::Instance& instance);
+    ~vk_debug_utils_messenger ();
+
+    inline vk::DebugUtilsMessengerEXT get_obj ()
+    {
+        return debug_utils_messenger;
+    }
+
+private:
+    vk::DebugUtilsMessengerEXT debug_utils_messenger;
+    vk::Instance instance;
+};
+
+
+class vk_surface
+{
+public:
+    vk_surface (const vk::Instance& instance, HINSTANCE h_instance, HWND h_wnd);
+    ~vk_surface ();
+
+    inline vk::SurfaceKHR get_obj ()
+    {
+        return surface;
+    }
+
+private:
+    vk::SurfaceKHR surface;
+    vk::Instance instance;
+};
+
+
+class vk_graphics_device
+{
+public:
+    vk_graphics_device ();
+    ~vk_graphics_device ();
+
+    inline vk::Device get_obj ()
+    {
+        return graphics_device;
+    }
+
+private:
+    vk::Device graphics_device;
+};
 
 class vk_utils
 {

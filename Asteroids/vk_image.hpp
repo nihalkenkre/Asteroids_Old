@@ -3,11 +3,11 @@
 #include <tiny_gltf.h>
 #include <vulkan/vulkan.hpp>
 
-class vk_image
+class vk_texture
 {
 public:
-    vk_image (const tinygltf::Image& image);
-    ~vk_image ();
+    vk_texture (const tinygltf::Image& image);
+    ~vk_texture ();
 
     std::string name;
 

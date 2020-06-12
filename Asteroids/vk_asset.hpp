@@ -6,11 +6,11 @@
 #include <memory>
 #include <vulkan/vulkan.hpp>
 
-/*class vk_image
+/*class vk_texture
 {
 public:
-    vk_image ();
-    ~vk_image ();
+    vk_texture ();
+    ~vk_texture ();
 
     std::string name;
 
@@ -45,11 +45,11 @@ class vk_material
 public:
     std::string name;
 
-    vk_image base_texture;
-    vk_image metalness_roughness_texture;
-    vk_image normal_texture;
-    vk_image occlusion_texture;
-    vk_image emissive_texture;
+    vk_texture base_texture;
+    vk_texture metalness_roughness_texture;
+    vk_texture normal_texture;
+    vk_texture occlusion_texture;
+    vk_texture emissive_texture;
 
     std::array<float, 4> base_color_factor;
     float metalness_factor;

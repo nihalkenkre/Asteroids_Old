@@ -48,9 +48,92 @@ vk_instance::vk_instance (const bool& is_validation_needed)
 
 vk_instance::~vk_instance ()
 {
-    OutputDebugString (L"vk_instance::vk_instance\n");
+    OutputDebugString (L"vk_instance::~vk_instance\n");
 
     instance.destroy ();
+}
+
+PFN_vkCreateDebugUtilsMessengerEXT  pfnVkCreateDebugUtilsMessengerEXT;
+PFN_vkDestroyDebugUtilsMessengerEXT pfnVkDestroyDebugUtilsMessengerEXT;
+
+VKAPI_ATTR VkResult VKAPI_CALL vkCreateDebugUtilsMessengerEXT (VkInstance instance,
+    const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+    const VkAllocationCallbacks* pAllocator,
+    VkDebugUtilsMessengerEXT* pMessenger)
+{
+    return pfnVkCreateDebugUtilsMessengerEXT (instance, pCreateInfo, pAllocator, pMessenger);
+}
+
+VKAPI_ATTR void VKAPI_CALL vkDestroyDebugUtilsMessengerEXT (VkInstance instance,
+    VkDebugUtilsMessengerEXT      messenger,
+    VkAllocationCallbacks const* pAllocator)
+{
+    return pfnVkDestroyDebugUtilsMessengerEXT (instance, messenger, pAllocator);
+}
+
+VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+    VkDebugUtilsMessageTypeFlagsEXT              message_types,
+    VkDebugUtilsMessengerCallbackDataEXT const* callback_data,
+    void* user_data)
+{
+    if (callback_data)
+    {
+        wchar_t buff[2048];
+        swprintf_s (buff, 2048, L"Debug Messenger Callback: %hs\n", callback_data->pMessage);
+        OutputDebugString (buff);
+    }
+
+    return VK_FALSE;
+}
+
+
+vk_debug_utils_messenger::vk_debug_utils_messenger (const vk::Instance& instance)
+{
+    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger\n");
+
+    pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance.getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
+    pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance.getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
+
+    vk::DebugUtilsMessageSeverityFlagsEXT severity_flags (vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose);
+    vk::DebugUtilsMessageTypeFlagsEXT message_type_flags (vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
+
+    debug_utils_messenger = instance.createDebugUtilsMessengerEXT (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
+    this->instance = instance;
+}
+
+vk_debug_utils_messenger::~vk_debug_utils_messenger ()
+{
+    OutputDebugString (L"vk_debug_utils_messenger::~vk_debug_utils_messenger\n");
+
+    instance.destroyDebugUtilsMessengerEXT (debug_utils_messenger);
+}
+
+
+vk_surface::vk_surface (const vk::Instance& instance, HINSTANCE h_instance, HWND h_wnd)
+{
+    OutputDebugString (L"vk_surface::vk_surface\n");
+
+    vk::Win32SurfaceCreateInfoKHR create_info ({}, h_instance, h_wnd);
+    surface = instance.createWin32SurfaceKHR (create_info);
+    this->instance = instance;
+}
+
+vk_surface::~vk_surface ()
+{
+    OutputDebugString (L"vk_surface::~vk_surface\n");
+
+    instance.destroySurfaceKHR (surface);
+}
+
+
+vk_graphics_device::vk_graphics_device ()
+{
+    OutputDebugString (L"vk_graphics_device::vk_graphics_device\n");
+}
+
+vk_graphics_device::~vk_graphics_device ()
+{
+    OutputDebugString (L"vk_graphics_device::~vk_graphics_device\n");
 }
 
 

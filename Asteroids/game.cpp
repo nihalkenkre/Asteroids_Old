@@ -2,9 +2,11 @@
 #include "test_scene.hpp"
 
 
-game::game ()
+game::game (HINSTANCE h_instance, HWND h_wnd)
 {
     OutputDebugString (L"game::game\n");
+
+    graphics = std::make_unique<common_graphics> (h_instance, h_wnd);
 }
 
 game::~game ()
