@@ -82,25 +82,25 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	try
 	{
 		G = std::make_unique <game> (hInstance, hWnd);
+		G->init (hInstance, hWnd);
+
+		MSG msg;
+		ZeroMemory (&msg, sizeof (msg));
+
+		while (msg.message != WM_QUIT)
+		{
+			if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
+			{
+				G->main_loop ();
+
+				TranslateMessage (&msg);
+				DispatchMessage (&msg);
+			}
+		}
 	}
 	catch (...)
 	{
 		OutputDebugString (L"Caught something\n");
-	}
-	G->init (hInstance, hWnd);
-
-	MSG msg;
-	ZeroMemory (&msg, sizeof (msg));
-
-	while (msg.message != WM_QUIT)
-	{
-		if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			G->main_loop ();
-
-			TranslateMessage (&msg);
-			DispatchMessage (&msg);
-		}
 	}
 
 	DestroyWindow (hWnd);
