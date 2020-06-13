@@ -25,7 +25,7 @@ class scene
 {
 public:
     scene (game* obj);
-    ~scene ();
+    virtual ~scene ();
 
     virtual void process_keyboard_input (WPARAM WParam, LPARAM LParam);
     virtual void main_loop ();
