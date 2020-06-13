@@ -4,6 +4,7 @@
 test_scene::test_scene (game* obj) : scene (obj)
 {
     OutputDebugString (L"test_scene::test_scene\n");
+    
     this->game_obj = obj;
 }
 

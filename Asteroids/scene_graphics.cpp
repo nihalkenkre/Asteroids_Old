@@ -2,7 +2,6 @@
 #include "common_graphics.hpp"
 #include "utils.hpp"
 #include "vk_utils.hpp"
-#include "asset_io.hpp"
 
 
 scene_graphics::scene_graphics ()

@@ -15,8 +15,14 @@ include_directories (${CMAKE_SOURCE_DIR}/External/stb)
 link_directories ($ENV{VULKAN_SDK}/Lib32)
 link_directories ($ENV{VULKAN_SDK}/Lib)
 
-set (H "err.hpp" "game.hpp" "log.hpp" "utils.hpp" "test_scene.hpp" "scene.hpp" "scene_graphics.hpp" "common_graphics.hpp" "vk_asset.hpp" "asset_io.hpp" "vk_utils.hpp" "vk_image.hpp")
-set (C "main.cpp" "game.cpp" "log.cpp" "utils.cpp" "test_scene.cpp" "scene.cpp" "scene_graphics.cpp" "common_graphics.cpp" "vk_asset.cpp" "asset_io.cpp" "vk_utils.cpp" "vk_image.cpp")
+set (SceneHPP "scene.hpp" "test_scene.hpp" "scene_graphics.hpp" "scene_physics.hpp")
+set (SceneCPP "scene.cpp" "test_scene.cpp" "scene_graphics.cpp" "scene_physics.cpp")
+
+set (GlobalHPP "utils.hpp" "vk_utils.hpp" "common_graphics.hpp" "vk_asset.hpp" "gltf_models.hpp")
+set (GlobalCPP "utils.cpp" "vk_utils.cpp" "common_graphics.cpp" "vk_asset.cpp" "gltf_models.cpp")
+
+set (H ${SceneHPP} ${GlobalHPP})
+set (C ${SceneHPP} ${GlobalCPP})
 set (GLSL "Assets/pbr_opaque.vert" "Assets/pbr_opaque.frag")
 
 source_group (${GLSL})
