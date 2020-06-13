@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 
-#include "err.hpp"
 
 class game;
 class scene_graphics;

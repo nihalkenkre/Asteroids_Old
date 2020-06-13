@@ -103,6 +103,9 @@
     "editor.suggestOnTriggerCharacters": false,
 
     // Controls if suggestions should be accepted 'Enter' - in addition to 'Tab'. Helps to avoid ambiguity between inserting new lines or accepting suggestions.
-    "editor.acceptSuggestionOnEnter": "off"
+    "editor.acceptSuggestionOnEnter": "off",
+    "files.associations": {
+        "xstring": "cpp"
+    }
 
 }

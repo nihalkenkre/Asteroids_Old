@@ -1,6 +1,7 @@
 #include "scene.hpp"
 #include "scene_graphics.hpp"
 #include "scene_physics.hpp"
+#include "gltf_models.hpp"
 
 #include <Windows.h>
 
@@ -9,6 +10,8 @@ scene::scene (game* obj)
 {
     OutputDebugString (L"scene::scene\n");
     
+    gltf_models models ("");
+
     physics = std::make_unique<scene_physics> ();
     graphics = std::make_unique<scene_graphics> ();
 

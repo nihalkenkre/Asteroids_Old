@@ -24,3 +24,35 @@ std::string utils::get_full_file_path (const std::string& partial_file_path)
 
 	return std::string (out_path);
 }
+
+std::vector<std::string> utils::get_all_files_in_folder (const std::string& full_folder_path)
+{
+	std::vector<std::string> files;
+	files.reserve (5);
+
+	wchar_t folder_path[MAX_PATH];
+	mbstowcs (folder_path, (full_folder_path + "*" ).c_str (), MAX_PATH);
+
+	WIN32_FIND_DATA ffd;
+	HANDLE find_handle = INVALID_HANDLE_VALUE;
+
+	find_handle = FindFirstFile (folder_path, &ffd);
+	size_t num_files = 0;
+
+	do
+	{
+		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+		{
+			char file_name[MAX_PATH];
+			wcstombs (file_name, ffd.cFileName, MAX_PATH);
+			std::string file_name_str (file_name);
+
+			if (file_name_str.find (".glb") != std::string::npos)
+			{
+				files.emplace_back (full_folder_path + file_name_str);
+			}
+		}
+	} while (FindNextFile (find_handle, &ffd) != 0);
+
+	return files;
+}

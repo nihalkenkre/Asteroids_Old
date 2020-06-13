@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "scene.hpp"
-#include "err.hpp"
 #include "common_graphics.hpp"
 
 
