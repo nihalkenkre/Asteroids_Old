@@ -1,5 +1,6 @@
 #include "static_meshes.hpp"
 #include "gltf_models.hpp"
+#include "mesh_primitives.hpp"
 
 #include <Windows.h>
 
@@ -8,7 +9,7 @@ static_mesh::static_mesh (const tinygltf::Node& graphics_node, const std::vector
 {
     OutputDebugString (L"static_mesh::static_mesh\n");
 
-    
+        
 }
 
 static_mesh::~static_mesh ()

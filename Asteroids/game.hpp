@@ -7,9 +7,6 @@
 #include "common_graphics.hpp"
 
 
-class scene;
-
-
 class game
 {
 public:

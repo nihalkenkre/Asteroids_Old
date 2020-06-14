@@ -13,7 +13,6 @@ game::game (HINSTANCE h_instance, HWND h_wnd)
 game::~game ()
 {
     OutputDebugString (L"game::~game\n");
-    current_scene.reset ();
 }
 
 void game::set_current_scene (SCENE_TYPE type)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vk_image.hpp"
+#include "textures.hpp"
 
 #include <string>
 #include <memory>
