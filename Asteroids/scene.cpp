@@ -2,7 +2,7 @@
 #include "scene_graphics.hpp"
 #include "scene_physics.hpp"
 #include "gltf_models.hpp"
-#include "static_mesh.hpp"
+#include "static_meshes.hpp"
 
 #include <Windows.h>
 
@@ -13,8 +13,8 @@ scene::scene (game* obj)
     
     gltf_models models ("");
 
-    scene_static_meshes = std::make_unique<static_meshes> (models);
-    
+    scene_static_meshes = std::make_unique<static_meshes> (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
+
     physics = std::make_unique<scene_physics> ();
     graphics = std::make_unique<scene_graphics> ();
 
