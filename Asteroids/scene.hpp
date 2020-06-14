@@ -9,6 +9,7 @@
 class game;
 class scene_graphics;
 class scene_physics;
+class static_meshes;
 
 
 enum class SCENE_TYPE
@@ -32,6 +33,8 @@ public:
 private:
     std::unique_ptr<scene_physics> physics = nullptr;
     std::unique_ptr<scene_graphics> graphics = nullptr;
+
+    std::unique_ptr<static_meshes> scene_static_meshes = nullptr;
 
     game* game_obj;
 };
