@@ -15,8 +15,8 @@ include_directories (${CMAKE_SOURCE_DIR}/External/stb)
 link_directories ($ENV{VULKAN_SDK}/Lib32)
 link_directories ($ENV{VULKAN_SDK}/Lib)
 
-set (AssetHPP "static_meshes.hpp" "textures.hpp")
-set (AssetCPP "static_meshes.cpp" "textures.cpp")
+set (AssetHPP "static_mesh.hpp" "static_meshes.hpp" "textures.hpp" "static_graphics_primitive.hpp" "static_graphics_primitives.hpp")
+set (AssetCPP "static_mesh.cpp" "static_meshes.cpp" "textures.cpp" "static_graphics_primitive.cpp" "static_graphics_primitives.cpp")
 
 set (SceneHPP "scene.hpp" "test_scene.hpp" "scene_graphics.hpp" "scene_physics.hpp")
 set (SceneCPP "scene.cpp" "test_scene.cpp" "scene_graphics.cpp" "scene_physics.cpp")

@@ -1,24 +1,10 @@
 #pragma once
 
-#include <tiny_gltf.h>
 
-#include <Windows.h>
-#include <memory>
+#include <string>
 #include <vector>
 
-#include "mesh_primitives.hpp"
-
-class static_mesh 
-{
-public:
-    static_mesh (const tinygltf::Node& graphics_node, const std::vector<tinygltf::Node>& physics_nodes, const tinygltf::Model& model);
-    ~static_mesh ();
-
-    static_physics_primitives physics_primitives;
-};
-
-
-#include <vector>
+#include "static_mesh.hpp"
 
 
 class gltf_models;
