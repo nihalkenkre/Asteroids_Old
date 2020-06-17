@@ -7,8 +7,13 @@
 class vk_instance
 {
 public:
+    vk_instance ();
+    vk_instance (const vk_instance& other);
+    vk_instance& operator= (const vk_instance& other);
+    vk_instance (vk_instance&& other) noexcept;
+    vk_instance& operator= (vk_instance&& other) noexcept;
     vk_instance (const bool& is_validation_needed);
-    ~vk_instance ();
+    ~vk_instance () noexcept;
 
     inline vk::Instance get_obj ()
     {
@@ -23,8 +28,13 @@ private:
 class vk_debug_utils_messenger
 {
 public:
+    vk_debug_utils_messenger ();
+    vk_debug_utils_messenger (const vk_debug_utils_messenger& other);
+    vk_debug_utils_messenger& operator= (const vk_debug_utils_messenger& other);
+    vk_debug_utils_messenger (vk_debug_utils_messenger&& other) noexcept;
+    vk_debug_utils_messenger& operator= (vk_debug_utils_messenger&& other) noexcept;
     vk_debug_utils_messenger (const vk::Instance& instance);
-    ~vk_debug_utils_messenger ();
+    ~vk_debug_utils_messenger () noexcept;
 
     inline vk::DebugUtilsMessengerEXT get_obj ()
     {
@@ -90,8 +100,13 @@ private:
 class vk_command_pool
 {
 public:
+    vk_command_pool ();
+    vk_command_pool (const vk_command_pool& other);
+    vk_command_pool& operator= (const vk_command_pool& other);
+    vk_command_pool (vk_command_pool&& other) noexcept;
+    vk_command_pool& operator=(vk_command_pool&& other) noexcept;
     vk_command_pool (const vk::Device& graphics_device, const size_t& queue_family_index, const vk::CommandPoolCreateFlags& flags);
-    ~vk_command_pool ();
+    ~vk_command_pool () noexcept;
 
     inline vk::CommandPool get_obj ()
     {

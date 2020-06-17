@@ -148,9 +148,46 @@ void vk_utils::submit_one_time_command_buffer (vk::Queue queue, vk::CommandBuffe
 */
 
 
-vk_instance::vk_instance (const bool& is_validation_needed)
+vk_instance::vk_instance ()
 {
     OutputDebugString (L"vk_instance::vk_instance\n");
+}
+
+vk_instance::vk_instance (const vk_instance& other)
+{
+    OutputDebugString (L"vk_instance::vk_instance Copy constructor\n");
+
+    *this = other;
+}
+
+vk_instance& vk_instance::operator=(const vk_instance& other)
+{
+    OutputDebugString (L"vk_instance::vk_instance Copy assignment\n");
+
+    instance = other.instance;
+
+    return *this;
+}
+
+vk_instance::vk_instance (vk_instance&& other) noexcept
+{
+    OutputDebugString (L"vk_instance::vk_instance Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_instance& vk_instance::operator=(vk_instance&& other) noexcept
+{
+    OutputDebugString (L"vk_instance::vk_instance Move assignment\n");
+
+    instance = other.instance;
+
+    return *this;
+}
+
+vk_instance::vk_instance (const bool& is_validation_needed)
+{
+    OutputDebugString (L"vk_instance::vk_instance is_validation_needed\n");
 
     std::vector<const char*> requested_instance_layers;
     std::vector<const char*> requested_instance_extensions;
@@ -233,9 +270,47 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeve
 }
 
 
-vk_debug_utils_messenger::vk_debug_utils_messenger (const vk::Instance& instance)
+vk_debug_utils_messenger::vk_debug_utils_messenger ()
 {
     OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger\n");
+}
+
+vk_debug_utils_messenger::vk_debug_utils_messenger (const vk_debug_utils_messenger& other)
+{
+    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger Copy constructor\n");
+    *this = other;
+}
+
+vk_debug_utils_messenger& vk_debug_utils_messenger::operator=(const vk_debug_utils_messenger& other)
+{
+    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger Copy assignment\n");
+
+    debug_utils_messenger = other.debug_utils_messenger;
+    instance = other.instance;
+
+    return *this;
+}
+
+vk_debug_utils_messenger::vk_debug_utils_messenger (vk_debug_utils_messenger&& other) noexcept
+{
+    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_debug_utils_messenger& vk_debug_utils_messenger::operator=(vk_debug_utils_messenger&& other) noexcept
+{
+    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger Move assignment\n");
+
+    debug_utils_messenger = other.debug_utils_messenger;
+    instance = other.instance;
+
+    return *this;
+}
+
+vk_debug_utils_messenger::vk_debug_utils_messenger (const vk::Instance& instance)
+{
+    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger instance\n");
 
     pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance.getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
     pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance.getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
@@ -314,9 +389,48 @@ vk_swapchain::~vk_swapchain ()
     graphics_device.destroySwapchainKHR (swapchain);
 }
 
-vk_command_pool::vk_command_pool (const vk::Device& graphics_device, const size_t& queue_family_index, const vk::CommandPoolCreateFlags& flags)
+vk_command_pool::vk_command_pool ()
 {
     OutputDebugString (L"vk_command_pool::vk_command_pool\n");
+}
+
+vk_command_pool::vk_command_pool (const vk_command_pool& other)
+{
+    OutputDebugString (L"vk_command_pool::vk_command_pool Copy constructor\n");
+
+    *this = other;
+}
+
+vk_command_pool& vk_command_pool::operator=(const vk_command_pool& other)
+{
+    OutputDebugString (L"vk_command_pool::vk_command_pool Copy assignment\n");
+
+    command_pool = other.command_pool;
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_command_pool::vk_command_pool (vk_command_pool&& other) noexcept
+{
+    OutputDebugString (L"vk_command_pool::vk_command_pool Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_command_pool& vk_command_pool::operator=(vk_command_pool&& other) noexcept
+{
+    OutputDebugString (L"vk_command_pool::vk_command_pool Move assignment\n");
+
+    command_pool = other.command_pool;
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_command_pool::vk_command_pool (const vk::Device& graphics_device, const size_t& queue_family_index, const vk::CommandPoolCreateFlags& flags)
+{
+    OutputDebugString (L"vk_command_pool::vk_command_pool graphics_device queue_family_index flags\n");
 
     vk::CommandPoolCreateInfo create_info (flags, queue_family_index);
     command_pool = graphics_device.createCommandPool (create_info);
