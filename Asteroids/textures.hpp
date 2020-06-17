@@ -6,8 +6,12 @@
 class texture
 {
 public:
+    texture (const texture& other);
+    texture& operator= (const texture& other);
+    texture (texture&& other) noexcept;
+    texture& operator= (texture&& other) noexcept;
     texture (const tinygltf::Image& image);
-    ~texture ();
+    ~texture () noexcept;
 
     std::string name;
 
@@ -19,4 +23,15 @@ public:
 
     vk::Image image;
     vk::ImageView image_view;
+};
+
+class textures
+{
+public:
+    textures () {}
+    textures (const textures& other) {}
+    textures& operator= (const textures& other) {}
+    textures (textures&& other) noexcept {}
+    textures& operator= (textures&& other) noexcept {}
+    ~textures () noexcept {}
 };

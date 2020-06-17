@@ -7,6 +7,88 @@
 #include <Windows.h>
 
 
+static_mesh::static_mesh (const static_mesh& other)
+{
+    OutputDebugString (L"static_mesh::static_mesh Copy Constructor\n");
+
+    *this = other;
+}
+
+static_mesh& static_mesh::operator= (const static_mesh& other)
+{
+    OutputDebugString (L"static_mesh::static_mesh Copy Assignment\n");
+
+    name = other.name;
+    opaque_graphics_primitives->primitives = other.opaque_graphics_primitives->primitives;
+
+    return *this;
+}
+
+static_mesh::static_mesh (static_mesh&& other) noexcept
+{
+    OutputDebugString (L"static_mesh::static_mesh Move Constructor\n");
+
+    *this = std::move (other);
+}
+
+static_mesh& static_mesh::operator= (static_mesh&& other) noexcept
+{
+    OutputDebugString (L"static_mesh::static_mesh Move Assignment\n");
+
+    name = other.name;
+    opaque_graphics_primitives = std::move (other.opaque_graphics_primitives);
+
+    other.name.clear ();
+
+    return *this;
+}
+
+static_mesh::static_mesh (const tinygltf::Node& graphics_node, const std::vector<tinygltf::Node>& physics_nodes, const tinygltf::Model& model)
+{
+    OutputDebugString (L"static_mesh::static_mesh graphics_node physics_node model\n");
+
+    name = graphics_node.name;
+}
+
+static_mesh::~static_mesh ()
+{
+    OutputDebugString (L"static_mesh::~static_mesh\n");
+}
+
+
+
+static_meshes::static_meshes (const static_meshes& other)
+{
+    OutputDebugString (L"static_meshes::static_meshes Copy constructor\n");
+
+    *this = other;
+}
+
+static_meshes& static_meshes::operator=(const static_meshes& other)
+{
+    OutputDebugString (L"static_meshes::static_meshes Copy assignment\n");
+    
+    meshes = other.meshes;
+
+    return *this;
+}
+
+static_meshes::static_meshes (static_meshes&& other) noexcept
+{
+    OutputDebugString (L"static_meshes::static_meshes Move constructor\n");
+
+    *this = std::move (other);
+}
+
+static_meshes& static_meshes::operator=(static_meshes&& other) noexcept
+{
+    OutputDebugString (L"static_meshes::static_meshes Move Assignment\n");
+
+    meshes = std::move (other.meshes);
+
+    return *this;
+}
+
 static_meshes::static_meshes (const gltf_models& models, const std::vector<std::string>& search_names)
 {
     OutputDebugString (L"static_meshes::static_meshes\n");
