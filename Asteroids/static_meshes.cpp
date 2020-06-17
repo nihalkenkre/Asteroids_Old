@@ -20,6 +20,8 @@ static_mesh& static_mesh::operator= (const static_mesh& other)
 
     name = other.name;
     opaque_graphics_primitives->primitives = other.opaque_graphics_primitives->primitives;
+    alpha_graphics_primitives->primitives = other.alpha_graphics_primitives->primitives;
+    blend_graphics_primitives->primitives = other.blend_graphics_primitives->primitives;
 
     return *this;
 }
@@ -37,6 +39,8 @@ static_mesh& static_mesh::operator= (static_mesh&& other) noexcept
 
     name = other.name;
     opaque_graphics_primitives = std::move (other.opaque_graphics_primitives);
+    alpha_graphics_primitives = std::move (other.alpha_graphics_primitives);
+    blend_graphics_primitives = std::move (other.blend_graphics_primitives);
 
     other.name.clear ();
 
@@ -128,7 +132,6 @@ static_meshes::static_meshes (const gltf_models& models, const std::vector<std::
     }
 
     physics_nodes.resize (graphics_nodes.size ());
-
 
     for (const auto& model : models.models)
     {

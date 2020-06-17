@@ -24,14 +24,3 @@ public:
     vk::Image image;
     vk::ImageView image_view;
 };
-
-class textures
-{
-public:
-    textures () {}
-    textures (const textures& other) {}
-    textures& operator= (const textures& other) {}
-    textures (textures&& other) noexcept {}
-    textures& operator= (textures&& other) noexcept {}
-    ~textures () noexcept {}
-};

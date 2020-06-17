@@ -8,45 +8,6 @@
 #include <tiny_gltf.h>
 
 
-gltf_models::gltf_models ()
-{
-    OutputDebugString (L"gltf_models::gltf_models\n");
-}
-
-gltf_models::gltf_models (const gltf_models& other)
-{
-    OutputDebugString (L"gltf_models::gltf_models Copy constructor\n");
-
-    *this = other;
-}
-
-gltf_models& gltf_models::operator=(const gltf_models& other)
-{
-    OutputDebugString (L"gltf_models::gltf_models Copy assignment\n");
-    
-    models = other.models;
-
-    return *this;
-}
-
-gltf_models::gltf_models (gltf_models&& other) noexcept
-{
-    OutputDebugString (L"gltf_models::gltf_models Move constructor\n");
-
-    *this = std::move (other);
-}
-
-gltf_models& gltf_models::operator=(gltf_models&& other) noexcept
-{
-    OutputDebugString (L"gltf_models::gltf_models Move assignment\n");
-
-    models = other.models;
-
-    other.models.clear ();
-
-    return *this;
-}
-
 gltf_models::gltf_models (const std::string& folder_path)
 {
     OutputDebugString (L"gltf_models::gltf_models folder_path\n");
