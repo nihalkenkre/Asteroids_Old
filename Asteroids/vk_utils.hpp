@@ -50,8 +50,13 @@ private:
 class vk_surface
 {
 public:
+    vk_surface ();
+    vk_surface (const vk_surface& other);
+    vk_surface& operator= (const vk_surface& other);
+    vk_surface (vk_surface&& other) noexcept;
+    vk_surface& operator= (vk_surface&& other) noexcept;
     vk_surface (const vk::Instance& instance, HINSTANCE h_instance, HWND h_wnd);
-    ~vk_surface ();
+    ~vk_surface () noexcept;
 
     inline vk::SurfaceKHR get_obj ()
     {
@@ -67,8 +72,13 @@ private:
 class vk_graphics_device
 {
 public:
+    vk_graphics_device ();
+    vk_graphics_device (const vk_graphics_device& other);
+    vk_graphics_device& operator= (const vk_graphics_device& other);
+    vk_graphics_device (vk_graphics_device&& other) noexcept;
+    vk_graphics_device& operator= (const vk_graphics_device&& other) noexcept;
     vk_graphics_device (const vk::PhysicalDevice& physical_device, const std::vector<vk::DeviceQueueCreateInfo>& queue_create_infos);
-    ~vk_graphics_device ();
+    ~vk_graphics_device () noexcept;
 
     inline vk::Device get_obj ()
     {
@@ -83,8 +93,13 @@ private:
 class vk_swapchain
 {
 public:
+    vk_swapchain ();
+    vk_swapchain (const vk_swapchain& other);
+    vk_swapchain& operator= (const vk_swapchain& other);
+    vk_swapchain (vk_swapchain&& other) noexcept;
+    vk_swapchain& operator= (vk_swapchain&& other) noexcept;
     vk_swapchain (const vk::Device& graphics_device, const vk::SurfaceKHR& surface, const vk::SurfaceCapabilitiesKHR& surface_capabilities, const vk::SurfaceFormatKHR& surface_format, const vk::Extent2D& surface_extent, const vk::PresentModeKHR& present_mode);
-    ~vk_swapchain ();
+    ~vk_swapchain () noexcept;
 
     inline vk::SwapchainKHR get_obj ()
     {
@@ -122,8 +137,13 @@ private:
 class vk_image_view
 {
 public:
+    vk_image_view ();
+    vk_image_view (const vk_image_view& other);
+    vk_image_view& operator= (const vk_image_view& other);
+    vk_image_view (vk_image_view&& other) noexcept;
+    vk_image_view& operator= (vk_image_view&& other) noexcept;
     vk_image_view (const vk::Device& graphics_device, const vk::Image& image, const vk::Format& format);
-    ~vk_image_view ();
+    ~vk_image_view () noexcept;
 
     inline vk::ImageView get_obj ()
     {

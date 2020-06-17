@@ -330,9 +330,48 @@ vk_debug_utils_messenger::~vk_debug_utils_messenger ()
 }
 
 
-vk_surface::vk_surface (const vk::Instance& instance, HINSTANCE h_instance, HWND h_wnd)
+vk_surface::vk_surface ()
 {
     OutputDebugString (L"vk_surface::vk_surface\n");
+}
+
+vk_surface::vk_surface (const vk_surface& other)
+{
+    OutputDebugString (L"vk_surface::vk_surface Copy constructor\n");
+
+    *this = other;
+}
+
+vk_surface& vk_surface::operator=(const vk_surface& other)
+{
+    OutputDebugString (L"vk_surface::vk_surface Copy assignment\n");
+
+    surface = other.surface;
+    instance = other.instance;
+
+    return *this;
+}
+
+vk_surface::vk_surface (vk_surface&& other) noexcept
+{
+    OutputDebugString (L"vk_surface::vk_surface Move constructor\n");
+    
+    *this = std::move (other);
+}
+
+vk_surface& vk_surface::operator=(vk_surface&& other) noexcept
+{
+    OutputDebugString (L"vk_surface::vk_surface Copy assignment\n");
+    
+    surface = other.surface;
+    instance = other.instance;
+
+    return *this;
+}
+
+vk_surface::vk_surface (const vk::Instance& instance, HINSTANCE h_instance, HWND h_wnd)
+{
+    OutputDebugString (L"vk_surface::vk_surface instance h_instance h_wnd\n");
 
     vk::Win32SurfaceCreateInfoKHR create_info ({}, h_instance, h_wnd);
     surface = instance.createWin32SurfaceKHR (create_info);
@@ -347,9 +386,46 @@ vk_surface::~vk_surface ()
 }
 
 
-vk_graphics_device::vk_graphics_device (const vk::PhysicalDevice& physical_device, const std::vector<vk::DeviceQueueCreateInfo>& queue_create_infos)
+vk_graphics_device::vk_graphics_device ()
 {
     OutputDebugString (L"vk_graphics_device::vk_graphics_device\n");
+}
+
+vk_graphics_device::vk_graphics_device (const vk_graphics_device& other)
+{
+    OutputDebugString (L"vk_graphics_device::vk_graphics_device Copy constructor\n");
+
+    *this = other;
+}
+
+vk_graphics_device& vk_graphics_device::operator=(const vk_graphics_device& other)
+{
+    OutputDebugString (L"vk_graphics_device::vk_graphics_device Copy assignment\n");
+
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_graphics_device::vk_graphics_device (vk_graphics_device&& other) noexcept
+{
+    OutputDebugString (L"vk_graphics_device::vk_graphics_device Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_graphics_device& vk_graphics_device::operator=(const vk_graphics_device&& other) noexcept
+{
+    OutputDebugString (L"vk_graphics_device::vk_graphics_device Move assignment\n");
+
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_graphics_device::vk_graphics_device (const vk::PhysicalDevice& physical_device, const std::vector<vk::DeviceQueueCreateInfo>& queue_create_infos)
+{
+    OutputDebugString (L"vk_graphics_device::vk_graphics_device physical_device queue_create_infos\n");
 
     std::vector<const char*> requested_device_extensions;
     std::vector<vk::ExtensionProperties> extension_properties = physical_device.enumerateDeviceExtensionProperties ();
@@ -372,9 +448,48 @@ vk_graphics_device::~vk_graphics_device ()
 }
 
 
-vk_swapchain::vk_swapchain (const vk::Device& graphics_device, const vk::SurfaceKHR& surface, const vk::SurfaceCapabilitiesKHR& surface_capabilities, const vk::SurfaceFormatKHR& surface_format, const vk::Extent2D& surface_extent, const vk::PresentModeKHR& present_mode)
+vk_swapchain::vk_swapchain ()
 {
     OutputDebugString (L"vk_swapchain::vk_swapchain\n");
+}
+
+vk_swapchain::vk_swapchain (const vk_swapchain& other)
+{
+    OutputDebugString (L"vk_swapchain::vk_swapchain Copy constructor\n");
+
+    *this = other;
+}
+
+vk_swapchain& vk_swapchain::operator=(const vk_swapchain& other)
+{
+    OutputDebugString (L"vk_swapchain::vk_swapchain Copy assignment\n");
+
+    swapchain = other.swapchain;
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_swapchain::vk_swapchain (vk_swapchain&& other) noexcept
+{
+    OutputDebugString (L"vk_swapchain::vk_swapchain Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_swapchain& vk_swapchain::operator=(vk_swapchain&& other) noexcept
+{
+    OutputDebugString (L"vk_swapchain::vk_swapchain Move assignment\n");
+
+    swapchain = other.swapchain;
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_swapchain::vk_swapchain (const vk::Device& graphics_device, const vk::SurfaceKHR& surface, const vk::SurfaceCapabilitiesKHR& surface_capabilities, const vk::SurfaceFormatKHR& surface_format, const vk::Extent2D& surface_extent, const vk::PresentModeKHR& present_mode)
+{
+    OutputDebugString (L"vk_swapchain::vk_swapchain graphics_device surface surface_capabilities surface_format surface_extent present_mode\n");
 
     vk::SwapchainCreateInfoKHR swapchain_create_info ({}, surface, surface_capabilities.minImageCount + 1, surface_format.format, surface_format.colorSpace, surface_extent, 1, surface_capabilities.supportedUsageFlags, vk::SharingMode::eExclusive, 0, {}, surface_capabilities.currentTransform, vk::CompositeAlphaFlagBitsKHR::eOpaque, present_mode);
     swapchain = graphics_device.createSwapchainKHR (swapchain_create_info);
@@ -444,9 +559,48 @@ vk_command_pool::~vk_command_pool ()
     graphics_device.destroyCommandPool (command_pool);
 }
 
-vk_image_view::vk_image_view (const vk::Device& graphics_device, const vk::Image& image, const vk::Format& format)
+vk_image_view::vk_image_view ()
 {
     OutputDebugString (L"vk_image_view::vk_image_view\n");
+}
+
+vk_image_view::vk_image_view (const vk_image_view& other)
+{
+    OutputDebugString (L"vk_image_view::vk_image_view Copy constructor\n");
+    
+    *this = other;
+}
+
+vk_image_view& vk_image_view::operator=(const vk_image_view& other)
+{
+    OutputDebugString (L"vk_image_view::vk_image_view Copy assignment\n");
+
+    image_view = other.image_view;
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_image_view::vk_image_view (vk_image_view&& other) noexcept
+{
+    OutputDebugString (L"vk_image_view::vk_image_view Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_image_view& vk_image_view::operator=(vk_image_view&& other) noexcept
+{
+    OutputDebugString (L"vk_image_view::vk_image_view Move assignment\n");
+
+    image_view = other.image_view;
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_image_view::vk_image_view (const vk::Device& graphics_device, const vk::Image& image, const vk::Format& format)
+{
+    OutputDebugString (L"vk_image_view::vk_image_view graphics_device image format\n");
 
     vk::ComponentMapping component_mapping (vk::ComponentSwizzle::eIdentity);
     vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
