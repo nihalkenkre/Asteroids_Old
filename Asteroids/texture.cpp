@@ -1,4 +1,4 @@
-#include "textures.hpp"
+#include "texture.hpp"
 
 texture::texture (const texture& other)
 {

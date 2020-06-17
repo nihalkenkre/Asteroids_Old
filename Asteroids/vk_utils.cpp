@@ -559,6 +559,47 @@ vk_command_pool::~vk_command_pool ()
     graphics_device.destroyCommandPool (command_pool);
 }
 
+vk_image::vk_image ()
+{
+    OutputDebugString (L"vk_image::vk_image\n");
+}
+
+vk_image::vk_image (const vk_image& other)
+{
+    OutputDebugString (L"vk_image::vk_image Copy constructor\n");
+    *this = other;
+}
+
+vk_image& vk_image::operator= (const vk_image& other)
+{
+    OutputDebugString (L"vk_image::vk_image Copy assignment\n");
+    image = other.image;
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_image::vk_image (vk_image&& other) noexcept
+{
+    OutputDebugString (L"vk_image::vk_image Move constructor\n");
+    *this = other;
+}
+
+vk_image& vk_image::operator= (vk_image&& other) noexcept
+{
+    OutputDebugString (L"vk_image::vk_image Move assignment\n");
+    image = other.image;
+    graphics_device = other.graphics_device;
+
+    return *this;
+}
+
+vk_image::~vk_image () 
+{
+    OutputDebugString (L"vk_image::~vk_image\n");
+    graphics_device.destroy (image);
+}
+
 vk_image_view::vk_image_view ()
 {
     OutputDebugString (L"vk_image_view::vk_image_view\n");

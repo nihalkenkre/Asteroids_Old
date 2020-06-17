@@ -1,5 +1,7 @@
 #pragma once
 
+#include "vk_utils.hpp"
+
 #include <tiny_gltf.h>
 #include <vulkan/vulkan.hpp>
 
@@ -21,8 +23,8 @@ public:
     vk::DeviceSize width;
     vk::DeviceSize height;
 
-    vk::Image image;
-    vk::ImageView image_view;
+    vk_image image;
+    vk_image_view image_view;
 };
 
 class textures

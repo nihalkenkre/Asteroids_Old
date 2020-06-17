@@ -1,6 +1,6 @@
 #pragma once
 
-#include "textures.hpp"
+#include "texture.hpp"
 
 #include <string>
 #include <memory>
