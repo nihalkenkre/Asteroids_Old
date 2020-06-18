@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Windows.h>
-#include <memory>
 
 #include "scene.hpp"
 #include "common_graphics.hpp"
@@ -10,6 +9,7 @@
 class game
 {
 public:
+    game ();
     game (HINSTANCE h_instance, HWND h_wnd);
     ~game ();
 
@@ -19,6 +19,6 @@ public:
     void main_loop ();
 
 private:
-    std::unique_ptr<common_graphics> graphics = nullptr;
-    std::unique_ptr<scene> current_scene = nullptr;
+    common_graphics graphics;
+    scene current_scene;
 };

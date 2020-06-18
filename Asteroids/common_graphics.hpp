@@ -1,32 +1,34 @@
 #pragma once
 
+#include "vk_utils.hpp"
+
 #include <Windows.h>
 #include <memory>
 #include <vulkan/vulkan.hpp>
-
-class vk_instance;
-class vk_debug_utils_messenger;
-class vk_surface;
-class vk_graphics_device;
-class vk_swapchain;
-class vk_command_pool;
-class vk_image_view;
 
 
 class common_graphics
 {
 public:
+    common_graphics ();
     common_graphics (HINSTANCE h_instance, HWND h_wnd);
-    ~common_graphics ();
+    
+    common_graphics (const common_graphics& other);
+    common_graphics& operator= (const common_graphics& other);
 
-    std::unique_ptr<vk_instance> instance = nullptr;
-    std::unique_ptr<vk_graphics_device> graphics_device = nullptr;
-    std::unique_ptr<vk_debug_utils_messenger> debug_utils_messenger = nullptr;
-    std::unique_ptr<vk_surface> surface = nullptr;
-    std::unique_ptr<vk_swapchain> swapchain = nullptr;
+    common_graphics (common_graphics&& other) noexcept;
+    common_graphics& operator= (common_graphics&& other) noexcept;
+
+    ~common_graphics () noexcept;
+
+    vk_instance instance;
+    vk_graphics_device graphics_device;
+    vk_debug_utils_messenger debug_utils_messenger;
+    vk_surface surface;
+    vk_swapchain swapchain;
     std::vector<vk::Image> swapchain_images;
-    std::vector<std::unique_ptr<vk_image_view>> swapchain_image_views;
-    std::unique_ptr<vk_command_pool> transfer_command_pool = nullptr;
+    std::vector<vk_image_view> swapchain_image_views;
+    vk_command_pool transfer_command_pool;
 
     vk::PhysicalDeviceMemoryProperties physical_device_memory_properties;
     vk::PhysicalDeviceLimits physical_device_limits;
@@ -47,7 +49,6 @@ private:
     void get_surface_properties ();
     std::pair <std::vector<vk::DeviceQueueCreateInfo>, std::vector<size_t>> get_queue_data ();
     void get_device_queues (const std::vector<size_t>& queue_indices);
-    void create_transfer_command_pool ();
 
     bool is_validation_needed = false;
 

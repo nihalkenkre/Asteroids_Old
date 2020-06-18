@@ -6,7 +6,11 @@
 
 scene_graphics::scene_graphics ()
 {
-    OutputDebugString (L"scene_graphics::scene_graphics\n");
+}
+
+scene_graphics::scene_graphics (static_meshes* meshes)
+{
+    OutputDebugString (L"scene_graphics::scene_graphics meshes\n");
 
 }
 

@@ -47,6 +47,11 @@ static_mesh& static_mesh::operator= (static_mesh&& other) noexcept
     return *this;
 }
 
+static_mesh::static_mesh ()
+{
+    OutputDebugString (L"static_mesh::static_mesh\n");
+}
+
 static_mesh::static_mesh (const tinygltf::Node& graphics_node, const std::vector<tinygltf::Node>& physics_nodes, const tinygltf::Model& model)
 {
     OutputDebugString (L"static_mesh::static_mesh graphics_node physics_node model\n");
@@ -93,9 +98,14 @@ static_meshes& static_meshes::operator=(static_meshes&& other) noexcept
     return *this;
 }
 
-static_meshes::static_meshes (const gltf_models& models, const std::vector<std::string>& search_names)
+static_meshes::static_meshes ()
 {
     OutputDebugString (L"static_meshes::static_meshes\n");
+}
+
+static_meshes::static_meshes (const gltf_models& models, const std::vector<std::string>& search_names)
+{
+    OutputDebugString (L"static_meshes::static_meshes models search_names\n");
 
     meshes.reserve (5);
 

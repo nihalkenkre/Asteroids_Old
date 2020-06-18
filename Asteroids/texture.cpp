@@ -1,4 +1,10 @@
-#include "textures.hpp"
+#include "texture.hpp"
+
+
+texture::texture ()
+{
+    OutputDebugString (L"texture::texture\n");
+}
 
 texture::texture (const texture& other)
 {

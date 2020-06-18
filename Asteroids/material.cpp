@@ -14,7 +14,7 @@ material::material (const material& other)
 
 material& material::operator=(const material& other)
 {
-    // TODO: insert return statement here
+    return *this;
 }
 
 material::material (material&& other) noexcept
@@ -23,7 +23,7 @@ material::material (material&& other) noexcept
 
 material& material::operator=(material&& other) noexcept
 {
-    // TODO: insert return statement here
+    return *this;
 }
 
 material::~material () noexcept

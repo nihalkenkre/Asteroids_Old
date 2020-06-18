@@ -5,11 +5,11 @@
 #include <vector>
 #include <memory>
 
+#include "scene_physics.hpp"
+#include "scene_graphics.hpp"
+#include "static_meshes.hpp"
 
 class game;
-class scene_graphics;
-class scene_physics;
-class static_meshes;
 
 
 enum class SCENE_TYPE
@@ -24,6 +24,7 @@ enum class SCENE_TYPE
 class scene
 {
 public:
+    scene ();
     scene (game* obj);
     virtual ~scene ();
 
@@ -31,10 +32,10 @@ public:
     virtual void main_loop ();
 
 private:
-    std::unique_ptr<scene_physics> physics = nullptr;
-    std::unique_ptr<scene_graphics> graphics = nullptr;
+    scene_physics physics;
+    scene_graphics graphics;
 
-    std::unique_ptr<static_meshes> scene_static_meshes = nullptr;
+    static_meshes scene_static_meshes;
 
     game* game_obj;
 };
