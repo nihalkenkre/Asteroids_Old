@@ -133,6 +133,24 @@ private:
     vk::Device graphics_device;
 };
 
+class vk_image
+{
+public:
+    vk_image ();
+    vk_image (const vk_image& other);
+    vk_image& operator= (const vk_image& other);
+    vk_image (vk_image&& other) noexcept;
+    vk_image& operator= (vk_image&& other) noexcept;
+    ~vk_image () noexcept;
+
+    inline vk::Image get_obj ()
+    {
+        return image;
+    }
+private:
+    vk::Image image;
+    vk::Device graphics_device;
+};
 
 class vk_image_view
 {

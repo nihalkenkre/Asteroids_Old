@@ -1,5 +1,7 @@
 #pragma once
 
+#include "texture.hpp"
+
 #include <string>
 #include <memory>
 #include <vulkan/vulkan.hpp>
