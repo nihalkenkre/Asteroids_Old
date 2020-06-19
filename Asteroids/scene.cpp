@@ -18,10 +18,10 @@ scene::scene (game* obj)
     
     gltf_models models ("");
 
-    scene_static_meshes = static_meshes (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
+    scene_static_meshes = std::make_unique<static_meshes> (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
 
-    physics = scene_physics ();
-    graphics = scene_graphics ();
+    physics = std::make_unique<scene_physics> ();
+    graphics = std::make_unique<scene_graphics> ();
 
     this->game_obj = obj;
 }

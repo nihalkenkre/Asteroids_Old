@@ -5,9 +5,6 @@
 #include <vector>
 #include <memory>
 
-#include "scene_physics.hpp"
-#include "scene_graphics.hpp"
-#include "static_meshes.hpp"
 
 class game;
 
@@ -20,6 +17,9 @@ enum class SCENE_TYPE
     MENU_SCENE
 };
 
+class scene_physics;
+class scene_graphics;
+class static_meshes;
 
 class scene
 {
@@ -32,10 +32,10 @@ public:
     virtual void main_loop ();
 
 private:
-    scene_physics physics;
-    scene_graphics graphics;
+    std::unique_ptr<scene_physics> physics;
+    std::unique_ptr<scene_graphics> graphics;
 
-    static_meshes scene_static_meshes;
+    std::unique_ptr<static_meshes> scene_static_meshes;
 
     game* game_obj;
 };

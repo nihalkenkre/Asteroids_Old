@@ -11,7 +11,7 @@ game::game (HINSTANCE h_instance, HWND h_wnd)
 {
     OutputDebugString (L"game::game h_instance h_wnd\n");
 
-    graphics = common_graphics (h_instance, h_wnd);
+    graphics = std::make_unique<common_graphics> (h_instance, h_wnd);
     set_current_scene (SCENE_TYPE::TEST_SCENE);
 }
 
@@ -25,7 +25,8 @@ void game::set_current_scene (SCENE_TYPE type)
     switch (type)
     {
         case SCENE_TYPE::TEST_SCENE:
-            current_scene = test_scene (this);
+            current_scene.reset ();
+            current_scene = std::make_unique<test_scene> (this);
             break;
 
         default:
@@ -36,7 +37,7 @@ void game::set_current_scene (SCENE_TYPE type)
 void game::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 {
     OutputDebugString (L"game::process_keyboard_input\n");
-    current_scene.process_keyboard_input (WParam, LParam);
+    current_scene->process_keyboard_input (WParam, LParam);
 }
 
 void game::main_loop ()

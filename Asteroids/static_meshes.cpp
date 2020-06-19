@@ -9,14 +9,18 @@
 
 static_mesh::static_mesh (const static_mesh& other)
 {
-    OutputDebugString (L"static_mesh::static_mesh Copy Constructor\n");
+    wchar_t buff[512];
+    swprintf (buff, 512, L"static_mesh::static_mesh Copy constructor %hs\n", other.name.c_str ());
+    OutputDebugString (buff);
 
     *this = other;
 }
 
 static_mesh& static_mesh::operator= (const static_mesh& other)
 {
-    OutputDebugString (L"static_mesh::static_mesh Copy Assignment\n");
+    wchar_t buff[512];
+    swprintf (buff, 512, L"static_mesh::static_mesh Copy assignment %hs\n", other.name.c_str ());
+    OutputDebugString (buff);
 
     name = other.name;
     opaque_graphics_primitives->primitives = other.opaque_graphics_primitives->primitives;
@@ -28,21 +32,23 @@ static_mesh& static_mesh::operator= (const static_mesh& other)
 
 static_mesh::static_mesh (static_mesh&& other) noexcept
 {
-    OutputDebugString (L"static_mesh::static_mesh Move Constructor\n");
+    wchar_t buff[512];
+    swprintf (buff, 512, L"static_mesh::static_mesh Move constructor %hs\n", other.name.c_str ());
+    OutputDebugString (buff);
 
     *this = std::move (other);
 }
 
 static_mesh& static_mesh::operator= (static_mesh&& other) noexcept
 {
-    OutputDebugString (L"static_mesh::static_mesh Move Assignment\n");
+    wchar_t buff[512];
+    swprintf (buff, 512, L"static_mesh::static_mesh Move assignment %hs\n", other.name.c_str ());
+    OutputDebugString (buff);
 
     name = other.name;
     opaque_graphics_primitives = std::move (other.opaque_graphics_primitives);
     alpha_graphics_primitives = std::move (other.alpha_graphics_primitives);
     blend_graphics_primitives = std::move (other.blend_graphics_primitives);
-
-    other.name.clear ();
 
     return *this;
 }
@@ -61,7 +67,10 @@ static_mesh::static_mesh (const tinygltf::Node& graphics_node, const std::vector
 
 static_mesh::~static_mesh ()
 {
-    OutputDebugString (L"static_mesh::~static_mesh\n");
+    wchar_t buff[512];
+    swprintf (buff, 512, L"static_mesh::~static_mesh %hs\n", name.c_str ());
+
+    OutputDebugString (buff);
 }
 
 

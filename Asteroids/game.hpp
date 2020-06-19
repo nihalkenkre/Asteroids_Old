@@ -5,7 +5,6 @@
 #include "scene.hpp"
 #include "common_graphics.hpp"
 
-
 class game
 {
 public:
@@ -19,6 +18,6 @@ public:
     void main_loop ();
 
 private:
-    common_graphics graphics;
-    scene current_scene;
+    std::unique_ptr<common_graphics> graphics;
+    std::unique_ptr<scene> current_scene;
 };
