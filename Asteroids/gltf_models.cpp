@@ -14,10 +14,10 @@ gltf_models::gltf_models (const std::string& folder_path)
 
     models.reserve (5);
 
-    std::string full_folder_path = utils::get_full_file_path (folder_path);
-    std::vector<std::string> files = utils::get_all_files_in_folder (full_folder_path);
+    full_file_path full_path (folder_path);
+    files_in_folder files (full_path.path);
 
-    for (const auto& file : files)
+    for (const auto& file : files.files)
     {
         tinygltf::Model model;
         tinygltf::TinyGLTF loader;

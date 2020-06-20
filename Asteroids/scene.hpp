@@ -1,5 +1,9 @@
 #pragma once
 
+#include "scene_physics.hpp"
+#include "scene_graphics.hpp"
+#include "static_meshes.hpp"
+
 #include <Windows.h>
 #include <string>
 #include <vector>
@@ -31,11 +35,11 @@ public:
     virtual void process_keyboard_input (WPARAM WParam, LPARAM LParam);
     virtual void main_loop ();
 
-private:
-    std::unique_ptr<scene_physics> physics;
-    std::unique_ptr<scene_graphics> graphics;
+protected:
+    scene_physics physics;
+    scene_graphics graphics;
 
-    std::unique_ptr<static_meshes> scene_static_meshes;
+    static_meshes scene_static_meshes;
 
     game* game_obj;
 };

@@ -12,8 +12,10 @@ vk_instance::vk_instance (vk_instance&& other) noexcept
 {
     OutputDebugString (L"vk_instance::vk_instance Move constructor\n");
 
-    instance = other.instance;
-    other.instance = nullptr;
+    /*instance = other.instance;
+    other.instance = nullptr;*/
+
+    *this = std::move (other);
 }
 
 vk_instance& vk_instance::operator=(vk_instance&& other) noexcept
@@ -122,11 +124,13 @@ vk_debug_utils_messenger::vk_debug_utils_messenger (vk_debug_utils_messenger&& o
 {
     OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger Move constructor\n");
 
-    debug_utils_messenger = other.debug_utils_messenger;
+    /*debug_utils_messenger = other.debug_utils_messenger;
     instance = other.instance;
 
     other.debug_utils_messenger = nullptr;
-    other.instance = nullptr;
+    other.instance = nullptr;*/
+
+    *this = std::move (other);
 }
 
 vk_debug_utils_messenger& vk_debug_utils_messenger::operator=(vk_debug_utils_messenger&& other) noexcept
@@ -174,17 +178,13 @@ vk_surface::vk_surface ()
 vk_surface::vk_surface (vk_surface&& other) noexcept
 {
     OutputDebugString (L"vk_surface::vk_surface Move constructor\n");
-    
-    surface = other.surface;
-    instance = other.instance;
 
-    other.surface = nullptr;
-    other.instance = nullptr;
+    *this = std::move (other);
 }
 
 vk_surface& vk_surface::operator=(vk_surface&& other) noexcept
 {
-    OutputDebugString (L"vk_surface::vk_surface Copy assignment\n");
+    OutputDebugString (L"vk_surface::vk_surface Move assignment\n");
     
     surface = other.surface;
     instance = other.instance;
@@ -223,9 +223,11 @@ vk_graphics_device::vk_graphics_device (vk_graphics_device&& other) noexcept
 {
     OutputDebugString (L"vk_graphics_device::vk_graphics_device Move constructor\n");
     
-    graphics_device = other.graphics_device;
+    /*graphics_device = other.graphics_device;
 
-    other.graphics_device = nullptr;
+    other.graphics_device = nullptr;*/
+
+    *this = std::move (other);
 }
 
 vk_graphics_device& vk_graphics_device::operator=(vk_graphics_device&& other) noexcept
@@ -275,11 +277,13 @@ vk_swapchain::vk_swapchain (vk_swapchain&& other) noexcept
 {
     OutputDebugString (L"vk_swapchain::vk_swapchain Move constructor\n");
 
-    swapchain = other.swapchain;
+    /*swapchain = other.swapchain;
     graphics_device = other.graphics_device;
 
     other.swapchain = nullptr;
-    other.graphics_device = nullptr;
+    other.graphics_device = nullptr;*/
+
+    *this = std::move (other);
 }
 
 vk_swapchain& vk_swapchain::operator=(vk_swapchain&& other) noexcept
@@ -324,11 +328,13 @@ vk_command_pool::vk_command_pool (vk_command_pool&& other) noexcept
 {
     OutputDebugString (L"vk_command_pool::vk_command_pool Move constructor\n");
 
-    command_pool = other.command_pool;
+    /*command_pool = other.command_pool;
     graphics_device = other.graphics_device;
 
     other.command_pool = nullptr;
-    other.graphics_device = nullptr;
+    other.graphics_device = nullptr;*/
+
+    *this = std::move (other);
 }
 
 vk_command_pool& vk_command_pool::operator=(vk_command_pool&& other) noexcept
@@ -372,11 +378,13 @@ vk_image::vk_image (vk_image&& other) noexcept
 {
     OutputDebugString (L"vk_image::vk_image Move constructor\n");
     
-    image = other.image;
+    /*image = other.image;
     graphics_device = other.graphics_device;
 
     other.image = nullptr;
-    graphics_device = nullptr;
+    graphics_device = nullptr;*/
+
+    *this = std::move (other);
 }
 
 vk_image& vk_image::operator= (vk_image&& other) noexcept
@@ -410,11 +418,13 @@ vk_image_view::vk_image_view (vk_image_view&& other) noexcept
 {
     OutputDebugString (L"vk_image_view::vk_image_view Move constructor\n");
 
-    image_view = other.image_view;
+    /*image_view = other.image_view;
     graphics_device = other.graphics_device;
 
     other.image_view = nullptr;
-    other.graphics_device = nullptr;    
+    other.graphics_device = nullptr;*/    
+
+    *this = std::move (other);
 }
 
 vk_image_view& vk_image_view::operator=(vk_image_view&& other) noexcept

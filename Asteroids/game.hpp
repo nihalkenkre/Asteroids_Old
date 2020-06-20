@@ -18,6 +18,6 @@ public:
     void main_loop ();
 
 private:
-    std::unique_ptr<common_graphics> graphics;
+    common_graphics graphics;
     std::unique_ptr<scene> current_scene;
 };

@@ -2,11 +2,13 @@
 
 #include <vector>
 #include <vulkan/vulkan.hpp>
+#include <tiny_gltf.h>
 
 class static_graphics_primitive
 {
 public:
     static_graphics_primitive ();
+    static_graphics_primitive (const tinygltf::Primitive& primitive, const tinygltf::Model& model);
     static_graphics_primitive (const static_graphics_primitive& other);
     static_graphics_primitive& operator= (const static_graphics_primitive& other);
     static_graphics_primitive (const static_graphics_primitive&& other) noexcept;

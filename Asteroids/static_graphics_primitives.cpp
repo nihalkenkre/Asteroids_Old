@@ -7,6 +7,11 @@ static_graphics_primitive::static_graphics_primitive ()
     OutputDebugString (L"static_graphics_primitive::static_graphics_primitive\n");
 }
 
+static_graphics_primitive::static_graphics_primitive (const tinygltf::Primitive& primitive, const tinygltf::Model& model)
+{
+    OutputDebugString (L"static_graphics_primitive::static_graphics_primitive primitive model\n");
+}
+
 static_graphics_primitive::static_graphics_primitive (const static_graphics_primitive& other)
 {
     OutputDebugString (L"static_graphics_primitive::static_graphics_primitive Copy constructor\n");

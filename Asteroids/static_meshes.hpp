@@ -23,9 +23,9 @@ public:
 
     std::string name;
 
-    std::unique_ptr <static_graphics_primitives> opaque_graphics_primitives = nullptr;
-    std::unique_ptr <static_graphics_primitives> alpha_graphics_primitives = nullptr;
-    std::unique_ptr <static_graphics_primitives> blend_graphics_primitives = nullptr;
+    std::vector<static_graphics_primitive> opaque_graphics_primitives;
+    std::vector<static_graphics_primitive> alpha_graphics_primitives;
+    std::vector<static_graphics_primitive> blend_graphics_primitives;
 };
 
 

@@ -23,27 +23,23 @@ static_mesh& static_mesh::operator= (const static_mesh& other)
     OutputDebugString (buff);
 
     name = other.name;
-    opaque_graphics_primitives->primitives = other.opaque_graphics_primitives->primitives;
-    alpha_graphics_primitives->primitives = other.alpha_graphics_primitives->primitives;
-    blend_graphics_primitives->primitives = other.blend_graphics_primitives->primitives;
+    opaque_graphics_primitives = other.opaque_graphics_primitives;
+    alpha_graphics_primitives = other.alpha_graphics_primitives;
+    blend_graphics_primitives = other.blend_graphics_primitives;
 
     return *this;
 }
 
 static_mesh::static_mesh (static_mesh&& other) noexcept
 {
-    wchar_t buff[512];
-    swprintf (buff, 512, L"static_mesh::static_mesh Move constructor %hs\n", other.name.c_str ());
-    OutputDebugString (buff);
+    OutputDebugString (L"static_mesh::static_mesh Move constructor\n");
 
     *this = std::move (other);
 }
 
 static_mesh& static_mesh::operator= (static_mesh&& other) noexcept
 {
-    wchar_t buff[512];
-    swprintf (buff, 512, L"static_mesh::static_mesh Move assignment %hs\n", other.name.c_str ());
-    OutputDebugString (buff);
+    OutputDebugString (L"static_mesh::static_mesh Move assignment\n");
 
     name = other.name;
     opaque_graphics_primitives = std::move (other.opaque_graphics_primitives);
@@ -63,14 +59,30 @@ static_mesh::static_mesh (const tinygltf::Node& graphics_node, const std::vector
     OutputDebugString (L"static_mesh::static_mesh graphics_node physics_node model\n");
 
     name = graphics_node.name;
+    opaque_graphics_primitives.reserve (5);
+    alpha_graphics_primitives.reserve (5);
+    blend_graphics_primitives.reserve (5);
+
+    for (const auto& primitive : model.meshes[graphics_node.mesh].primitives)
+    {
+        if (model.materials[primitive.material].name.find ("OPAQUE") != std::string::npos)
+        {
+            opaque_graphics_primitives.emplace_back (static_graphics_primitive (primitive, model));
+        }
+        else if (model.materials[primitive.material].name.find ("ALPHA") != std::string::npos)
+        {
+            alpha_graphics_primitives.emplace_back (static_graphics_primitive (primitive, model));
+        }
+        else if (model.materials[primitive.material].name.find ("BLEND") != std::string::npos)
+        {
+            blend_graphics_primitives.emplace_back (static_graphics_primitive (primitive, model));
+        }
+    }
 }
 
 static_mesh::~static_mesh ()
 {
-    wchar_t buff[512];
-    swprintf (buff, 512, L"static_mesh::~static_mesh %hs\n", name.c_str ());
-
-    OutputDebugString (buff);
+    OutputDebugString (L"static_mesh::~static_mesh\n");
 }
 
 
