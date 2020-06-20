@@ -10,8 +10,8 @@ class texture
 public:
     texture ();
     texture (const tinygltf::Image& image);
-    texture (const texture& other);
-    texture& operator= (const texture& other);
+    texture (const texture& other) = delete;
+    texture& operator= (const texture& other) = delete;
     texture (texture&& other) noexcept;
     texture& operator= (texture&& other) noexcept;
     ~texture () noexcept;

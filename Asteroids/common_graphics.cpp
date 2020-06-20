@@ -82,19 +82,19 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeve
 
 /*void common_graphics::setup_debug_utils_messenger ()
 {
-    pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance->get_obj ().getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
-    pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance->get_obj ().getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
+    pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance.get_obj ().getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
+    pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance.get_obj ().getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
 
     vk::DebugUtilsMessageSeverityFlagsEXT severity_flags (vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose);
     vk::DebugUtilsMessageTypeFlagsEXT message_type_flags (vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
 
-    debug_utils_messenger = instance->get_obj ().createDebugUtilsMessengerEXT (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
+    debug_utils_messenger = instance.get_obj ().createDebugUtilsMessengerEXT (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
 }*/
 
 /*void common_graphics::create_surface (HINSTANCE h_instance, HWND h_wnd)
 {
     vk::Win32SurfaceCreateInfoKHR surface_create_info ({}, h_instance, h_wnd);
-    surface = instance->get_obj ().createWin32SurfaceKHR (surface_create_info);
+    surface = instance.get_obj ().createWin32SurfaceKHR (surface_create_info);
 }*/
 
 /*void common_graphics::create_graphics_device ()
@@ -114,7 +114,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeve
 
 /*void common_graphics::create_swapchain ()
 {
-    vk::SwapchainCreateInfoKHR swapchain_create_info ({}, surface->get_obj (), surface_capabilities.minImageCount + 1, surface_format.format, surface_format.colorSpace, surface_extent, 1, surface_capabilities.supportedUsageFlags, vk::SharingMode::eExclusive, 0, {}, surface_capabilities.currentTransform, vk::CompositeAlphaFlagBitsKHR::eOpaque, present_mode);
+    vk::SwapchainCreateInfoKHR swapchain_create_info ({}, surface.get_obj (), surface_capabilities.minImageCount + 1, surface_format.format, surface_format.colorSpace, surface_extent, 1, surface_capabilities.supportedUsageFlags, vk::SharingMode::eExclusive, 0, {}, surface_capabilities.currentTransform, vk::CompositeAlphaFlagBitsKHR::eOpaque, present_mode);
     swapchain = graphics_device->get_obj ().createSwapchainKHR (swapchain_create_info);
     swapchain_images = graphics_device->get_obj ().getSwapchainImagesKHR (swapchain);
 
@@ -148,31 +148,31 @@ common_graphics::common_graphics (HINSTANCE h_instance, HWND h_wnd)
     is_validation_needed = true;
 #endif
 
-    instance = std::make_unique<vk_instance> (is_validation_needed);
+    instance = vk_instance (is_validation_needed);
     
     if (is_validation_needed)
     {
-        debug_utils_messenger = std::make_unique<vk_debug_utils_messenger> (instance->get_obj ());
+        debug_utils_messenger = vk_debug_utils_messenger (instance.get_obj ());
     }
 
-    surface = std::make_unique<vk_surface> (instance->get_obj (), h_instance, h_wnd);
+    surface = vk_surface (instance.get_obj (), h_instance, h_wnd);
     get_physical_device ();
     get_queue_properties ();
     get_surface_properties ();
 
     auto queue_info = get_queue_data ();
-    graphics_device = std::make_unique<vk_graphics_device> (physical_device, queue_info.first);
+    graphics_device = vk_graphics_device (physical_device, queue_info.first);
     get_device_queues (queue_info.second);
 
-    swapchain = std::make_unique<vk_swapchain> (graphics_device->get_obj (), surface->get_obj (), surface_capabilities, surface_format, surface_extent, present_mode);
-    swapchain_images = graphics_device->get_obj ().getSwapchainImagesKHR (swapchain->get_obj ());
+    swapchain = vk_swapchain (graphics_device.get_obj (), surface.get_obj (), surface_capabilities, surface_format, surface_extent, present_mode);
+    swapchain_images = graphics_device.get_obj ().getSwapchainImagesKHR (swapchain.get_obj ());
     swapchain_image_views.reserve (swapchain_images.size ());
     for (const auto& image : swapchain_images)
     {
-        swapchain_image_views.emplace_back (std::make_unique<vk_image_view> (graphics_device->get_obj (), image, surface_format.format));
+        swapchain_image_views.emplace_back (vk_image_view (graphics_device.get_obj (), image, surface_format.format));
     }
 
-    transfer_command_pool = std::make_unique<vk_command_pool> (graphics_device->get_obj (), transfer_queue_family_index, vk::CommandPoolCreateFlagBits::eTransient);
+    transfer_command_pool = vk_command_pool (graphics_device.get_obj (), transfer_queue_family_index, vk::CommandPoolCreateFlagBits::eTransient);
 }
 
 common_graphics::common_graphics (const common_graphics& other)
@@ -195,7 +195,7 @@ common_graphics& common_graphics::operator=(common_graphics&& other) noexcept
 
 void common_graphics::get_physical_device ()
 {
-    physical_device = instance->get_obj ().enumeratePhysicalDevices ().at (0);
+    physical_device = instance.get_obj ().enumeratePhysicalDevices ().at (0);
     
     physical_device_memory_properties = physical_device.getMemoryProperties ();
     physical_device_limits = physical_device.getProperties ().limits;
@@ -230,12 +230,12 @@ void common_graphics::get_queue_properties ()
 
 void common_graphics::get_surface_properties ()
 {
-    bool is_supported = physical_device.getSurfaceSupportKHR (graphics_queue_family_index, surface->get_obj ());
+    bool is_supported = physical_device.getSurfaceSupportKHR (graphics_queue_family_index, surface.get_obj ());
 
-    surface_capabilities = physical_device.getSurfaceCapabilitiesKHR (surface->get_obj ());
+    surface_capabilities = physical_device.getSurfaceCapabilitiesKHR (surface.get_obj ());
     surface_extent = surface_capabilities.currentExtent;
 
-    std::vector<vk::SurfaceFormatKHR> surface_formats = physical_device.getSurfaceFormatsKHR (surface->get_obj ());
+    std::vector<vk::SurfaceFormatKHR> surface_formats = physical_device.getSurfaceFormatsKHR (surface.get_obj ());
 
     auto format_iter = std::find_if (surface_formats.begin (), surface_formats.end (), [&](vk::SurfaceFormatKHR format) { return format == vk::Format::eB8G8R8A8Unorm; });
     if (format_iter != surface_formats.end ())
@@ -243,7 +243,7 @@ void common_graphics::get_surface_properties ()
         surface_format = *format_iter;
     }
 
-    std::vector<vk::PresentModeKHR> present_modes = physical_device.getSurfacePresentModesKHR (surface->get_obj ());
+    std::vector<vk::PresentModeKHR> present_modes = physical_device.getSurfacePresentModesKHR (surface.get_obj ());
 
     auto present_mode_iter = std::find_if (present_modes.begin (), present_modes.end (), [&](const vk::PresentModeKHR& present_mode) { return present_mode == vk::PresentModeKHR::eMailbox; });
     if (present_mode_iter != present_modes.end ())
@@ -293,9 +293,9 @@ void common_graphics::get_device_queues (const std::vector<size_t>& queue_indice
 {
     std::vector<vk::QueueFamilyProperties> queue_family_properties = physical_device.getQueueFamilyProperties ();
 
-    graphics_queue = graphics_device->get_obj ().getQueue (graphics_queue_family_index, queue_indices.at (0) > queue_family_properties.at (graphics_queue_family_index).queueCount ? queue_family_properties.at (graphics_queue_family_index).queueCount - 1 : queue_indices.at (0));
-    compute_queue = graphics_device->get_obj ().getQueue (compute_queue_family_index, queue_indices.at (1) > queue_family_properties.at (compute_queue_family_index).queueCount ? queue_family_properties.at (compute_queue_family_index).queueCount - 1 : queue_indices.at (1));
-    transfer_queue = graphics_device->get_obj ().getQueue (transfer_queue_family_index, queue_indices.at (2) > queue_family_properties.at (transfer_queue_family_index).queueCount ? queue_family_properties.at (transfer_queue_family_index).queueCount - 1 : queue_indices.at (2));
+    graphics_queue = graphics_device.get_obj ().getQueue (graphics_queue_family_index, queue_indices.at (0) > queue_family_properties.at (graphics_queue_family_index).queueCount ? queue_family_properties.at (graphics_queue_family_index).queueCount - 1 : queue_indices.at (0));
+    compute_queue = graphics_device.get_obj ().getQueue (compute_queue_family_index, queue_indices.at (1) > queue_family_properties.at (compute_queue_family_index).queueCount ? queue_family_properties.at (compute_queue_family_index).queueCount - 1 : queue_indices.at (1));
+    transfer_queue = graphics_device.get_obj ().getQueue (transfer_queue_family_index, queue_indices.at (2) > queue_family_properties.at (transfer_queue_family_index).queueCount ? queue_family_properties.at (transfer_queue_family_index).queueCount - 1 : queue_indices.at (2));
 }
 
 common_graphics::~common_graphics ()

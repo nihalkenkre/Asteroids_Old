@@ -6,7 +6,7 @@ texture::texture ()
     OutputDebugString (L"texture::texture\n");
 }
 
-texture::texture (const texture& other)
+/*texture::texture (const texture& other)
 {
     OutputDebugString (L"texture::texture Copy constructor\n");
 
@@ -26,7 +26,7 @@ texture& texture::operator=(const texture& other)
     image_view = other.image_view;
 
     return *this;
-}
+} */
 
 texture::texture (texture&& other) noexcept
 {

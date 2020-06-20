@@ -29,14 +29,14 @@ public:
 
     ~common_graphics () noexcept;
 
-    std::unique_ptr<vk_instance> instance;
-    std::unique_ptr<vk_graphics_device> graphics_device;
-    std::unique_ptr<vk_debug_utils_messenger> debug_utils_messenger;
-    std::unique_ptr<vk_surface> surface;
-    std::unique_ptr<vk_swapchain> swapchain;
+    vk_instance instance;
+    vk_graphics_device graphics_device;
+    vk_debug_utils_messenger debug_utils_messenger;
+    vk_surface surface;
+    vk_swapchain swapchain;
     std::vector<vk::Image> swapchain_images;
-    std::vector<std::unique_ptr<vk_image_view>> swapchain_image_views;
-    std::unique_ptr<vk_command_pool> transfer_command_pool;
+    std::vector<vk_image_view> swapchain_image_views;
+    vk_command_pool transfer_command_pool;
 
     vk::PhysicalDeviceMemoryProperties physical_device_memory_properties;
     vk::PhysicalDeviceLimits physical_device_limits;
