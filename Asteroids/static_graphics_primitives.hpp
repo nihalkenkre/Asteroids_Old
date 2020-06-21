@@ -36,6 +36,7 @@ class static_graphics_primitives
 {
 public:
     static_graphics_primitives ();
+    static_graphics_primitives (const tinygltf::Node& graphics_node, const tinygltf::Model& model);
     static_graphics_primitives (const static_graphics_primitives& other);
     static_graphics_primitives& operator= (const static_graphics_primitives& other);
     static_graphics_primitives (const static_graphics_primitives&& other) noexcept;

@@ -20,6 +20,16 @@ scene::scene (game* obj)
 
     scene_static_meshes = static_meshes (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
 
+    for (const auto& mesh : scene_static_meshes.meshes)
+    {
+        for (const auto& primitive : mesh.alpha_graphics_primitives.primitives)
+        {
+            wchar_t buff[32];
+            swprintf (buff, 32, L"positions size %d\n", primitive.positions.size ());
+            OutputDebugString (buff);
+        }
+    }
+
     physics = scene_physics ();
     graphics = scene_graphics ();
 

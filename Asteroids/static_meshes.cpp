@@ -9,18 +9,14 @@
 
 static_mesh::static_mesh (const static_mesh& other)
 {
-    wchar_t buff[512];
-    swprintf (buff, 512, L"static_mesh::static_mesh Copy constructor %hs\n", other.name.c_str ());
-    OutputDebugString (buff);
+    OutputDebugString (L"static_mesh::static_mesh Copy constructor\n");
 
     *this = other;
 }
 
 static_mesh& static_mesh::operator= (const static_mesh& other)
 {
-    wchar_t buff[512];
-    swprintf (buff, 512, L"static_mesh::static_mesh Copy assignment %hs\n", other.name.c_str ());
-    OutputDebugString (buff);
+    OutputDebugString (L"static_mesh::static_mesh Copy assignment\n");
 
     name = other.name;
     opaque_graphics_primitives = other.opaque_graphics_primitives;
@@ -59,25 +55,10 @@ static_mesh::static_mesh (const tinygltf::Node& graphics_node, const std::vector
     OutputDebugString (L"static_mesh::static_mesh graphics_node physics_node model\n");
 
     name = graphics_node.name;
-    opaque_graphics_primitives.reserve (5);
-    alpha_graphics_primitives.reserve (5);
-    blend_graphics_primitives.reserve (5);
+    opaque_graphics_primitives = static_graphics_primitives (graphics_node, model);
+    alpha_graphics_primitives = static_graphics_primitives (graphics_node, model);
+    blend_graphics_primitives = static_graphics_primitives (graphics_node, model);
 
-    for (const auto& primitive : model.meshes[graphics_node.mesh].primitives)
-    {
-        if (model.materials[primitive.material].name.find ("OPAQUE") != std::string::npos)
-        {
-            opaque_graphics_primitives.emplace_back (static_graphics_primitive (primitive, model));
-        }
-        else if (model.materials[primitive.material].name.find ("ALPHA") != std::string::npos)
-        {
-            alpha_graphics_primitives.emplace_back (static_graphics_primitive (primitive, model));
-        }
-        else if (model.materials[primitive.material].name.find ("BLEND") != std::string::npos)
-        {
-            blend_graphics_primitives.emplace_back (static_graphics_primitive (primitive, model));
-        }
-    }
 }
 
 static_mesh::~static_mesh ()
