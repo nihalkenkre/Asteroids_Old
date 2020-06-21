@@ -2,22 +2,12 @@
 #include "test_scene.hpp"
 
 
-game::game ()
-{
-    OutputDebugString (L"game::game\n");
-}
-
 game::game (HINSTANCE h_instance, HWND h_wnd)
 {
     OutputDebugString (L"game::game h_instance h_wnd\n");
 
-    graphics = common_graphics (h_instance, h_wnd);
+    graphics = std::make_unique<common_graphics> (h_instance, h_wnd);
     set_current_scene (SCENE_TYPE::TEST_SCENE);
-}
-
-game::~game ()
-{
-    OutputDebugString (L"game::~game\n");
 }
 
 void game::set_current_scene (SCENE_TYPE type)

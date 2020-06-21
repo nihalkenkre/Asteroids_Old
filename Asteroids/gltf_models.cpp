@@ -30,8 +30,3 @@ gltf_models::gltf_models (const std::string& folder_path)
         models.push_back (model);
     }
 }
-
-gltf_models::~gltf_models ()
-{
-    OutputDebugString (L"gltf_models::~gltf_models\n");
-}

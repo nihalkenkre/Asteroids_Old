@@ -18,11 +18,11 @@ scene::scene (game* obj)
     
     gltf_models models ("");
 
-    scene_static_meshes = static_meshes (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
+    scene_static_meshes = std::make_unique<static_meshes> (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
 
-    for (const auto& mesh : scene_static_meshes.meshes)
+    for (const auto& mesh : scene_static_meshes->meshes)
     {
-        for (const auto& primitive : mesh.alpha_graphics_primitives.primitives)
+        for (const auto& primitive : mesh.alpha_graphics_primitives->primitives)
         {
             wchar_t buff[32];
             swprintf (buff, 32, L"positions size %d\n", primitive.positions.size ());
@@ -30,15 +30,10 @@ scene::scene (game* obj)
         }
     }
 
-    physics = scene_physics ();
-    graphics = scene_graphics ();
+    physics = std::make_unique<scene_physics> ();
+    graphics = std::make_unique<scene_graphics> ();
 
     this->game_obj = obj;
-}
-
-scene::~scene ()
-{
-    OutputDebugString (L"scene::~scene\n");
 }
 
 void scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)

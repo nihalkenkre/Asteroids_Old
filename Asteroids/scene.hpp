@@ -12,7 +12,6 @@
 
 class game;
 
-
 enum class SCENE_TYPE
 {
     SPLASH_SCENE,
@@ -21,25 +20,20 @@ enum class SCENE_TYPE
     MENU_SCENE
 };
 
-class scene_physics;
-class scene_graphics;
-class static_meshes;
-
 class scene
 {
 public:
     scene ();
     scene (game* obj);
-    virtual ~scene ();
 
     virtual void process_keyboard_input (WPARAM WParam, LPARAM LParam);
     virtual void main_loop ();
 
 protected:
-    scene_physics physics;
-    scene_graphics graphics;
+    std::unique_ptr<scene_physics> physics;
+    std::unique_ptr<scene_graphics> graphics;
 
-    static_meshes scene_static_meshes;
+    std::unique_ptr<static_meshes> scene_static_meshes;
 
     game* game_obj;
 };
