@@ -12,8 +12,8 @@ static_graphics_primitive::static_graphics_primitive (const tinygltf::Primitive&
         auto accessor = model.accessors[position_attribute->second];
         auto buffer_view = model.bufferViews[accessor.bufferView];
 
-        positions.reserve (buffer_view.byteLength);
-        std::memcpy (positions.data (), model.buffers[buffer_view.buffer].data.data () + (accessor.byteOffset + buffer_view.byteOffset), buffer_view.byteLength);
+        positions.resize (buffer_view.byteLength);
+        std::copy (model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset, model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset + buffer_view.byteLength, positions.begin ());
     }
 }
 
