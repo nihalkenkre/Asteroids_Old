@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tiny_gltf.h>
+#include <memory>
 
 #include "texture.hpp"
 
@@ -15,21 +16,15 @@ enum class MATERIAL_ALPHA_MODE
 class material
 {
 public:
-    material ();
     material (const tinygltf::Material& material);
-    material (const material& other);
-    material& operator= (const material& other);
-    material (material&& other) noexcept;
-    material& operator= (material&& other) noexcept;
-    ~material () noexcept;
 
     std::string name;
 
-    texture base_texture;
-    texture metalness_roughness_texture;
-    texture normal_texture;
-    texture occlusion_texture;
-    texture emissive_texture;
+    std::unique_ptr<texture> base_texture;
+    std::unique_ptr<texture> metalness_roughness_texture;
+    std::unique_ptr<texture> normal_texture;
+    std::unique_ptr<texture> occlusion_texture;
+    std::unique_ptr<texture> emissive_texture;
 
     std::array<float, 4> base_color_factor;
     float metalness_factor;
