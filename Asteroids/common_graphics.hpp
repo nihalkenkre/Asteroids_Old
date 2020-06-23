@@ -4,6 +4,8 @@
 #include <memory>
 #include <vulkan/vulkan.hpp>
 
+#include "vk_utils.hpp"
+
 class vk_instance;
 class vk_graphics_device;
 class vk_debug_utils_messenger;

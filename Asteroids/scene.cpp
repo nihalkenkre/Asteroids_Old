@@ -21,7 +21,7 @@ scene::scene (game* obj)
     scene_static_meshes = std::make_unique<static_meshes> (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
 
     physics = std::make_unique<scene_physics> ();
-    graphics = std::make_unique<scene_graphics> ();
+    graphics = std::make_unique<scene_graphics> (scene_static_meshes.get ());
 
     this->game_obj = obj;
 }
