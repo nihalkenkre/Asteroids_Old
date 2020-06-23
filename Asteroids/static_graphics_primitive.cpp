@@ -39,6 +39,20 @@ static_graphics_primitive::static_graphics_primitive (const tinygltf::Primitive&
     auto accessor = model.accessors[primitive.indices];
     auto buffer_view = model.bufferViews[accessor.bufferView];
 
+    if (accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE)
+    {
+        index_type = vk::IndexType::eUint8EXT;
+    }
+    else if (accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT)
+    {
+        index_type = vk::IndexType::eUint16;
+    }
+    else if (accessor.componentType == TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT)
+    {
+        index_type = vk::IndexType::eUint32;
+    }
+
+    index_count = accessor.count;    
     indices.resize (buffer_view.byteLength);
     std::copy (model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset, model.buffers[buffer_view.buffer].data.begin () + accessor.byteOffset + buffer_view.byteOffset + buffer_view.byteLength, indices.begin ());
 

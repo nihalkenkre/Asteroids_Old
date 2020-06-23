@@ -594,9 +594,21 @@ vk_device_memory::vk_device_memory (const vk::Device graphics_device, const vk::
 
     vk::MemoryRequirements memory_requirements = graphics_device.getBufferMemoryRequirements (buffer);
 
-    vk::MemoryAllocateInfo allocate_info;
+    uint32_t memory_type_index = 0;
 
-    graphics_device.allocateMemory (allocate_info);
+    for (uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i)
+    {
+        if (memory_requirements.memoryTypeBits & (1 << i) && required_types & memory_properties.memoryTypes[i].propertyFlags)
+        {
+            memory_type_index = i;
+            break;
+        }
+    }
+
+    vk::MemoryAllocateInfo allocate_info (memory_requirements.size, memory_type_index);
+
+    device_memory = graphics_device.allocateMemory (allocate_info);
+    this->graphics_device = graphics_device;
 }
 
 vk_device_memory::vk_device_memory (vk_device_memory&& other) noexcept
