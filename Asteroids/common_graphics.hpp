@@ -11,7 +11,10 @@ class vk_surface;
 class vk_swapchain;
 class vk_image_view;
 class vk_command_pool;
-
+class vk_physical_device;
+class vk_queue_family_indices;
+class vk_device_queues;
+class vk_queue_info;
 
 class common_graphics
 {
@@ -23,33 +26,14 @@ public:
     std::unique_ptr<vk_debug_utils_messenger> debug_utils_messenger;
     std::unique_ptr<vk_surface> surface;
     std::unique_ptr<vk_swapchain> swapchain;
-    std::vector<vk::Image> swapchain_images;
-    std::vector<vk_image_view> swapchain_image_views;
     std::unique_ptr<vk_command_pool> transfer_command_pool;
+    std::unique_ptr<vk_physical_device> physical_device;
+    std::unique_ptr<vk_queue_family_indices> queue_family_indices;
+    std::unique_ptr<vk_device_queues> device_queues;
+    std::unique_ptr<vk_queue_info> queue_infos;
 
-    vk::PhysicalDeviceMemoryProperties physical_device_memory_properties;
-    vk::PhysicalDeviceLimits physical_device_limits;
-    vk::SurfaceFormatKHR surface_format;
-    vk::Extent2D surface_extent;
     size_t num_swapchain_images;
-    vk::Queue graphics_queue;
-    vk::Queue transfer_queue;
-    vk::Queue compute_queue;
-
-    size_t graphics_queue_family_index;
-    size_t transfer_queue_family_index;
-    size_t compute_queue_family_index;
 
 private:
-    void get_physical_device ();
-    void get_queue_properties ();
-    void get_surface_properties ();
-    std::pair <std::vector<vk::DeviceQueueCreateInfo>, std::vector<size_t>> get_queue_data ();
-    void get_device_queues (const std::vector<size_t>& queue_indices);
-
     bool is_validation_needed = false;
-
-    vk::PhysicalDevice physical_device;
-    vk::PresentModeKHR present_mode;
-    vk::SurfaceCapabilitiesKHR surface_capabilities;
 };

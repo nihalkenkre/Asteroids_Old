@@ -15,12 +15,6 @@ public:
     vk_instance& operator= (vk_instance&& other) noexcept;
     ~vk_instance () noexcept;
 
-    inline vk::Instance get_obj ()
-    {
-        return instance;
-    }
-
-private:
     vk::Instance instance;
 };
 
@@ -36,14 +30,32 @@ public:
     vk_debug_utils_messenger& operator= (vk_debug_utils_messenger&& other) noexcept;
     ~vk_debug_utils_messenger () noexcept;
 
-    inline vk::DebugUtilsMessengerEXT get_obj ()
-    {
-        return debug_utils_messenger;
-    }
+    vk::DebugUtilsMessengerEXT debug_utils_messenger;
 
 private:
-    vk::DebugUtilsMessengerEXT debug_utils_messenger;
     vk::Instance instance;
+};
+
+
+class vk_physical_device
+{
+public:
+    vk_physical_device (const vk::Instance& instance);
+
+    vk::PhysicalDevice physical_device;
+    vk::PhysicalDeviceMemoryProperties memory_properties;
+    vk::PhysicalDeviceLimits limits;
+};
+
+
+class vk_queue_family_indices
+{
+public:
+    vk_queue_family_indices (const vk::PhysicalDevice& physical_device);
+
+    uint32_t graphics_queue_family_index;
+    uint32_t compute_queue_family_index;
+    uint32_t transfer_queue_family_index;
 };
 
 
@@ -51,23 +63,32 @@ class vk_surface
 {
 public:
     vk_surface ();
-    vk_surface (const vk::Instance& instance, HINSTANCE h_instance, HWND h_wnd);
+    vk_surface (const vk::Instance& instance, const HINSTANCE& h_instance, const HWND& h_wnd, const vk::PhysicalDevice& physical_device, const uint32_t& graphics_queue_family_index);
     vk_surface (const vk_surface& other) = delete;
     vk_surface& operator= (const vk_surface& other) = delete;
     vk_surface (vk_surface&& other) noexcept;
     vk_surface& operator= (vk_surface&& other) noexcept;
     ~vk_surface () noexcept;
 
-    inline vk::SurfaceKHR get_obj ()
-    {
-        return surface;
-    }
+    vk::SurfaceKHR surface;
+    vk::PresentModeKHR present_mode;
+    vk::SurfaceCapabilitiesKHR surface_capabilities;
+    vk::SurfaceFormatKHR surface_format;
+    vk::Extent2D surface_extent;
 
 private:
-    vk::SurfaceKHR surface;
     vk::Instance instance;
 };
 
+
+class vk_queue_info
+{
+public:
+    vk_queue_info (const vk_queue_family_indices* queue_family_indices);
+
+    std::vector<vk::DeviceQueueCreateInfo> queue_create_infos;
+    std::vector<size_t> queue_indices;
+};
 
 class vk_graphics_device
 {
@@ -80,10 +101,33 @@ public:
     vk_graphics_device& operator= (vk_graphics_device&& other) noexcept;
     ~vk_graphics_device () noexcept;
 
-    inline vk::Device get_obj ()
-    {
-        return graphics_device;
-    }
+    vk::Device graphics_device;
+};
+
+
+class vk_device_queues
+{
+public:
+    vk_device_queues (const vk::PhysicalDevice& physical_device, const vk::Device& graphics_device, const vk_queue_family_indices* queue_family_indices, const std::vector<uint32_t>& queue_indices);
+
+    vk::Queue graphics_queue;
+    vk::Queue compute_queue;
+    vk::Queue transfer_queue;
+};
+
+
+class vk_image_view
+{
+public:
+    vk_image_view ();
+    vk_image_view (const vk::Device& graphics_device, const vk::Image& image, const vk::Format& format);
+    vk_image_view (const vk_image_view& other) = delete;
+    vk_image_view& operator= (const vk_image_view& other) = delete;
+    vk_image_view (vk_image_view&& other) noexcept;
+    vk_image_view& operator= (vk_image_view&& other) noexcept;
+    ~vk_image_view () noexcept;
+
+    vk::ImageView image_view;
 
 private:
     vk::Device graphics_device;
@@ -94,20 +138,18 @@ class vk_swapchain
 {
 public:
     vk_swapchain ();
-    vk_swapchain (const vk::Device& graphics_device, const vk::SurfaceKHR& surface, const vk::SurfaceCapabilitiesKHR& surface_capabilities, const vk::SurfaceFormatKHR& surface_format, const vk::Extent2D& surface_extent, const vk::PresentModeKHR& present_mode);
+    vk_swapchain (const vk::Device& graphics_device, const vk_surface* surface);
     vk_swapchain (const vk_swapchain& other) = delete;
     vk_swapchain& operator= (const vk_swapchain& other) = delete;
     vk_swapchain (vk_swapchain&& other) noexcept;
     vk_swapchain& operator= (vk_swapchain&& other) noexcept;
     ~vk_swapchain () noexcept;
 
-    inline vk::SwapchainKHR get_obj ()
-    {
-        return swapchain;
-    }
+    vk::SwapchainKHR swapchain;
+    std::vector<vk::Image> swapchain_images;
+    std::vector<vk_image_view> swapchain_image_views;
 
 private:
-    vk::SwapchainKHR swapchain;
     vk::Device graphics_device;
 };
 
@@ -123,15 +165,12 @@ public:
     vk_command_pool& operator=(vk_command_pool&& other) noexcept;
     ~vk_command_pool () noexcept;
 
-    inline vk::CommandPool get_obj ()
-    {
-        return command_pool;
-    }
-
-private:
     vk::CommandPool command_pool;
+    
+private:
     vk::Device graphics_device;
 };
+
 
 class vk_image
 {
@@ -143,32 +182,8 @@ public:
     vk_image& operator= (vk_image&& other) noexcept;
     ~vk_image () noexcept;
 
-    inline vk::Image get_obj ()
-    {
-        return image;
-    }
-private:
     vk::Image image;
-    vk::Device graphics_device;
-};
-
-class vk_image_view
-{
-public:
-    vk_image_view ();
-    vk_image_view (const vk::Device& graphics_device, const vk::Image& image, const vk::Format& format);
-    vk_image_view (const vk_image_view& other) = delete;
-    vk_image_view& operator= (const vk_image_view& other) = delete;
-    vk_image_view (vk_image_view&& other) noexcept;
-    vk_image_view& operator= (vk_image_view&& other) noexcept;
-    ~vk_image_view () noexcept;
-
-    inline vk::ImageView get_obj ()
-    {
-        return image_view;
-    }
 
 private:
-    vk::ImageView image_view;
     vk::Device graphics_device;
 };
