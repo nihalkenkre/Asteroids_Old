@@ -1,11 +1,9 @@
 #include "test_scene.hpp"
 
 
-test_scene::test_scene (game* obj) : scene (obj)
+test_scene::test_scene (const game* obj, const common_graphics* c_graphics) : scene (obj, c_graphics)
 {
     OutputDebugString (L"test_scene::test_scene\n");
-    
-    this->game_obj = obj;
 }
 
 test_scene::~test_scene ()

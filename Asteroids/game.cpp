@@ -2,7 +2,7 @@
 #include "test_scene.hpp"
 
 
-game::game (HINSTANCE h_instance, HWND h_wnd)
+game::game (const HINSTANCE& h_instance, const HWND& h_wnd)
 {
     OutputDebugString (L"game::game h_instance h_wnd\n");
 
@@ -16,7 +16,7 @@ void game::set_current_scene (SCENE_TYPE type)
     {
         case SCENE_TYPE::TEST_SCENE:
             current_scene.reset ();
-            current_scene = std::make_unique<test_scene> (this);
+            current_scene = std::make_unique<test_scene> (this, graphics.get ());
             break;
 
         default:

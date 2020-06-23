@@ -4,12 +4,13 @@
 
 
 class game;
+class common_graphics;
 
 
 class test_scene : public scene
 {
 public:
-    test_scene (game* obj);
+    test_scene (const game* obj, const common_graphics* c_graphics);
     ~test_scene ();
 
     void process_keyboard_input (WPARAM WParam, LPARAM LParam) override;

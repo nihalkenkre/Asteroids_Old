@@ -537,3 +537,94 @@ vk_queue_info::vk_queue_info (const vk_queue_family_indices* queue_family_indice
         queue_create_infos.emplace_back (vk::DeviceQueueCreateInfo ({}, family_index_queue_count.first, family_index_queue_count.second, &queue_priorities));
     }
 }
+
+vk_buffer::vk_buffer ()
+{
+    OutputDebugString (L"vk_buffer::vk_buffer\n");
+}
+
+vk_buffer::vk_buffer (const vk::Device& graphics_device, vk::DeviceSize size, vk::BufferUsageFlagBits usage, const vk::SharingMode& sharing_mode, const uint32_t& graphics_queue_family_index)
+{
+    OutputDebugString (L"vk_buffer::vk_buffer graphics_device size usage sharing_mdoe graphics_queue_family_index\n");
+
+    vk::BufferCreateInfo create_info ({}, size, usage, sharing_mode);
+
+    buffer = graphics_device.createBuffer (create_info);
+    this->graphics_device = graphics_device;
+}
+
+vk_buffer::vk_buffer (vk_buffer&& other) noexcept
+{
+    OutputDebugString (L"vk_buffer::vk_buffer Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_buffer& vk_buffer::operator=(vk_buffer&& other) noexcept
+{
+    OutputDebugString (L"vk_buffer::vk_buffer Move assignment\n");
+
+    buffer = other.buffer;
+    graphics_device = other.graphics_device;
+
+    other.buffer = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_buffer::~vk_buffer ()
+{
+    OutputDebugString (L"vk_buffer::~vk_buffer\n");
+
+    if (graphics_device != nullptr && buffer != nullptr)
+    {
+        graphics_device.destroyBuffer (buffer);
+    }
+}
+
+vk_device_memory::vk_device_memory ()
+{
+    OutputDebugString (L"vk_device_memory::vk_device_memory\n");
+}
+
+vk_device_memory::vk_device_memory (const vk::Device graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types)
+{
+    OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device buffer memory_properties required_types\n");
+
+    vk::MemoryRequirements memory_requirements = graphics_device.getBufferMemoryRequirements (buffer);
+
+    vk::MemoryAllocateInfo allocate_info;
+
+    graphics_device.allocateMemory (allocate_info);
+}
+
+vk_device_memory::vk_device_memory (vk_device_memory&& other) noexcept
+{
+    OutputDebugString (L"vk_device_memory::vk_device_memory Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_device_memory& vk_device_memory::operator=(vk_device_memory&& other) noexcept
+{
+    OutputDebugString (L"vk_device_memory::vk_device_memory Move assignment\n");
+
+    device_memory = other.device_memory;
+    graphics_device = other.graphics_device;
+
+    other.device_memory = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_device_memory::~vk_device_memory () noexcept
+{
+    OutputDebugString (L"vk_device_memory::~vk_device_memory\n");
+
+    if (graphics_device != nullptr && device_memory != nullptr)
+    {
+        graphics_device.freeMemory (device_memory);
+    }
+}

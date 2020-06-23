@@ -8,7 +8,7 @@
 class game
 {
 public:
-    game (HINSTANCE h_instance, HWND h_wnd);
+    game (const HINSTANCE& h_instance, const HWND& h_wnd);
 
     void set_current_scene (SCENE_TYPE type);
 

@@ -9,8 +9,8 @@
 #include <vector>
 #include <memory>
 
-
 class game;
+class common_graphics;
 
 enum class SCENE_TYPE
 {
@@ -23,8 +23,7 @@ enum class SCENE_TYPE
 class scene
 {
 public:
-    scene ();
-    scene (game* obj);
+    scene (const game* obj, const common_graphics* graphics);
 
     virtual void process_keyboard_input (WPARAM WParam, LPARAM LParam);
     virtual void main_loop ();
@@ -35,5 +34,5 @@ protected:
 
     std::unique_ptr<static_meshes> scene_static_meshes;
 
-    game* game_obj;
+    const game* game_obj;
 };

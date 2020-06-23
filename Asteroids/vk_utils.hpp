@@ -187,3 +187,39 @@ public:
 private:
     vk::Device graphics_device;
 };
+
+
+class vk_buffer
+{
+public:
+    vk_buffer ();
+    vk_buffer (const vk::Device& graphics_device, vk::DeviceSize size, vk::BufferUsageFlagBits usage, const vk::SharingMode& sharing_mode, const uint32_t& graphics_queue_family_index);
+    vk_buffer (const vk_buffer& other) = delete;
+    vk_buffer& operator= (const vk_buffer& other) = delete;
+    vk_buffer (vk_buffer&& other) noexcept;
+    vk_buffer& operator= (vk_buffer&& other) noexcept;
+    ~vk_buffer () noexcept;
+
+    vk::Buffer buffer;
+
+private:
+    vk::Device graphics_device;
+};
+
+
+class vk_device_memory
+{
+public:
+    vk_device_memory ();
+    vk_device_memory (const vk::Device graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
+    vk_device_memory (const vk_device_memory& other) = delete;
+    vk_device_memory& operator= (const vk_device_memory& other) = delete;
+    vk_device_memory (vk_device_memory&& other) noexcept;
+    vk_device_memory& operator= (vk_device_memory&& other) noexcept;
+    ~vk_device_memory () noexcept;
+
+    vk::DeviceMemory device_memory;
+
+private:
+    vk::Device graphics_device;
+};
