@@ -14,8 +14,8 @@ public:
 
     std::vector<unsigned char> image_data;
 
-    vk::DeviceSize width;
-    vk::DeviceSize height;
+    uint32_t width;
+    uint32_t height;
 
     vk::DeviceSize image_data_offset;
 

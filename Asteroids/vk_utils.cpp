@@ -384,6 +384,17 @@ vk_image::vk_image ()
     OutputDebugString (L"vk_image::vk_image\n");
 }
 
+vk_image::vk_image (const vk::Device& graphics_device, const uint32_t& queue_family_index, const vk::Extent3D& extent, const uint32_t& array_layers, const vk::Format& format, const vk::ImageLayout& image_layout, vk::SharingMode sharing_mode, vk::ImageUsageFlags usage)
+{
+    OutputDebugString (L"vk_image::vk_image graphics_device queue_family_index extent array_layers format image_layout sharing_mode usage\n");
+
+    vk::ImageCreateInfo create_info ({}, vk::ImageType::e2D, format, extent, 1, array_layers, vk::SampleCountFlagBits::e1 , {}, usage, sharing_mode, 1, &queue_family_index, image_layout);
+
+    image = graphics_device.createImage (create_info);
+
+    this->graphics_device = graphics_device;
+}
+
 vk_image::vk_image (vk_image&& other) noexcept
 {
     OutputDebugString (L"vk_image::vk_image Move constructor\n");
@@ -398,7 +409,7 @@ vk_image& vk_image::operator= (vk_image&& other) noexcept
     graphics_device = other.graphics_device;
 
     other.image = nullptr;
-    graphics_device = nullptr;
+    other.graphics_device = nullptr;
 
     return *this;
 }

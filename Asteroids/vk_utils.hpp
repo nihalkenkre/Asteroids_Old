@@ -176,6 +176,7 @@ class vk_image
 {
 public:
     vk_image ();
+    vk_image (const vk::Device& graphics_device, const uint32_t& queue_family_index, const vk::Extent3D& extent, const uint32_t& array_layers, const vk::Format& format, const vk::ImageLayout& image_layout, vk::SharingMode sharing_mode, vk::ImageUsageFlags usage);
     vk_image (const vk_image& other) = delete;
     vk_image& operator= (const vk_image& other) = delete;
     vk_image (vk_image&& other) noexcept;
