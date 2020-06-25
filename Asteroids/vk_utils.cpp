@@ -594,6 +594,13 @@ vk_buffer::~vk_buffer ()
     }
 }
 
+void vk_buffer::copy_from (const vk::Buffer& src_buffer, const vk::Queue& transfer_queue)
+{
+    OutputDebugString (L"vk_buffer::copy_from src_buffer transfer_queue\n");
+
+
+}
+
 vk_device_memory::vk_device_memory ()
 {
     OutputDebugString (L"vk_device_memory::vk_device_memory\n");

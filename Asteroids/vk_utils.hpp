@@ -201,6 +201,8 @@ public:
     vk_buffer& operator= (vk_buffer&& other) noexcept;
     ~vk_buffer () noexcept;
 
+    void copy_from (const vk::Buffer& src_buffer, const vk::Queue& transfer_queue);
+
     vk::Buffer buffer;
 
 private:

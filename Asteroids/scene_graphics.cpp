@@ -17,7 +17,7 @@ scene_graphics::scene_graphics (const static_meshes* meshes, const common_graphi
     {
         for (auto& primitive : mesh.alpha_graphics_primitives->primitives)
         {
-            total_data.resize (total_data.size () + primitive.positions.size () + primitive.normals.size () + primitive.uv0s.size () + primitive.indices.size () + primitive.mat->base_image->image_data.size ());
+            total_data.resize (total_data.size () + primitive.positions.size () + primitive.normals.size () + primitive.uv0s.size () + primitive.indices.size ());
 
             primitive.positions_offset = current_data_size;
             std::copy (primitive.positions.begin (), primitive.positions.end (), total_data.begin () + static_cast<int>(current_data_size));
@@ -34,10 +34,6 @@ scene_graphics::scene_graphics (const static_meshes* meshes, const common_graphi
             primitive.indices_offset = current_data_size;
             std::copy (primitive.indices.begin (), primitive.indices.end (), total_data.begin () + static_cast<int>(current_data_size));
             current_data_size += primitive.indices.size ();
-
-            primitive.mat->base_image->image_data_offset = current_data_size;
-            std::copy (primitive.mat->base_image->image_data.begin (), primitive.mat->base_image->image_data.end (), total_data.begin () + static_cast<int>(current_data_size));
-            current_data_size += primitive.mat->base_image->image_data.size ();
         }
     }
 
@@ -49,6 +45,25 @@ scene_graphics::scene_graphics (const static_meshes* meshes, const common_graphi
     HANDLE data = c_graphics->graphics_device->graphics_device.mapMemory (staging_buffer_memory.device_memory, 0, current_data_size);
     std::memcpy (data, total_data.data (), total_data.size ());
     c_graphics->graphics_device->graphics_device.unmapMemory (staging_buffer_memory.device_memory);
+
+    vb_ib = std::make_unique<vk_buffer> (c_graphics->graphics_device->graphics_device, current_data_size, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eIndexBuffer, vk::SharingMode::eExclusive, c_graphics->queue_family_indices->transfer_queue_family_index);
+    vb_ib_memory = std::make_unique <vk_device_memory> (c_graphics->graphics_device->graphics_device, vb_ib->buffer, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
+
+    vb_ib->copy_from (staging_buffer.buffer, c_graphics->device_queues->transfer_queue);
+    
+    current_data_size = 0;
+    total_data.clear ();
+    total_data.shrink_to_fit ();
+    
+    for (const auto& mesh : meshes->meshes)
+    {
+        for (auto& primitive : mesh.alpha_graphics_primitives->primitives)
+        {
+            total_data.resize (total_data.size () + primitive.mat->base_image->image_data.size ());
+            std::copy (primitive.mat->base_image->image_data.begin (), primitive.mat->base_image->image_data.end (), total_data.begin () + static_cast<int> (current_data_size));
+            current_data_size += primitive.mat->base_image->image_data.size ();
+        }
+    }
 
     for (const auto& mesh : meshes->meshes)
     {
