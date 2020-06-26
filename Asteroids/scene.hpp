@@ -29,10 +29,10 @@ public:
     virtual void main_loop ();
 
 protected:
-    std::unique_ptr<scene_physics> physics;
-    std::unique_ptr<scene_graphics> graphics;
+    std::unique_ptr<scene_physics> physics = nullptr;
+    std::unique_ptr<scene_graphics> graphics = nullptr;
 
-    std::unique_ptr<static_meshes> scene_static_meshes;
+    std::unique_ptr<scene_assets> assets = nullptr;
 
     const game* game_obj;
 };

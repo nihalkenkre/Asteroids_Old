@@ -14,10 +14,10 @@ scene::scene (const game* obj, const common_graphics* c_graphics) : game_obj (ob
 
     gltf_models models ("");
 
-    scene_static_meshes = std::make_unique<static_meshes> (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
+    assets = std::make_unique<scene_assets> (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
 
     physics = std::make_unique<scene_physics> ();
-    graphics = std::make_unique<scene_graphics> (scene_static_meshes.get (), c_graphics);
+    graphics = std::make_unique<scene_graphics> (assets.get (), c_graphics);
 }
 
 

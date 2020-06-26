@@ -1,20 +1,22 @@
 #pragma once
 
 #include "vk_utils.hpp"
+#include "scene_assets.hpp"
 #include <memory>
 
 
-class static_meshes;
 class common_graphics;
 
 class scene_graphics
 {
 public:
-    scene_graphics (const static_meshes* meshes, const common_graphics* c_graphics);
+    scene_graphics (const scene_assets* assets, const common_graphics* c_graphics);
 
 private:
     std::unique_ptr<vk_buffer> vb_ib;
     std::unique_ptr<vk_device_memory> vb_ib_memory;
 
+    std::vector<vk_image> images;
+    std::vector<vk_image_view> image_views;
     std::unique_ptr<vk_device_memory> image_memory;
 };
