@@ -594,6 +594,13 @@ vk_buffer::~vk_buffer ()
     }
 }
 
+void vk_buffer::bind_memory (const vk::DeviceMemory& memory, const vk::DeviceSize& offset)
+{
+    OutputDebugString (L"vk_buffer::bind_memory memory offset\n");
+
+    graphics_device.bindBufferMemory (buffer, memory, offset);
+}
+
 void vk_buffer::copy_from (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue)
 {
     OutputDebugString (L"vk_buffer::copy_from src_buffer transfer_queue\n");
@@ -665,6 +672,15 @@ vk_device_memory::~vk_device_memory () noexcept
     {
         graphics_device.freeMemory (device_memory);
     }
+}
+
+void vk_device_memory::map_data (const std::vector<unsigned char>& data, const vk::DeviceSize& offset)
+{
+    OutputDebugString (L"vk_device_memory::map_data data\n");
+
+    HANDLE mapped_data = graphics_device.mapMemory (device_memory, offset, data.size ());
+    std::memcpy (mapped_data, data.data (), data.size ());
+    graphics_device.unmapMemory (device_memory);
 }
 
 vk_command_buffer::vk_command_buffer ()

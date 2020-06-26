@@ -40,17 +40,13 @@ scene_graphics::scene_graphics (const static_meshes* meshes, const common_graphi
     vk_buffer staging_buffer (c_graphics->graphics_device->graphics_device, current_data_size, vk::BufferUsageFlagBits::eTransferSrc, vk::SharingMode::eExclusive, 0);
     vk_device_memory staging_buffer_memory (c_graphics->graphics_device->graphics_device, staging_buffer.buffer, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eHostVisible);
 
-    c_graphics->graphics_device->graphics_device.bindBufferMemory (staging_buffer.buffer, staging_buffer_memory.device_memory, 0);
-
-    HANDLE data = c_graphics->graphics_device->graphics_device.mapMemory (staging_buffer_memory.device_memory, 0, current_data_size);
-    std::memcpy (data, total_data.data (), total_data.size ());
-    c_graphics->graphics_device->graphics_device.unmapMemory (staging_buffer_memory.device_memory);
+    staging_buffer.bind_memory (staging_buffer_memory.device_memory, 0);
+    staging_buffer_memory.map_data (total_data, 0);
 
     vb_ib = std::make_unique<vk_buffer> (c_graphics->graphics_device->graphics_device, current_data_size, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eIndexBuffer, vk::SharingMode::eExclusive, c_graphics->queue_family_indices->transfer_queue_family_index);
     vb_ib_memory = std::make_unique <vk_device_memory> (c_graphics->graphics_device->graphics_device, vb_ib->buffer, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
 
-    c_graphics->graphics_device->graphics_device.bindBufferMemory (vb_ib->buffer, vb_ib_memory->device_memory, 0);
-
+    vb_ib->bind_memory (vb_ib_memory->device_memory, 0);
     vb_ib->copy_from (staging_buffer.buffer, current_data_size, c_graphics->transfer_command_pool->command_pool, c_graphics->device_queues->transfer_queue);
     
     current_data_size = 0;

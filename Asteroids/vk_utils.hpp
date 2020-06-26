@@ -223,6 +223,7 @@ public:
     vk_buffer& operator= (vk_buffer&& other) noexcept;
     ~vk_buffer () noexcept;
 
+    void bind_memory (const vk::DeviceMemory& memory, const vk::DeviceSize& offset);
     void copy_from (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue);
 
     vk::Buffer buffer;
@@ -242,6 +243,8 @@ public:
     vk_device_memory (vk_device_memory&& other) noexcept;
     vk_device_memory& operator= (vk_device_memory&& other) noexcept;
     ~vk_device_memory () noexcept;
+
+    void map_data (const std::vector<unsigned char>& data, const vk::DeviceSize& offset);
 
     vk::DeviceMemory device_memory;
 
