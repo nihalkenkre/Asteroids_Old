@@ -49,7 +49,9 @@ scene_graphics::scene_graphics (const static_meshes* meshes, const common_graphi
     vb_ib = std::make_unique<vk_buffer> (c_graphics->graphics_device->graphics_device, current_data_size, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eIndexBuffer, vk::SharingMode::eExclusive, c_graphics->queue_family_indices->transfer_queue_family_index);
     vb_ib_memory = std::make_unique <vk_device_memory> (c_graphics->graphics_device->graphics_device, vb_ib->buffer, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
 
-    vb_ib->copy_from (staging_buffer.buffer, c_graphics->device_queues->transfer_queue);
+    c_graphics->graphics_device->graphics_device.bindBufferMemory (vb_ib->buffer, vb_ib_memory->device_memory, 0);
+
+    vb_ib->copy_from (staging_buffer.buffer, current_data_size, c_graphics->transfer_command_pool->command_pool, c_graphics->device_queues->transfer_queue);
     
     current_data_size = 0;
     total_data.clear ();

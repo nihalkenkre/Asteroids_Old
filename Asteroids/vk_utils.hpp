@@ -172,6 +172,28 @@ private:
 };
 
 
+class vk_command_buffer
+{
+public:
+    vk_command_buffer ();
+    vk_command_buffer (const vk::Device graphics_device, const vk::CommandPool& command_pool);
+    vk_command_buffer (const vk_command_buffer& other) = delete;
+    vk_command_buffer& operator= (const vk_command_buffer& other) = delete;
+    vk_command_buffer (vk_command_buffer&& other) noexcept;
+    vk_command_buffer& operator= (vk_command_buffer&& other) noexcept;
+    ~vk_command_buffer () noexcept;
+
+    void begin ();
+    void end ();
+
+    vk::CommandBuffer command_buffer;
+
+private:
+    vk::CommandPool command_pool;
+    vk::Device graphics_device;
+};
+
+
 class vk_image
 {
 public:
@@ -194,14 +216,14 @@ class vk_buffer
 {
 public:
     vk_buffer ();
-    vk_buffer (const vk::Device& graphics_device, vk::DeviceSize size, vk::BufferUsageFlagBits usage, const vk::SharingMode& sharing_mode, const uint32_t& graphics_queue_family_index);
+    vk_buffer (const vk::Device& graphics_device, const vk::DeviceSize& size, const vk::BufferUsageFlags& usage, const vk::SharingMode& sharing_mode, const uint32_t& graphics_queue_family_index);
     vk_buffer (const vk_buffer& other) = delete;
     vk_buffer& operator= (const vk_buffer& other) = delete;
     vk_buffer (vk_buffer&& other) noexcept;
     vk_buffer& operator= (vk_buffer&& other) noexcept;
     ~vk_buffer () noexcept;
 
-    void copy_from (const vk::Buffer& src_buffer, const vk::Queue& transfer_queue);
+    void copy_from (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue);
 
     vk::Buffer buffer;
 

@@ -554,7 +554,7 @@ vk_buffer::vk_buffer ()
     OutputDebugString (L"vk_buffer::vk_buffer\n");
 }
 
-vk_buffer::vk_buffer (const vk::Device& graphics_device, vk::DeviceSize size, vk::BufferUsageFlagBits usage, const vk::SharingMode& sharing_mode, const uint32_t& graphics_queue_family_index)
+vk_buffer::vk_buffer (const vk::Device& graphics_device, const vk::DeviceSize& size, const vk::BufferUsageFlags& usage, const vk::SharingMode& sharing_mode, const uint32_t& graphics_queue_family_index)
 {
     OutputDebugString (L"vk_buffer::vk_buffer graphics_device size usage sharing_mdoe graphics_queue_family_index\n");
 
@@ -594,11 +594,16 @@ vk_buffer::~vk_buffer ()
     }
 }
 
-void vk_buffer::copy_from (const vk::Buffer& src_buffer, const vk::Queue& transfer_queue)
+void vk_buffer::copy_from (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue)
 {
     OutputDebugString (L"vk_buffer::copy_from src_buffer transfer_queue\n");
 
+    vk::BufferCopy buffer_copy (0, 0, size);
 
+    vk_command_buffer copy_cmd_buffer (graphics_device, command_pool);
+    copy_cmd_buffer.begin ();
+    copy_cmd_buffer.command_buffer.copyBuffer (src_buffer, buffer, buffer_copy);
+    copy_cmd_buffer.end ();
 }
 
 vk_device_memory::vk_device_memory ()
@@ -658,3 +663,69 @@ vk_device_memory::~vk_device_memory () noexcept
         graphics_device.freeMemory (device_memory);
     }
 }
+
+vk_command_buffer::vk_command_buffer ()
+{
+    OutputDebugString (L"vk_command_buffer::vk_command_buffer\n");
+}
+
+vk_command_buffer::vk_command_buffer (const vk::Device graphics_device, const vk::CommandPool& command_pool)
+{
+    OutputDebugString (L"vk_command_buffer::vk_comamnd_buffer graphics_device command_pool\n");
+
+    vk::CommandBufferAllocateInfo allocate_info (command_pool, {}, 1);
+    command_buffer = graphics_device.allocateCommandBuffers (allocate_info)[0];
+
+    this->graphics_device = graphics_device;
+    this->command_pool = command_pool;
+}
+
+vk_command_buffer::vk_command_buffer (vk_command_buffer&& other) noexcept
+{
+    OutputDebugString (L"vk_command_buffer::vk_command_buffer Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_command_buffer& vk_command_buffer::operator=(vk_command_buffer&& other) noexcept
+{
+    OutputDebugString (L"vk_command_buffer::vk_command_buffer Move assignment\n");
+
+    command_buffer = other.command_buffer;
+    command_pool = other.command_pool;
+    graphics_device = other.graphics_device;
+
+    other.command_buffer = nullptr;
+    other.command_pool = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_command_buffer::~vk_command_buffer () noexcept
+{
+    OutputDebugString (L"vk_command_buffer::~vk_command_buffer\n");
+
+    if (command_buffer != nullptr && command_pool != nullptr && graphics_device != nullptr)
+    {
+        graphics_device.freeCommandBuffers (command_pool, command_buffer);
+    }
+}
+
+void vk_command_buffer::begin ()
+{
+    OutputDebugString (L"vk_command_buffer::begin\n");
+
+    vk::CommandBufferBeginInfo begin_info (vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+    command_buffer.begin (begin_info);
+}
+
+void vk_command_buffer::end ()
+{
+    OutputDebugString (L"vk_command_buffer::end\n");
+
+    command_buffer.end ();
+}
+
+
+

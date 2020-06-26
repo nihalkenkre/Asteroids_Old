@@ -1,5 +1,8 @@
 #pragma once
 
+#include "vk_utils.hpp"
+#include <memory>
+
 
 class static_meshes;
 class common_graphics;
