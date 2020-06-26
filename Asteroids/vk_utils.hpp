@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <vulkan/vulkan.hpp>
+#include <map>
 
 
 class vk_instance
@@ -205,6 +206,10 @@ public:
     vk_image& operator= (vk_image&& other) noexcept;
     ~vk_image () noexcept;
 
+    void change_layout () {}
+    void copy_from () {}
+    void copy_to () {}
+
     vk::Image image;
 
 private:
@@ -225,6 +230,7 @@ public:
 
     void bind_memory (const vk::DeviceMemory& memory, const vk::DeviceSize& offset);
     void copy_from (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue);
+    void copy_to () {}
 
     vk::Buffer buffer;
 
@@ -237,13 +243,16 @@ class vk_device_memory
 {
 public:
     vk_device_memory ();
-    vk_device_memory (const vk::Device graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
+    vk_device_memory (const vk::Device& graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
+    vk_device_memory (const vk::Device& graphics_device, const vk::ArrayProxy<vk::Image>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
     vk_device_memory (const vk_device_memory& other) = delete;
     vk_device_memory& operator= (const vk_device_memory& other) = delete;
     vk_device_memory (vk_device_memory&& other) noexcept;
     vk_device_memory& operator= (vk_device_memory&& other) noexcept;
     ~vk_device_memory () noexcept;
 
+    void bind_buffer (const vk::Buffer& buffer, const vk::DeviceSize& offset);
+    void bind_images (const std::map<vk::Image, vk::DeviceSize>& images_offsets);
     void map_data (const std::vector<unsigned char>& data, const vk::DeviceSize& offset);
 
     vk::DeviceMemory device_memory;

@@ -556,7 +556,7 @@ vk_buffer::vk_buffer ()
 
 vk_buffer::vk_buffer (const vk::Device& graphics_device, const vk::DeviceSize& size, const vk::BufferUsageFlags& usage, const vk::SharingMode& sharing_mode, const uint32_t& graphics_queue_family_index)
 {
-    OutputDebugString (L"vk_buffer::vk_buffer graphics_device size usage sharing_mdoe graphics_queue_family_index\n");
+    OutputDebugString (L"vk_buffer::vk_buffer graphics_device size usage sharing_mode graphics_queue_family_index\n");
 
     vk::BufferCreateInfo create_info ({}, size, usage, sharing_mode);
 
@@ -621,7 +621,7 @@ vk_device_memory::vk_device_memory ()
     OutputDebugString (L"vk_device_memory::vk_device_memory\n");
 }
 
-vk_device_memory::vk_device_memory (const vk::Device graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types)
+vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types)
 {
     OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device buffer memory_properties required_types\n");
 
@@ -640,6 +640,37 @@ vk_device_memory::vk_device_memory (const vk::Device graphics_device, const vk::
 
     vk::MemoryAllocateInfo allocate_info (memory_requirements.size, memory_type_index);
 
+    device_memory = graphics_device.allocateMemory (allocate_info);
+    this->graphics_device = graphics_device;
+}
+
+vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const vk::ArrayProxy<vk::Image>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types)
+{
+    OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device images memory_properties required_types\n");
+
+    vk::DeviceSize total_size = 0;
+    uint32_t memory_type_bits = 0;
+
+    vk::MemoryRequirements memory_requirements;
+    for (const auto& image : images)
+    {
+        memory_requirements = graphics_device.getImageMemoryRequirements (image);
+        total_size += memory_requirements.size;
+    }
+
+    uint32_t memory_type_index = 0;
+
+    for (uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i)
+    {
+        if (memory_requirements.memoryTypeBits * (1 << i) && required_types & memory_properties.memoryTypes[i].propertyFlags)
+        {
+            memory_type_index = i;
+            break;
+        }
+    }
+
+    vk::MemoryAllocateInfo allocate_info (total_size, memory_type_index);
+    
     device_memory = graphics_device.allocateMemory (allocate_info);
     this->graphics_device = graphics_device;
 }
@@ -671,6 +702,23 @@ vk_device_memory::~vk_device_memory () noexcept
     if (graphics_device != nullptr && device_memory != nullptr)
     {
         graphics_device.freeMemory (device_memory);
+    }
+}
+
+void vk_device_memory::bind_buffer (const vk::Buffer& buffer, const vk::DeviceSize& offset)
+{
+    OutputDebugString (L"vk_device_memory::bind_buffer buffer offset\n");
+
+    graphics_device.bindBufferMemory (buffer, device_memory, offset);
+}
+
+void vk_device_memory::bind_images (const std::map<vk::Image, vk::DeviceSize>& images_offsets)
+{
+    OutputDebugString (L"vk_device_memory::bind_images images offsets\n");
+
+    for (const auto& image_offset : images_offsets)
+    {
+        graphics_device.bindImageMemory (image_offset.first, device_memory, image_offset.second);
     }
 }
 
