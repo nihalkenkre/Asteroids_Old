@@ -604,6 +604,9 @@ void vk_buffer::copy_from (const vk::Buffer& src_buffer, const vk::DeviceSize& s
     copy_cmd_buffer.begin ();
     copy_cmd_buffer.command_buffer.copyBuffer (src_buffer, buffer, buffer_copy);
     copy_cmd_buffer.end ();
+
+    vk_queue one_time_submit_queue (transfer_queue, graphics_device);
+    one_time_submit_queue.submit (copy_cmd_buffer.command_buffer);
 }
 
 vk_device_memory::vk_device_memory ()
@@ -728,4 +731,17 @@ void vk_command_buffer::end ()
 }
 
 
+vk_queue::vk_queue (const vk::Queue& queue, const vk::Device& graphics_device) : queue (queue), graphics_device (graphics_device)
+{
+    OutputDebugString (L"vk_queue::vk_queue queue graphics_device\n");
+}
 
+void vk_queue::submit (const vk::ArrayProxy<vk::CommandBuffer>& command_buffers)
+{
+    OutputDebugString (L"vk_queue::submit command_buffers\n");
+
+    vk::SubmitInfo submit_info ({}, {}, {}, command_buffers.size (), command_buffers.data ());
+
+    queue.submit (submit_info, nullptr);
+    queue.waitIdle ();
+}

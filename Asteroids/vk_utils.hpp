@@ -248,3 +248,16 @@ public:
 private:
     vk::Device graphics_device;
 };
+
+
+class vk_queue
+{
+public:
+    vk_queue (const vk::Queue& queue, const vk::Device& graphics_device);
+
+    void submit (const vk::ArrayProxy<vk::CommandBuffer>& command_buffers);
+
+private:
+    vk::Device graphics_device;
+    vk::Queue queue;
+};
