@@ -19,6 +19,6 @@ public:
 
     vk::DeviceSize image_data_offset;
 
-    vk_image img;
-    vk_image_view img_view;
+    std::unique_ptr<vk_image> img = nullptr;
+    std::unique_ptr<vk_image_view> img_view = nullptr;
 };

@@ -16,7 +16,5 @@ private:
     std::unique_ptr<vk_buffer> vb_ib;
     std::unique_ptr<vk_device_memory> vb_ib_memory;
 
-    std::vector<vk_image> images;
-    std::vector<vk_image_view> image_views;
     std::unique_ptr<vk_device_memory> image_memory;
 };

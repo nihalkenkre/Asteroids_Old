@@ -71,7 +71,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
 
         if (current_data_size > 0)
         {
-            std::vector<vk::Image> images;
+            std::vector<vk_image*> images;
             images.reserve (5);
 
             std::map<vk::Image, vk::DeviceSize> images_offsets;
@@ -80,10 +80,10 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
             {
                 for (auto& primitive : mesh.alpha_graphics_primitives->primitives)
                 {
-                    primitive.mat->base_image->img = vk_image (c_graphics->graphics_device->graphics_device, c_graphics->queue_family_indices->graphics_queue_family_index, { primitive.mat->base_image->width, primitive.mat->base_image->height, 1 }, 1, vk::Format::eR8G8B8A8Unorm, vk::ImageLayout::eUndefined, vk::SharingMode::eExclusive, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled);
-                    images.push_back (primitive.mat->base_image->img.image);
+                    primitive.mat->base_image->img = std::make_unique<vk_image> (c_graphics->graphics_device->graphics_device, c_graphics->queue_family_indices->graphics_queue_family_index, vk::Extent3D (primitive.mat->base_image->width, primitive.mat->base_image->height, 1), 1, vk::Format::eR8G8B8A8Unorm, vk::ImageLayout::eUndefined, vk::SharingMode::eExclusive, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled);
+                    images.push_back (primitive.mat->base_image->img.get ());
 
-                    images_offsets.insert (std::make_pair (primitive.mat->base_image->img.image, primitive.mat->base_image->image_data_offset));
+                    images_offsets.insert (std::make_pair (primitive.mat->base_image->img->image, primitive.mat->base_image->image_data_offset));
                 }
             }
 
@@ -95,6 +95,21 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
 
             image_memory = std::make_unique <vk_device_memory> (c_graphics->graphics_device->graphics_device, images, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
             image_memory->bind_images (images_offsets);
+
+            for (const auto& image : images)
+            {
+                //image->change_layout ();
+                //image->copy_from ();
+                //image->change_layout ();
+            }
+
+            for (const auto& mesh : assets->static_meshes)
+            {
+                for (auto& primitive : mesh.alpha_graphics_primitives->primitives)
+                {
+                    primitive.mat->base_image->img_view = std::make_unique<vk_image_view> (c_graphics->graphics_device->graphics_device, primitive.mat->base_image->img->image, vk::Format::eR8G8B8A8Unorm);
+                }
+            }
         }
     }
 }

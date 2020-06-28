@@ -206,7 +206,7 @@ public:
     vk_image& operator= (vk_image&& other) noexcept;
     ~vk_image () noexcept;
 
-    void change_layout () {}
+    void change_layout (const vk::Queue& transfer_queue, const vk::CommandPool& transfer_command_pool, const uint32_t& src_queue_family_index, const uint32_t& dst_queue_family_index, const vk::Image& image, const uint32_t& num_layers, const vk::ImageLayout& old_layout, const vk::ImageLayout& new_layout, const vk::AccessFlags& src_access, const vk::AccessFlags& dst_access, const vk::PipelineStageFlags& src_pipeline_stage, const vk::PipelineStageFlags& dst_pipeline_stage);
     void copy_from () {}
     void copy_to () {}
 
@@ -245,6 +245,7 @@ public:
     vk_device_memory ();
     vk_device_memory (const vk::Device& graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
     vk_device_memory (const vk::Device& graphics_device, const vk::ArrayProxy<vk::Image>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
+    vk_device_memory (const vk::Device& graphics_device, const vk::ArrayProxy<vk_image*>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
     vk_device_memory (const vk_device_memory& other) = delete;
     vk_device_memory& operator= (const vk_device_memory& other) = delete;
     vk_device_memory (vk_device_memory&& other) noexcept;
