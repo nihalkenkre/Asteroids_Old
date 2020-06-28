@@ -1,6 +1,6 @@
 #include "scene_graphics.hpp"
 #include "scene_assets.hpp"
-#include "static_meshes.hpp"
+#include "scene_assets.hpp"
 #include "common_graphics.hpp"
 #include "vk_utils.hpp"
 

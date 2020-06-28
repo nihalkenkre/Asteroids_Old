@@ -2,7 +2,7 @@
 
 #include "scene_physics.hpp"
 #include "scene_graphics.hpp"
-#include "static_meshes.hpp"
+#include "scene_assets.hpp"
 
 #include <Windows.h>
 #include <string>

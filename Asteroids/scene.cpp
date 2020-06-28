@@ -2,7 +2,6 @@
 #include "scene_graphics.hpp"
 #include "scene_physics.hpp"
 #include "gltf_models.hpp"
-#include "static_meshes.hpp"
 #include "common_graphics.hpp"
 
 #include <Windows.h>
