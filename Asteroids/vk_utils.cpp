@@ -430,6 +430,22 @@ void vk_image::change_layout (const vk::Queue& transfer_queue, const vk::Command
     one_time_queue.submit (one_time_buffer.command_buffer);
 }
 
+void vk_image::copy_from_buffer (const vk::Queue & transfer_queue, const vk::CommandPool& transfer_command_pool, const vk::DeviceSize& offset, const vk::Buffer& buffer, const vk::Extent3D& extent, const uint32_t& num_layers)
+{
+    OutputDebugString (L"vk_image::copy_from_buffer\n");
+
+    vk::ImageSubresourceLayers subresource_layers;
+    vk::BufferImageCopy buffer_image_copy;
+
+    vk_command_buffer one_time_buffer (graphics_device, transfer_command_pool);
+    one_time_buffer.begin ();
+    one_time_buffer.command_buffer.copyBufferToImage (buffer, image, vk::ImageLayout::eTransferDstOptimal, buffer_image_copy);
+    one_time_buffer.end ();
+
+    vk_queue one_time_queue (transfer_queue, graphics_device);
+    one_time_queue.submit (one_time_buffer.command_buffer);
+}
+
 vk_image::~vk_image () 
 {
     OutputDebugString (L"vk_image::~vk_image\n");
@@ -617,9 +633,9 @@ void vk_buffer::bind_memory (const vk::DeviceMemory& memory, const vk::DeviceSiz
     graphics_device.bindBufferMemory (buffer, memory, offset);
 }
 
-void vk_buffer::copy_from (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue)
+void vk_buffer::copy_from_buffer (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue)
 {
-    OutputDebugString (L"vk_buffer::copy_from src_buffer transfer_queue\n");
+    OutputDebugString (L"vk_buffer::copy_from_buffer src_buffer transfer_queue\n");
 
     vk::BufferCopy buffer_copy (0, 0, size);
 

@@ -207,7 +207,7 @@ public:
     ~vk_image () noexcept;
 
     void change_layout (const vk::Queue& transfer_queue, const vk::CommandPool& transfer_command_pool, const uint32_t& src_queue_family_index, const uint32_t& dst_queue_family_index, const vk::Image& image, const uint32_t& num_layers, const vk::ImageLayout& old_layout, const vk::ImageLayout& new_layout, const vk::AccessFlags& src_access, const vk::AccessFlags& dst_access, const vk::PipelineStageFlags& src_pipeline_stage, const vk::PipelineStageFlags& dst_pipeline_stage);
-    void copy_from () {}
+    void copy_from_buffer (const vk::Queue & transfer_queue, const vk::CommandPool& transfer_command_pool, const vk::DeviceSize& offset, const vk::Buffer& buffer, const vk::Extent3D& extent, const uint32_t& num_layers);
     void copy_to () {}
 
     vk::Image image;
@@ -229,7 +229,7 @@ public:
     ~vk_buffer () noexcept;
 
     void bind_memory (const vk::DeviceMemory& memory, const vk::DeviceSize& offset);
-    void copy_from (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue);
+    void copy_from_buffer (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue);
     void copy_to () {}
 
     vk::Buffer buffer;

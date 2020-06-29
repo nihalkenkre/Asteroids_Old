@@ -49,7 +49,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
             vb_ib_memory = std::make_unique <vk_device_memory> (c_graphics->graphics_device->graphics_device, vb_ib->buffer, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
 
             vb_ib->bind_memory (vb_ib_memory->device_memory, 0);
-            vb_ib->copy_from (staging_buffer.buffer, current_data_size, c_graphics->transfer_command_pool->command_pool, c_graphics->device_queues->transfer_queue);
+            vb_ib->copy_from_buffer (staging_buffer.buffer, current_data_size, c_graphics->transfer_command_pool->command_pool, c_graphics->device_queues->transfer_queue);
             
             current_data_size = 0;
             total_data.clear ();
@@ -98,8 +98,8 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
 
             for (const auto& image : images)
             {
-                //image->change_layout ();
-                //image->copy_from ();
+                image->change_layout (c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, c_graphics->queue_family_indices->transfer_queue_family_index, c_graphics->queue_family_indices->transfer_queue_family_index, image->image, 1, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, vk::AccessFlagBits::eTransferRead, vk::AccessFlagBits::eTransferWrite, vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer);
+//                image->copy_from_buffer (c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, image->)
                 //image->change_layout ();
             }
 
