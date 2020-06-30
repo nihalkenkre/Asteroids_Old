@@ -238,6 +238,7 @@ private:
     vk::Device graphics_device;
 };
 
+class image;
 
 class vk_device_memory
 {
@@ -245,7 +246,7 @@ public:
     vk_device_memory ();
     vk_device_memory (const vk::Device& graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
     vk_device_memory (const vk::Device& graphics_device, const vk::ArrayProxy<vk::Image>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
-    vk_device_memory (const vk::Device& graphics_device, const vk::ArrayProxy<vk_image*>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
+    vk_device_memory (const vk::Device& graphics_device, const std::vector<image*>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
     vk_device_memory (const vk_device_memory& other) = delete;
     vk_device_memory& operator= (const vk_device_memory& other) = delete;
     vk_device_memory (vk_device_memory&& other) noexcept;

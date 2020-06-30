@@ -1,5 +1,6 @@
 #include "vk_utils.hpp"
 #include "common_graphics.hpp"
+#include "image.hpp"
 
 #include <map>
 
@@ -418,8 +419,8 @@ void vk_image::change_layout (const vk::Queue& transfer_queue, const vk::Command
 {
     OutputDebugString (L"vk_image::change_layout\n");
 
-    vk::ImageSubresourceRange subresource_range;
-    vk::ImageMemoryBarrier image_memory_barrier;
+    vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
+    vk::ImageMemoryBarrier image_memory_barrier (src_access, dst_access, old_layout, new_layout, src_queue_family_index, dst_queue_family_index, image, subresource_range);
 
     vk_command_buffer one_time_buffer (graphics_device, transfer_command_pool);
     one_time_buffer.begin ();
@@ -434,8 +435,8 @@ void vk_image::copy_from_buffer (const vk::Queue & transfer_queue, const vk::Com
 {
     OutputDebugString (L"vk_image::copy_from_buffer\n");
 
-    vk::ImageSubresourceLayers subresource_layers;
-    vk::BufferImageCopy buffer_image_copy;
+    vk::ImageSubresourceLayers subresource_layers (vk::ImageAspectFlagBits::eColor, 0, 0, num_layers);
+    vk::BufferImageCopy buffer_image_copy (offset, {}, {}, subresource_layers, {}, extent);
 
     vk_command_buffer one_time_buffer (graphics_device, transfer_command_pool);
     one_time_buffer.begin ();
@@ -707,7 +708,7 @@ vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const vk:
     this->graphics_device = graphics_device;
 }
 
-vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const vk::ArrayProxy<vk_image*>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types)
+vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const std::vector<image*>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types)
 {
     OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device vk_images memory_properties required_types\n");
 
@@ -717,7 +718,7 @@ vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const vk:
     vk::MemoryRequirements memory_requirements;
     for (const auto& image : images)
     {
-        memory_requirements = graphics_device.getImageMemoryRequirements (image->image);
+        memory_requirements = graphics_device.getImageMemoryRequirements (image->img->image);
         total_size += memory_requirements.size;
     }
 

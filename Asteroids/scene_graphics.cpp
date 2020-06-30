@@ -71,7 +71,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
 
         if (current_data_size > 0)
         {
-            std::vector<vk_image*> images;
+            std::vector<image*> images;
             images.reserve (5);
 
             std::map<vk::Image, vk::DeviceSize> images_offsets;
@@ -81,7 +81,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
                 for (auto& primitive : mesh.alpha_graphics_primitives->primitives)
                 {
                     primitive.mat->base_image->img = std::make_unique<vk_image> (c_graphics->graphics_device->graphics_device, c_graphics->queue_family_indices->graphics_queue_family_index, vk::Extent3D (primitive.mat->base_image->width, primitive.mat->base_image->height, 1), 1, vk::Format::eR8G8B8A8Unorm, vk::ImageLayout::eUndefined, vk::SharingMode::eExclusive, vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled);
-                    images.push_back (primitive.mat->base_image->img.get ());
+                    images.push_back (primitive.mat->base_image.get ());
 
                     images_offsets.insert (std::make_pair (primitive.mat->base_image->img->image, primitive.mat->base_image->image_data_offset));
                 }
@@ -98,17 +98,10 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
 
             for (const auto& image : images)
             {
-                image->change_layout (c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, c_graphics->queue_family_indices->transfer_queue_family_index, c_graphics->queue_family_indices->transfer_queue_family_index, image->image, 1, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, vk::AccessFlagBits::eTransferRead, vk::AccessFlagBits::eTransferWrite, vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer);
-//                image->copy_from_buffer (c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, image->)
-                //image->change_layout ();
-            }
-
-            for (const auto& mesh : assets->static_meshes)
-            {
-                for (auto& primitive : mesh.alpha_graphics_primitives->primitives)
-                {
-                    primitive.mat->base_image->img_view = std::make_unique<vk_image_view> (c_graphics->graphics_device->graphics_device, primitive.mat->base_image->img->image, vk::Format::eR8G8B8A8Unorm);
-                }
+                image->img->change_layout (c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, c_graphics->queue_family_indices->transfer_queue_family_index, c_graphics->queue_family_indices->transfer_queue_family_index, image->img->image, 1, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, vk::AccessFlagBits::eMemoryRead, vk::AccessFlagBits::eTransferWrite, vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer);
+                image->img->copy_from_buffer (c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, image->image_data_offset, staging_image_buffer.buffer, vk::Extent3D (image->width, image->height, 1), 1);
+                image->img->change_layout(c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, c_graphics->queue_family_indices->transfer_queue_family_index, c_graphics->queue_family_indices->graphics_queue_family_index, image->img->image, 1, vk::ImageLayout::eUndefined, vk::ImageLayout::eShaderReadOnlyOptimal, vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead, vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader);
+                image->img_view = std::make_unique<vk_image_view> (c_graphics->graphics_device->graphics_device, image->img->image, vk::Format::eR8G8B8A8Unorm);
             }
         }
     }
