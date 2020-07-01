@@ -12,6 +12,8 @@ class scene_graphics
 public:
     scene_graphics (const scene_assets* assets, const common_graphics* c_graphics);
 
+    void main_loop ();
+
 private:
     std::unique_ptr<vk_buffer> vb_ib;
     std::unique_ptr<vk_device_memory> vb_ib_memory;

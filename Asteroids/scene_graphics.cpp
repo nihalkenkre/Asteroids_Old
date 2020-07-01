@@ -106,3 +106,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
         }
     }
 }
+
+void scene_graphics::main_loop ()
+{
+}

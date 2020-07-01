@@ -27,4 +27,5 @@ void scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 
 void scene::main_loop ()
 {
+    graphics->main_loop ();
 }
