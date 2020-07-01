@@ -19,7 +19,6 @@ scene::scene (const game* obj, const common_graphics* c_graphics) : game_obj (ob
     graphics = std::make_unique<scene_graphics> (assets.get (), c_graphics);
 }
 
-
 void scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 {
     OutputDebugString (L"scene::process_keyboard_input\n");

@@ -12,6 +12,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
 
     vk::DeviceSize current_data_size = 0;
     std::vector<unsigned char> total_data;
+
     {
         for (const auto& mesh : assets->static_meshes)
         {
@@ -46,7 +47,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
             staging_buffer_memory.map_data (total_data, 0);
 
             vb_ib = std::make_unique<vk_buffer> (c_graphics->graphics_device->graphics_device, current_data_size, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eIndexBuffer, vk::SharingMode::eExclusive, c_graphics->queue_family_indices->transfer_queue_family_index);
-            vb_ib_memory = std::make_unique <vk_device_memory> (c_graphics->graphics_device->graphics_device, vb_ib->buffer, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
+            vb_ib_memory = std::make_unique<vk_device_memory> (c_graphics->graphics_device->graphics_device, vb_ib->buffer, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
 
             vb_ib->bind_memory (vb_ib_memory->device_memory, 0);
             vb_ib->copy_from_buffer (staging_buffer.buffer, current_data_size, c_graphics->transfer_command_pool->command_pool, c_graphics->device_queues->transfer_queue);
@@ -93,7 +94,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
             staging_image_buffer.bind_memory (staging_image_memory.device_memory, 0);
             staging_image_memory.map_data (total_data, 0);
 
-            image_memory = std::make_unique <vk_device_memory> (c_graphics->graphics_device->graphics_device, images, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
+            image_memory = std::make_unique<vk_device_memory> (c_graphics->graphics_device->graphics_device, images, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
             image_memory->bind_images (images_offsets);
 
             for (const auto& image : images)

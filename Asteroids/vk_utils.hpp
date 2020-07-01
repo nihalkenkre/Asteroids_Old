@@ -281,6 +281,7 @@ class vk_descriptor_pool
 {
 public:
     vk_descriptor_pool ();
+    vk_descriptor_pool (const std::vector<std::pair<vk::DescriptorType, size_t>>& descriptor_types_counts, const uint32_t& max_sets);
     vk_descriptor_pool (const vk_descriptor_pool& other) = delete;
     vk_descriptor_pool& operator= (const vk_descriptor_pool& other) = delete;
     vk_descriptor_pool (vk_descriptor_pool&& other) noexcept;
@@ -298,6 +299,7 @@ class vk_descriptor_set_layout
 {
 public:
     vk_descriptor_set_layout ();
+    vk_descriptor_set_layout (const std::vector<vk::DescriptorSetLayoutBinding>& bindings);
     vk_descriptor_set_layout (const vk_descriptor_set_layout& other) = delete;
     vk_descriptor_set_layout& operator= (const vk_descriptor_set_layout& other) = delete;
     vk_descriptor_set_layout (vk_descriptor_set_layout&& other) noexcept;
@@ -315,48 +317,17 @@ class vk_descriptor_set
 {
 public:
     vk_descriptor_set ();
+    vk_descriptor_set (const vk::DescriptorPool& descriptor_pool, const std::vector<vk::DescriptorSetLayout>& set_layouts, const uint32_t& num_sets);
     vk_descriptor_set (const vk_descriptor_set& other) = delete;
     vk_descriptor_set& operator= (const vk_descriptor_set& other) = delete;
     vk_descriptor_set (vk_descriptor_set&& other) noexcept;
     vk_descriptor_set& operator= (vk_descriptor_set&& other) noexcept;
     ~vk_descriptor_set () noexcept;
 
-    vk::DescriptorSet descriptor_set;
+    std::vector<vk::DescriptorSet> descriptor_sets;
 
 private:
-    vk::Device graphics_device;
-};
-
-
-class vk_graphics_pipeline
-{
-public:
-    vk_graphics_pipeline ();
-    vk_graphics_pipeline (const vk_graphics_pipeline& other) = delete;
-    vk_graphics_pipeline& operator= (const vk_graphics_pipeline& other) = delete;
-    vk_graphics_pipeline (const vk_graphics_pipeline&& other) noexcept;
-    vk_graphics_pipeline& operator= (const vk_graphics_pipeline&& other) noexcept;
-    ~vk_graphics_pipeline () noexcept;
-
-    vk::Pipeline graphics_pipeline;
-
-private:
-    vk::Device graphics_device;
-};
-
-
-class vk_semaphore
-{
-    vk_semaphore ();
-    vk_semaphore (const vk_semaphore& other) = delete;
-    vk_semaphore& operator= (const vk_semaphore& other) = delete;
-    vk_semaphore (const vk_semaphore&& other) noexcept;
-    vk_semaphore& operator= (const vk_semaphore&& other) noexcept;
-    ~vk_semaphore () noexcept;
-
-    vk::Semaphore semaphore;
-
-private:
+    vk::DescriptorPool descriptor_pool;
     vk::Device graphics_device;
 };
 
@@ -389,6 +360,39 @@ public:
     ~vk_framebuffer () noexcept;
 
     vk::Framebuffer framebuffer;
+
+private:
+    vk::Device graphics_device;
+};
+
+
+class vk_graphics_pipeline
+{
+public:
+    vk_graphics_pipeline ();
+    vk_graphics_pipeline (const vk_graphics_pipeline& other) = delete;
+    vk_graphics_pipeline& operator= (const vk_graphics_pipeline& other) = delete;
+    vk_graphics_pipeline (vk_graphics_pipeline&& other) noexcept;
+    vk_graphics_pipeline& operator= (vk_graphics_pipeline&& other) noexcept;
+    ~vk_graphics_pipeline () noexcept;
+
+    vk::Pipeline graphics_pipeline;
+
+private:
+    vk::Device graphics_device;
+};
+
+
+class vk_semaphore
+{
+    vk_semaphore ();
+    vk_semaphore (const vk_semaphore& other) = delete;
+    vk_semaphore& operator= (const vk_semaphore& other) = delete;
+    vk_semaphore (vk_semaphore&& other) noexcept;
+    vk_semaphore& operator= (vk_semaphore&& other) noexcept;
+    ~vk_semaphore () noexcept;
+
+    vk::Semaphore semaphore;
 
 private:
     vk::Device graphics_device;

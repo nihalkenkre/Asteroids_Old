@@ -873,3 +873,277 @@ void vk_queue::submit (const vk::ArrayProxy<vk::CommandBuffer>& command_buffers)
     queue.submit (submit_info, nullptr);
     queue.waitIdle ();
 }
+
+vk_descriptor_pool::vk_descriptor_pool ()
+{
+    OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool\n");
+}
+
+vk_descriptor_pool::vk_descriptor_pool (const std::vector<std::pair<vk::DescriptorType, size_t>>& descriptor_types_counts, const uint32_t& max_sets)
+{
+    OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool types_counts max_sets\n");
+
+    std::vector<vk::DescriptorPoolSize> pool_sizes;
+    pool_sizes.reserve (descriptor_types_counts.size ());
+
+    for (const auto& type_count : descriptor_types_counts)
+    {
+        pool_sizes.emplace_back (vk::DescriptorPoolSize (type_count.first, type_count.second));
+    }
+
+    vk::DescriptorPoolCreateInfo create_info ({}, max_sets, pool_sizes.size (), pool_sizes.data ());
+    descriptor_pool = graphics_device.createDescriptorPool (create_info);
+}
+
+vk_descriptor_pool::vk_descriptor_pool (vk_descriptor_pool&& other) noexcept
+{
+    OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_descriptor_pool& vk_descriptor_pool::operator=(vk_descriptor_pool&& other) noexcept
+{
+    OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool Move assignment\n");
+
+    descriptor_pool = other.descriptor_pool;
+    graphics_device = other.graphics_device;
+
+    other.descriptor_pool = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_descriptor_pool::~vk_descriptor_pool () noexcept
+{
+    OutputDebugString (L"vk_descriptor_pool::~vk_descriptor_pool\n");
+
+    if (descriptor_pool != nullptr && graphics_device != nullptr)
+    {
+        graphics_device.destroyDescriptorPool (descriptor_pool);
+    }
+}
+
+vk_descriptor_set_layout::vk_descriptor_set_layout ()
+{
+    OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout\n");
+}
+
+vk_descriptor_set_layout::vk_descriptor_set_layout (const std::vector<vk::DescriptorSetLayoutBinding>& bindings)
+{
+    OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout bindings\n");
+
+    vk::DescriptorSetLayoutCreateInfo create_info ({}, bindings.size (), bindings.data ());
+
+    descriptor_set_layout = graphics_device.createDescriptorSetLayout (create_info);
+}
+
+vk_descriptor_set_layout::vk_descriptor_set_layout (vk_descriptor_set_layout&& other) noexcept
+{
+    OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_descriptor_set_layout& vk_descriptor_set_layout::operator=(vk_descriptor_set_layout&& other) noexcept
+{
+    OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout Move assignment\n");
+
+    descriptor_set_layout = other.descriptor_set_layout;
+    graphics_device = other.graphics_device;
+
+    other.descriptor_set_layout = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_descriptor_set_layout::~vk_descriptor_set_layout () noexcept
+{
+    OutputDebugString (L"vk_descriptor_set_layout::~vk_descriptor_set_layout\n");
+
+    if (descriptor_set_layout != nullptr && graphics_device != nullptr)
+    {
+        graphics_device.destroyDescriptorSetLayout (descriptor_set_layout);
+    }
+}
+
+vk_descriptor_set::vk_descriptor_set ()
+{
+    OutputDebugString (L"vk_descriptor_set::vk_descriptor_set\n");
+}
+
+vk_descriptor_set::vk_descriptor_set (const vk::DescriptorPool& descriptor_pool, const std::vector<vk::DescriptorSetLayout>& set_layouts, const uint32_t& num_sets)
+{
+    OutputDebugString (L"vk_descriptor_set::vk_descriptor_set descriptor_pool set_layouts\n");
+
+    vk::DescriptorSetAllocateInfo allocate_info (descriptor_pool, set_layouts.size (), set_layouts.data ());
+
+    descriptor_sets = graphics_device.allocateDescriptorSets (allocate_info);
+}
+
+vk_descriptor_set::vk_descriptor_set (vk_descriptor_set&& other) noexcept
+{
+    OutputDebugString (L"vk_descriptor_set::vk_descriptor_set Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_descriptor_set& vk_descriptor_set::operator=(vk_descriptor_set&& other) noexcept
+{
+    OutputDebugString (L"vk_descriptor_set::vk_descriptor_set Move assignment\n");
+
+    descriptor_sets = other.descriptor_sets;
+    descriptor_pool = other.descriptor_pool;
+    graphics_device = other.graphics_device;
+
+    other.descriptor_sets.clear ();
+    other.descriptor_pool = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_descriptor_set::~vk_descriptor_set () noexcept
+{
+    OutputDebugString (L"vk_descriptor_set::~vk_descriptor_set\n");
+
+    if (descriptor_sets.size () != 0 && descriptor_pool != nullptr && graphics_device != nullptr)
+    {
+        graphics_device.freeDescriptorSets (descriptor_pool, descriptor_sets);
+    }
+}
+
+vk_render_pass::vk_render_pass ()
+{
+    OutputDebugString (L"vk_render_pass::vk_render_pass\n");
+}
+
+vk_render_pass::vk_render_pass (vk_render_pass&& other) noexcept
+{
+    OutputDebugString (L"vk_render_pass::vk_render_pass Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_render_pass& vk_render_pass::operator=(vk_render_pass&& other) noexcept
+{
+    OutputDebugString (L"vk_render_pass::vk_render_pass Move assignment\n");
+
+    render_pass = other.render_pass;
+    graphics_device = other.graphics_device;
+
+    other.render_pass = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_render_pass::~vk_render_pass () noexcept
+{
+    OutputDebugString (L"vk_render_pass::~vk_render_pass\n");
+
+    if (render_pass != nullptr && graphics_device != nullptr)
+    {
+        graphics_device.destroyRenderPass (render_pass);
+    }
+}
+
+vk_framebuffer::vk_framebuffer ()
+{
+    OutputDebugString (L"vk_framebuffer::vk_framebuffer\n");
+}
+
+vk_framebuffer::vk_framebuffer (vk_framebuffer&& other) noexcept
+{
+    OutputDebugString (L"vk_framebuffer::vk_framebuffer Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_framebuffer& vk_framebuffer::operator=(vk_framebuffer&& other) noexcept
+{
+    OutputDebugString (L"vk_framebuffer::vk_framebuffer Move assignment\n");
+
+    framebuffer = other.framebuffer;
+    graphics_device = other.graphics_device;
+
+    other.framebuffer = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_framebuffer::~vk_framebuffer () noexcept
+{
+    OutputDebugString (L"vk_framebuffer::~vk_framebuffer\n");
+
+    if (framebuffer != nullptr && graphics_device != nullptr)
+    {
+        graphics_device.destroyFramebuffer (framebuffer);
+    }
+}
+
+vk_graphics_pipeline::vk_graphics_pipeline ()
+{
+    OutputDebugString (L"vk_graphics_pipeline::vk_graphics_pipeline\n");
+}
+
+vk_graphics_pipeline::vk_graphics_pipeline (vk_graphics_pipeline&& other) noexcept
+{
+    OutputDebugString (L"vk_graphics_pipeline::vk_graphics_pipeline Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_graphics_pipeline& vk_graphics_pipeline::operator=(vk_graphics_pipeline&& other) noexcept
+{
+    OutputDebugString (L"vk_graphics_pipeline::vk_graphics_pipeline Move assignment\n");
+
+    graphics_pipeline = other.graphics_pipeline;
+    graphics_device = other.graphics_device;
+
+    other.graphics_pipeline = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_graphics_pipeline::~vk_graphics_pipeline () noexcept
+{
+    OutputDebugString (L"vk_graphics_pipeline::~vk_graphics_pipeline\n");
+
+    if (graphics_pipeline != nullptr && graphics_device != nullptr)
+    {
+        graphics_device.destroyPipeline (graphics_pipeline);
+    }
+}
+
+vk_semaphore::vk_semaphore ()
+{
+    OutputDebugString (L"vk_semaphore::vk_semaphore\n");
+}
+
+vk_semaphore& vk_semaphore::operator=(vk_semaphore&& other) noexcept
+{
+    OutputDebugString (L"vk_semaphore::vk_semaphore Move assignment\n");
+
+    semaphore = other.semaphore;
+    graphics_device = other.graphics_device;
+
+    other.semaphore = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_semaphore::~vk_semaphore () noexcept
+{
+    OutputDebugString (L"vk_graphics_pipeline::~vk_graphics_pipeline\n");
+
+    if (semaphore != nullptr && graphics_device != nullptr)
+    {
+        graphics_device.destroySemaphore (semaphore);
+    }
+}
