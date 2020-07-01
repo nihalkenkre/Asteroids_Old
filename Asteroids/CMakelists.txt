@@ -21,8 +21,8 @@ set (AssetCPP "static_mesh.cpp" "image.cpp" "static_graphics_primitive.cpp" "sta
 set (SceneHPP "scene.hpp" "test_scene.hpp" "scene_assets.hpp" "scene_graphics.hpp" "scene_physics.hpp")
 set (SceneCPP "scene.cpp" "test_scene.cpp" "scene_assets.cpp" "scene_graphics.cpp" "scene_physics.cpp")
 
-set (GlobalHPP "utils.hpp" "vk_utils.hpp" "common_graphics.hpp" "vk_asset.hpp" "gltf_models.hpp" "game.hpp")
-set (GlobalCPP "utils.cpp" "vk_utils.cpp" "common_graphics.cpp" "vk_asset.cpp" "gltf_models.cpp" "game.cpp")
+set (GlobalHPP "utils.hpp" "vk_utils.hpp" "common_graphics.hpp" "gltf_models.hpp" "game.hpp")
+set (GlobalCPP "utils.cpp" "vk_utils.cpp" "common_graphics.cpp" "gltf_models.cpp" "game.cpp")
 
 set (MainCPP "main.cpp")
 
