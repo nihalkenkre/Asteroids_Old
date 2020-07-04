@@ -147,8 +147,8 @@ public:
     ~vk_swapchain () noexcept;
 
     vk::SwapchainKHR swapchain;
-    std::vector<vk::Image> swapchain_images;
-    std::vector<vk_image_view> swapchain_image_views;
+    std::vector<vk::Image> images;
+    std::vector<vk_image_view> image_views;
 
 private:
     vk::Device graphics_device;
@@ -173,21 +173,22 @@ private:
 };
 
 
-class vk_command_buffer
+class vk_command_buffers
 {
 public:
-    vk_command_buffer ();
-    vk_command_buffer (const vk::Device graphics_device, const vk::CommandPool& command_pool);
-    vk_command_buffer (const vk_command_buffer& other) = delete;
-    vk_command_buffer& operator= (const vk_command_buffer& other) = delete;
-    vk_command_buffer (vk_command_buffer&& other) noexcept;
-    vk_command_buffer& operator= (vk_command_buffer&& other) noexcept;
-    ~vk_command_buffer () noexcept;
+    vk_command_buffers ();
+    vk_command_buffers (const vk::Device graphics_device, const vk::CommandPool& command_pool, const uint32_t& num_command_buffers);
+    vk_command_buffers (const vk_command_buffers& other) = delete;
+    vk_command_buffers& operator= (const vk_command_buffers& other) = delete;
+    vk_command_buffers (vk_command_buffers&& other) noexcept;
+    vk_command_buffers& operator= (vk_command_buffers&& other) noexcept;
+    ~vk_command_buffers () noexcept;
 
-    void begin ();
+    void begin (const vk::CommandBufferUsageFlags& flags);
+    void draw (const vk::RenderPass& render_pass, const std::vector<vk::Framebuffer>& framebuffers, const vk::Rect2D& render_area);
     void end ();
 
-    vk::CommandBuffer command_buffer;
+    std::vector<vk::CommandBuffer> command_buffers;
 
 private:
     vk::CommandPool command_pool;
@@ -313,16 +314,16 @@ private:
 };
 
 
-class vk_descriptor_set
+class vk_descriptor_sets
 {
 public:
-    vk_descriptor_set ();
-    vk_descriptor_set (const vk::DescriptorPool& descriptor_pool, const std::vector<vk::DescriptorSetLayout>& set_layouts, const uint32_t& num_sets);
-    vk_descriptor_set (const vk_descriptor_set& other) = delete;
-    vk_descriptor_set& operator= (const vk_descriptor_set& other) = delete;
-    vk_descriptor_set (vk_descriptor_set&& other) noexcept;
-    vk_descriptor_set& operator= (vk_descriptor_set&& other) noexcept;
-    ~vk_descriptor_set () noexcept;
+    vk_descriptor_sets ();
+    vk_descriptor_sets (const vk::DescriptorPool& descriptor_pool, const std::vector<vk::DescriptorSetLayout>& set_layouts, const uint32_t& num_sets);
+    vk_descriptor_sets (const vk_descriptor_sets& other) = delete;
+    vk_descriptor_sets& operator= (const vk_descriptor_sets& other) = delete;
+    vk_descriptor_sets (vk_descriptor_sets&& other) noexcept;
+    vk_descriptor_sets& operator= (vk_descriptor_sets&& other) noexcept;
+    ~vk_descriptor_sets () noexcept;
 
     std::vector<vk::DescriptorSet> descriptor_sets;
 
@@ -395,7 +396,9 @@ private:
 
 class vk_semaphore
 {
+public:
     vk_semaphore ();
+    vk_semaphore (const vk::Device& graphics_device);
     vk_semaphore (const vk_semaphore& other) = delete;
     vk_semaphore& operator= (const vk_semaphore& other) = delete;
     vk_semaphore (vk_semaphore&& other) noexcept;
@@ -406,4 +409,13 @@ class vk_semaphore
 
 private:
     vk::Device graphics_device;
+};
+
+
+class vk_semaphores
+{
+public:
+    vk_semaphores (const vk::Device& graphics_device, const size_t& num_semaphores);
+
+    std::vector<vk_semaphore> semaphores;
 };

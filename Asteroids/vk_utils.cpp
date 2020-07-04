@@ -296,11 +296,11 @@ vk_swapchain::vk_swapchain (const vk::Device& graphics_device, const vk_surface*
     vk::SwapchainCreateInfoKHR swapchain_create_info ({}, surface->surface, surface->surface_capabilities.minImageCount + 1, surface->surface_format.format, surface->surface_format.colorSpace, surface->surface_extent, 1, surface->surface_capabilities.supportedUsageFlags, vk::SharingMode::eExclusive, 0, {}, surface->surface_capabilities.currentTransform, vk::CompositeAlphaFlagBitsKHR::eOpaque, surface->present_mode);
     swapchain = graphics_device.createSwapchainKHR (swapchain_create_info);
     
-    swapchain_images = graphics_device.getSwapchainImagesKHR (swapchain);
-    swapchain_image_views.reserve (swapchain_images.size ());
-    for (const auto& image : swapchain_images)
+    images = graphics_device.getSwapchainImagesKHR (swapchain);
+    image_views.reserve (images.size ());
+    for (const auto& image : images)
     {
-        swapchain_image_views.emplace_back (vk_image_view (graphics_device, image, surface->surface_format.format));
+        image_views.emplace_back (vk_image_view (graphics_device, image, surface->surface_format.format));
     }
 
     this->graphics_device = graphics_device;
@@ -422,13 +422,13 @@ void vk_image::change_layout (const vk::Queue& transfer_queue, const vk::Command
     vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
     vk::ImageMemoryBarrier image_memory_barrier (src_access, dst_access, old_layout, new_layout, src_queue_family_index, dst_queue_family_index, image, subresource_range);
 
-    vk_command_buffer one_time_buffer (graphics_device, transfer_command_pool);
-    one_time_buffer.begin ();
-    one_time_buffer.command_buffer.pipelineBarrier (src_pipeline_stage, dst_pipeline_stage, vk::DependencyFlagBits::eDeviceGroup, {}, {}, image_memory_barrier); 
+    vk_command_buffers one_time_buffer (graphics_device, transfer_command_pool, 1);
+    one_time_buffer.begin (vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+    one_time_buffer.command_buffers.at (0).pipelineBarrier (src_pipeline_stage, dst_pipeline_stage, vk::DependencyFlagBits::eDeviceGroup, {}, {}, image_memory_barrier); 
     one_time_buffer.end ();
 
     vk_queue one_time_queue (transfer_queue, graphics_device);
-    one_time_queue.submit (one_time_buffer.command_buffer);
+    one_time_queue.submit (one_time_buffer.command_buffers);
 }
 
 void vk_image::copy_from_buffer (const vk::Queue & transfer_queue, const vk::CommandPool& transfer_command_pool, const vk::DeviceSize& offset, const vk::Buffer& buffer, const vk::Extent3D& extent, const uint32_t& num_layers)
@@ -438,13 +438,13 @@ void vk_image::copy_from_buffer (const vk::Queue & transfer_queue, const vk::Com
     vk::ImageSubresourceLayers subresource_layers (vk::ImageAspectFlagBits::eColor, 0, 0, num_layers);
     vk::BufferImageCopy buffer_image_copy (offset, {}, {}, subresource_layers, {}, extent);
 
-    vk_command_buffer one_time_buffer (graphics_device, transfer_command_pool);
-    one_time_buffer.begin ();
-    one_time_buffer.command_buffer.copyBufferToImage (buffer, image, vk::ImageLayout::eTransferDstOptimal, buffer_image_copy);
+    vk_command_buffers one_time_buffer (graphics_device, transfer_command_pool, 1);
+    one_time_buffer.begin (vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+    one_time_buffer.command_buffers.at (0).copyBufferToImage (buffer, image, vk::ImageLayout::eTransferDstOptimal, buffer_image_copy);
     one_time_buffer.end ();
 
     vk_queue one_time_queue (transfer_queue, graphics_device);
-    one_time_queue.submit (one_time_buffer.command_buffer);
+    one_time_queue.submit (one_time_buffer.command_buffers);
 }
 
 vk_image::~vk_image () 
@@ -640,13 +640,13 @@ void vk_buffer::copy_from_buffer (const vk::Buffer& src_buffer, const vk::Device
 
     vk::BufferCopy buffer_copy (0, 0, size);
 
-    vk_command_buffer copy_cmd_buffer (graphics_device, command_pool);
-    copy_cmd_buffer.begin ();
-    copy_cmd_buffer.command_buffer.copyBuffer (src_buffer, buffer, buffer_copy);
+    vk_command_buffers copy_cmd_buffer (graphics_device, command_pool, 1);
+    copy_cmd_buffer.begin (vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+    copy_cmd_buffer.command_buffers.at (0).copyBuffer (src_buffer, buffer, buffer_copy);
     copy_cmd_buffer.end ();
 
     vk_queue one_time_submit_queue (transfer_queue, graphics_device);
-    one_time_submit_queue.submit (copy_cmd_buffer.command_buffer);
+    one_time_submit_queue.submit (copy_cmd_buffer.command_buffers);
 }
 
 vk_device_memory::vk_device_memory ()
@@ -795,67 +795,95 @@ void vk_device_memory::map_data (const std::vector<unsigned char>& data, const v
     graphics_device.unmapMemory (device_memory);
 }
 
-vk_command_buffer::vk_command_buffer ()
+vk_command_buffers::vk_command_buffers ()
 {
     OutputDebugString (L"vk_command_buffer::vk_command_buffer\n");
 }
 
-vk_command_buffer::vk_command_buffer (const vk::Device graphics_device, const vk::CommandPool& command_pool)
+vk_command_buffers::vk_command_buffers (const vk::Device graphics_device, const vk::CommandPool& command_pool, const uint32_t& num_command_buffers)
 {
-    OutputDebugString (L"vk_command_buffer::vk_comamnd_buffer graphics_device command_pool\n");
+    OutputDebugString (L"vk_command_buffer::vk_comamnd_buffer graphics_device command_pool num_command_buffers\n");
 
-    vk::CommandBufferAllocateInfo allocate_info (command_pool, {}, 1);
-    command_buffer = graphics_device.allocateCommandBuffers (allocate_info)[0];
+    vk::CommandBufferAllocateInfo allocate_info (command_pool, {}, num_command_buffers);
+    command_buffers = graphics_device.allocateCommandBuffers (allocate_info);
 
     this->graphics_device = graphics_device;
     this->command_pool = command_pool;
 }
 
-vk_command_buffer::vk_command_buffer (vk_command_buffer&& other) noexcept
+vk_command_buffers::vk_command_buffers (vk_command_buffers&& other) noexcept
 {
     OutputDebugString (L"vk_command_buffer::vk_command_buffer Move constructor\n");
 
     *this = std::move (other);
 }
 
-vk_command_buffer& vk_command_buffer::operator=(vk_command_buffer&& other) noexcept
+vk_command_buffers& vk_command_buffers::operator= (vk_command_buffers&& other) noexcept
 {
     OutputDebugString (L"vk_command_buffer::vk_command_buffer Move assignment\n");
 
-    command_buffer = other.command_buffer;
+    command_buffers = std::move (other.command_buffers);
     command_pool = other.command_pool;
     graphics_device = other.graphics_device;
 
-    other.command_buffer = nullptr;
     other.command_pool = nullptr;
     other.graphics_device = nullptr;
 
     return *this;
 }
 
-vk_command_buffer::~vk_command_buffer () noexcept
+vk_command_buffers::~vk_command_buffers () noexcept
 {
     OutputDebugString (L"vk_command_buffer::~vk_command_buffer\n");
 
-    if (command_buffer != nullptr && command_pool != nullptr && graphics_device != nullptr)
+    if (command_pool != nullptr && graphics_device != nullptr)
     {
-        graphics_device.freeCommandBuffers (command_pool, command_buffer);
+        graphics_device.freeCommandBuffers (command_pool, command_buffers);
     }
 }
 
-void vk_command_buffer::begin ()
+void vk_command_buffers::begin (const vk::CommandBufferUsageFlags& flags)
 {
-    OutputDebugString (L"vk_command_buffer::begin\n");
+    OutputDebugString (L"vk_command_buffers::begin flags\n");
 
-    vk::CommandBufferBeginInfo begin_info (vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
-    command_buffer.begin (begin_info);
+    vk::CommandBufferBeginInfo begin_info (flags);
+
+    for (const auto& command_buffer : command_buffers)
+    {
+        command_buffer.begin (begin_info);
+    }
 }
 
-void vk_command_buffer::end ()
+void vk_command_buffers::draw (const vk::RenderPass& render_pass, const std::vector<vk::Framebuffer>& framebuffers, const vk::Rect2D& render_area)
+{
+    OutputDebugString (L"vk_command_buffer::draw render_pass, framebuffers\n");
+
+    std::vector<vk::ClearValue> clear_values;
+    vk::ClearValue clear_value;
+    clear_value.color{ 1, 0, 1, 1 };
+    clear_values.push_back (clear_value);
+
+    vk::RenderPassBeginInfo render_pass_begin_info (render_pass, {}, render_area, clear_values.size (), clear_values.data ());
+
+    size_t index = 0;
+    for (const auto& command_buffer : command_buffers)
+    {
+        render_pass_begin_info.framebuffer = framebuffers.at (index);
+        command_buffer.beginRenderPass (render_pass_begin_info, vk::SubpassContents::eInline);
+        command_buffer.endRenderPass ();
+
+        ++index;
+    }
+}
+
+void vk_command_buffers::end ()
 {
     OutputDebugString (L"vk_command_buffer::end\n");
 
-    command_buffer.end ();
+    for (const auto& command_buffer : command_buffers)
+    {
+        command_buffer.end ();
+    }
 }
 
 
@@ -969,12 +997,12 @@ vk_descriptor_set_layout::~vk_descriptor_set_layout () noexcept
     }
 }
 
-vk_descriptor_set::vk_descriptor_set ()
+vk_descriptor_sets::vk_descriptor_sets ()
 {
     OutputDebugString (L"vk_descriptor_set::vk_descriptor_set\n");
 }
 
-vk_descriptor_set::vk_descriptor_set (const vk::DescriptorPool& descriptor_pool, const std::vector<vk::DescriptorSetLayout>& set_layouts, const uint32_t& num_sets)
+vk_descriptor_sets::vk_descriptor_sets (const vk::DescriptorPool& descriptor_pool, const std::vector<vk::DescriptorSetLayout>& set_layouts, const uint32_t& num_sets)
 {
     OutputDebugString (L"vk_descriptor_set::vk_descriptor_set descriptor_pool set_layouts\n");
 
@@ -983,33 +1011,32 @@ vk_descriptor_set::vk_descriptor_set (const vk::DescriptorPool& descriptor_pool,
     descriptor_sets = graphics_device.allocateDescriptorSets (allocate_info);
 }
 
-vk_descriptor_set::vk_descriptor_set (vk_descriptor_set&& other) noexcept
+vk_descriptor_sets::vk_descriptor_sets (vk_descriptor_sets&& other) noexcept
 {
     OutputDebugString (L"vk_descriptor_set::vk_descriptor_set Move constructor\n");
 
     *this = std::move (other);
 }
 
-vk_descriptor_set& vk_descriptor_set::operator=(vk_descriptor_set&& other) noexcept
+vk_descriptor_sets& vk_descriptor_sets::operator=(vk_descriptor_sets&& other) noexcept
 {
     OutputDebugString (L"vk_descriptor_set::vk_descriptor_set Move assignment\n");
 
-    descriptor_sets = other.descriptor_sets;
+    descriptor_sets = std::move (other.descriptor_sets);
     descriptor_pool = other.descriptor_pool;
     graphics_device = other.graphics_device;
 
-    other.descriptor_sets.clear ();
     other.descriptor_pool = nullptr;
     other.graphics_device = nullptr;
 
     return *this;
 }
 
-vk_descriptor_set::~vk_descriptor_set () noexcept
+vk_descriptor_sets::~vk_descriptor_sets () noexcept
 {
     OutputDebugString (L"vk_descriptor_set::~vk_descriptor_set\n");
 
-    if (descriptor_sets.size () != 0 && descriptor_pool != nullptr && graphics_device != nullptr)
+    if (descriptor_pool != nullptr && graphics_device != nullptr)
     {
         graphics_device.freeDescriptorSets (descriptor_pool, descriptor_sets);
     }
@@ -1163,7 +1190,22 @@ vk_semaphore::vk_semaphore ()
     OutputDebugString (L"vk_semaphore::vk_semaphore\n");
 }
 
-vk_semaphore& vk_semaphore::operator=(vk_semaphore&& other) noexcept
+vk_semaphore::vk_semaphore (const vk::Device& graphics_device)
+{
+    OutputDebugString (L"vk_semaphore::vk_semaphore graphics_device\n");
+
+    semaphore = graphics_device.createSemaphore (vk::SemaphoreCreateInfo ());
+    this->graphics_device = graphics_device;
+}
+
+vk_semaphore::vk_semaphore (vk_semaphore&& other) noexcept
+{
+    OutputDebugString (L"vk_semaphore::vk_semaphore Move constructor\n");
+
+    *this = std::move (other);
+}
+
+vk_semaphore& vk_semaphore::operator= (vk_semaphore&& other) noexcept
 {
     OutputDebugString (L"vk_semaphore::vk_semaphore Move assignment\n");
 
@@ -1178,10 +1220,23 @@ vk_semaphore& vk_semaphore::operator=(vk_semaphore&& other) noexcept
 
 vk_semaphore::~vk_semaphore () noexcept
 {
-    OutputDebugString (L"vk_graphics_pipeline::~vk_graphics_pipeline\n");
+    OutputDebugString (L"vk_semaphore::~vk_semaphore\n");
 
     if (semaphore != nullptr && graphics_device != nullptr)
     {
         graphics_device.destroySemaphore (semaphore);
+    }
+}
+
+
+vk_semaphores::vk_semaphores (const vk::Device& graphics_device, const size_t& num_semaphores)
+{
+    OutputDebugString (L"vk_semaphores::vk_semaphores graphics_device\n");
+
+    semaphores.reserve (num_semaphores);
+
+    for (size_t i = 0; i < num_semaphores; ++i)
+    {
+        semaphores.emplace_back (vk_semaphore (graphics_device));
     }
 }

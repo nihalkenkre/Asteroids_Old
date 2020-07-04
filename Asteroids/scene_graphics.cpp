@@ -108,7 +108,14 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
     }
 
     render_pass = std::make_unique<vk_render_pass> (c_graphics->graphics_device->graphics_device, c_graphics->surface->surface_format.format);
-    framebuffers = std::make_unique<vk_framebuffers> (c_graphics->graphics_device->graphics_device, c_graphics->swapchain->swapchain_image_views, render_pass->render_pass, c_graphics->surface->surface_extent);
+    framebuffers = std::make_unique<vk_framebuffers> (c_graphics->graphics_device->graphics_device, c_graphics->swapchain->image_views, render_pass->render_pass, c_graphics->surface->surface_extent);
+    signal_semaphores = std::make_unique<vk_semaphores> (c_graphics->graphics_device->graphics_device, c_graphics->swapchain->images.size ());
+    wait_semaphore = std::make_unique<vk_semaphore> (c_graphics->graphics_device->graphics_device);
+
+    graphics_command_pool = std::make_unique<vk_command_pool> (c_graphics->graphics_device->graphics_device, c_graphics->queue_family_indices->graphics_queue_family_index, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
+    swapchain_command_buffers = std::make_unique<vk_command_buffers> (c_graphics->graphics_device->graphics_device, graphics_command_pool->command_pool, c_graphics->swapchain->images.size ());
+
+    swapchain_command_buffers->begin (vk::CommandBufferUsageFlagBits::eSimultaneousUse);
 }
 
 void scene_graphics::main_loop ()
