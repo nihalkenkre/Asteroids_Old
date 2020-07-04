@@ -106,6 +106,9 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
             }
         }
     }
+
+    render_pass = std::make_unique<vk_render_pass> (c_graphics->graphics_device->graphics_device, c_graphics->surface->surface_format.format);
+    framebuffers = std::make_unique<vk_framebuffers> (c_graphics->graphics_device->graphics_device, c_graphics->swapchain->swapchain_image_views, render_pass->render_pass, c_graphics->surface->surface_extent);
 }
 
 void scene_graphics::main_loop ()

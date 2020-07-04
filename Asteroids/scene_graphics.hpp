@@ -19,4 +19,7 @@ private:
     std::unique_ptr<vk_device_memory> vb_ib_memory;
 
     std::unique_ptr<vk_device_memory> image_memory;
+
+    std::unique_ptr<vk_render_pass> render_pass;
+    std::unique_ptr<vk_framebuffers> framebuffers;
 };

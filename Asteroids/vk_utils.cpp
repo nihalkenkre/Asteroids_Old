@@ -1020,6 +1020,20 @@ vk_render_pass::vk_render_pass ()
     OutputDebugString (L"vk_render_pass::vk_render_pass\n");
 }
 
+vk_render_pass::vk_render_pass (const vk::Device& graphics_device, const vk::Format& chosen_format)
+{
+    OutputDebugString (L"vk_render_pass::vk_render_pass graphics_device chosen_format\n");
+
+    vk::AttachmentDescription attachment_description ({}, chosen_format, vk::SampleCountFlagBits::e1, vk::AttachmentLoadOp::eClear , {}, vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eDontCare, vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
+    vk::AttachmentReference attachment_reference (0, vk::ImageLayout::eColorAttachmentOptimal);
+
+    vk::SubpassDescription subpass_description ({}, vk::PipelineBindPoint::eGraphics, 0, nullptr, 1, &attachment_reference);
+
+    vk::RenderPassCreateInfo create_info ({}, 1, &attachment_description, 1, &subpass_description);
+    render_pass = graphics_device.createRenderPass (create_info);
+    this->graphics_device = graphics_device;
+}
+
 vk_render_pass::vk_render_pass (vk_render_pass&& other) noexcept
 {
     OutputDebugString (L"vk_render_pass::vk_render_pass Move constructor\n");
@@ -1055,6 +1069,16 @@ vk_framebuffer::vk_framebuffer ()
     OutputDebugString (L"vk_framebuffer::vk_framebuffer\n");
 }
 
+vk_framebuffer::vk_framebuffer (const vk::Device& graphics_device, const vk::ImageView& image_view, const vk::RenderPass& render_pass, const vk::Extent2D& extent)
+{
+    OutputDebugString (L"vk_framebuffer::vk_framebuffer graphics_device imgae_view render_pass extext");
+
+    vk::FramebufferCreateInfo create_info ({}, render_pass, 1, &image_view, extent.width, extent.height, 1);
+    
+    framebuffer = graphics_device.createFramebuffer (create_info);
+    this->graphics_device = graphics_device;
+}
+
 vk_framebuffer::vk_framebuffer (vk_framebuffer&& other) noexcept
 {
     OutputDebugString (L"vk_framebuffer::vk_framebuffer Move constructor\n");
@@ -1084,6 +1108,20 @@ vk_framebuffer::~vk_framebuffer () noexcept
         graphics_device.destroyFramebuffer (framebuffer);
     }
 }
+
+
+vk_framebuffers::vk_framebuffers (const vk::Device& graphics_device, const std::vector<vk_image_view>& image_views, const vk::RenderPass& render_pass, const vk::Extent2D& extent)
+{
+    OutputDebugString (L"vk_framebuffers::vk_framebuffers graphics_device image_views render_pass extent\n");
+
+    framebuffers.reserve (image_views.size ());
+
+    for (const auto& image_view : image_views)
+    {
+        framebuffers.emplace_back (vk_framebuffer (graphics_device, image_view.image_view, render_pass, extent));
+    }
+}
+
 
 vk_graphics_pipeline::vk_graphics_pipeline ()
 {

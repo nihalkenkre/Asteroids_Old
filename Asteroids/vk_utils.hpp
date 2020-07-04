@@ -336,6 +336,7 @@ class vk_render_pass
 {
 public:
     vk_render_pass ();
+    vk_render_pass (const vk::Device& graphics_device, const vk::Format& chosen_format);
     vk_render_pass (const vk_render_pass& other) = delete;
     vk_render_pass& operator= (const vk_render_pass& other) = delete;
     vk_render_pass (vk_render_pass&& other) noexcept;
@@ -353,6 +354,7 @@ class vk_framebuffer
 {
 public:
     vk_framebuffer ();
+    vk_framebuffer (const vk::Device& graphics_device, const vk::ImageView& image_view, const vk::RenderPass& render_pass, const vk::Extent2D& extent);
     vk_framebuffer (const vk_framebuffer& other) = delete;
     vk_framebuffer& operator= (const vk_framebuffer& other) = delete;
     vk_framebuffer (vk_framebuffer&& other) noexcept;
@@ -365,6 +367,14 @@ private:
     vk::Device graphics_device;
 };
 
+
+class vk_framebuffers
+{
+public:
+    vk_framebuffers (const vk::Device& graphics_device, const std::vector<vk_image_view>& image_views, const vk::RenderPass& render_pass, const vk::Extent2D& extent);
+
+    std::vector<vk_framebuffer> framebuffers;
+};
 
 class vk_graphics_pipeline
 {
