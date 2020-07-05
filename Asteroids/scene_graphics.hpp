@@ -11,6 +11,7 @@ class scene_graphics
 {
 public:
     scene_graphics (const scene_assets* assets, const common_graphics* c_graphics);
+    ~scene_graphics () noexcept;
 
     void main_loop ();
 

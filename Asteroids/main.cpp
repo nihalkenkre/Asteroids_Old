@@ -1,9 +1,9 @@
 #include <Windows.h>
 #include <cstdlib>
 #include <memory>
+#include <iostream>
 
 #include "game.hpp"
-
 
 std::unique_ptr<game> G = nullptr;
 
@@ -56,6 +56,11 @@ LRESULT CALLBACK WindowProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_instance, _In_ PWSTR cmd_line, _In_ int cmd_show)
 {
+#ifdef DEBUG
+	AllocConsole ();
+	freopen ("CONOUT$", "w", stdout);
+    std::cout << "Hello Console\n";
+#endif
 	WNDCLASS wc = { 0 };
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -79,6 +84,7 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	ShowWindow (hWnd, cmd_show);
 	UpdateWindow (hWnd);
 
+
 	try
 	{
 		G = std::make_unique<game> (hInstance, hWnd);
@@ -100,9 +106,11 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	catch (...)
 	{
 		OutputDebugString (L"Caught something\n");
+		std::cout << "Caught something\n";
 	}
 
 	DestroyWindow (hWnd);
-
-    return EXIT_SUCCESS;
+	FreeConsole ();
+    
+	return EXIT_SUCCESS;
 }

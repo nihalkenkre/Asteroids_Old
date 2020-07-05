@@ -139,3 +139,10 @@ void scene_graphics::main_loop ()
     graphics_queue->submit (vk::PipelineStageFlagBits::eColorAttachmentOutput, swapchain_command_buffers->command_buffers.at (result.value), wait_semaphore->semaphore, signal_semaphores->semaphores.at (result.value).semaphore);
     graphics_queue->present (swapchain->swapchain, result.value, signal_semaphores->semaphores.at (result.value).semaphore);
 }
+
+scene_graphics::~scene_graphics ()
+{
+    OutputDebugString (L"scene_graphics::~scene_graphics\n");
+
+    graphics_queue->queue.waitIdle ();
+}

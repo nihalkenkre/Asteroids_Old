@@ -1,7 +1,6 @@
 #include "game.hpp"
 #include "test_scene.hpp"
 
-
 game::game (const HINSTANCE& h_instance, const HWND& h_wnd)
 {
     OutputDebugString (L"game::game h_instance h_wnd\n");
@@ -27,6 +26,7 @@ void game::set_current_scene (SCENE_TYPE type)
 void game::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 {
     OutputDebugString (L"game::process_keyboard_input\n");
+
     current_scene->process_keyboard_input (WParam, LParam);
 }
 
