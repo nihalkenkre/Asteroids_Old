@@ -110,7 +110,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
     render_pass = std::make_unique<vk_render_pass> (c_graphics->graphics_device->graphics_device, c_graphics->surface->surface_format.format);
     framebuffers = std::make_unique<vk_framebuffers> (c_graphics->graphics_device->graphics_device, c_graphics->swapchain->image_views, render_pass->render_pass, c_graphics->surface->surface_extent);
     signal_semaphores = std::make_unique<vk_semaphores> (c_graphics->graphics_device->graphics_device, c_graphics->swapchain->images.size ());
-    wait_semaphores = std::make_unique<vk_semaphores> (c_graphics->graphics_device->graphics_device, 1);
+    wait_semaphore = std::make_unique<vk_semaphore> (c_graphics->graphics_device->graphics_device);
 
     graphics_command_pool = std::make_unique<vk_command_pool> (c_graphics->graphics_device->graphics_device, c_graphics->queue_family_indices->graphics_queue_family_index, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
     swapchain_command_buffers = std::make_unique<vk_command_buffers> (c_graphics->graphics_device->graphics_device, graphics_command_pool->command_pool, c_graphics->swapchain->images.size ());
@@ -118,17 +118,24 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
     swapchain_command_buffers->begin (vk::CommandBufferUsageFlagBits::eSimultaneousUse);
     swapchain_command_buffers->draw (render_pass->render_pass, framebuffers->framebuffers, vk::Rect2D ({}, { c_graphics->surface->surface_extent }));
     swapchain_command_buffers->end ();
-    graphics_queue->submit (vk::PipelineStageFlagBits::eColorAttachmentOutput, swapchain_command_buffers.get (), wait_semaphores.get (), signal_semaphores.get ());
 }
 
 void scene_graphics::main_loop ()
 {
-    vk::ResultValue<uint32_t> result = graphics_device->graphics_device.acquireNextImageKHR (swapchain->swapchain, UINT64_MAX, wait_semaphores->semaphores.at (0).semaphore, nullptr);
+    vk::ResultValue<uint32_t> result = graphics_device->graphics_device.acquireNextImageKHR (swapchain->swapchain, UINT64_MAX, wait_semaphore->semaphore, nullptr);
 
-    if (result.result != vk::Result::eSuccess && result.result != vk::Result::eSuboptimalKHR && result.result != vk::Result::eErrorOutOfDateKHR)
+    if (result.result != vk::Result::eSuccess)
     {
-        throw "Acquire next image";
+        if (result.result != vk::Result::eSuboptimalKHR && result.result != vk::Result::eErrorOutOfDateKHR)
+        {
+            throw "Acquire next image";
+        }
+        else
+        {
+            graphics_queue->queue.waitIdle ();
+        }
     }
 
-    graphics_queue->present ({ swapchain->swapchain }, { result.value }, wait_semaphores.get ());
+    graphics_queue->submit (vk::PipelineStageFlagBits::eColorAttachmentOutput, swapchain_command_buffers->command_buffers.at (result.value), wait_semaphore->semaphore, signal_semaphores->semaphores.at (result.value).semaphore);
+    graphics_queue->present (swapchain->swapchain, result.value, signal_semaphores->semaphores.at (result.value).semaphore);
 }

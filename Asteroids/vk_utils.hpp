@@ -275,8 +275,8 @@ public:
     vk_queue (const vk::Queue& queue, const vk::Device& graphics_device);
 
     void submit (const std::vector<vk::CommandBuffer>& command_buffers) const;
-    void submit (const vk::PipelineStageFlags& wait_stage_flags, const vk_command_buffers* command_buffers, const vk_semaphores* wait_semaphores, const vk_semaphores* signal_semaphores) const;
-    void present (const std::vector<vk::SwapchainKHR>& swapchains, const std::vector<uint32_t>& image_indices, const vk_semaphores* wait_semaphores) const;
+    void submit (const vk::PipelineStageFlags& wait_stage_flags, const vk::CommandBuffer& command_buffer, const vk::Semaphore& wait_semaphore, const vk::Semaphore& signal_semphore) const;
+    void present (const vk::SwapchainKHR& swapchain, const uint32_t& image_index, const vk::Semaphore& wait_semaphore) const;
 
     vk::Queue queue;
 

@@ -902,45 +902,20 @@ void vk_queue::submit (const std::vector<vk::CommandBuffer>& command_buffers) co
     queue.waitIdle ();
 }
 
-void vk_queue::submit (const vk::PipelineStageFlags& wait_stage_flags, const vk_command_buffers* command_buffers, const vk_semaphores* wait_semaphores, const vk_semaphores* signal_semphores) const
+void vk_queue::submit (const vk::PipelineStageFlags& wait_stage_flags, const vk::CommandBuffer& command_buffer, const vk::Semaphore& wait_semaphore, const vk::Semaphore& signal_semphore) const
 {
     OutputDebugString (L"vk_queue::submit wait_stage_flags command_buffers wait_semaphores signal_semaphores\n");
 
-    std::vector<vk::CommandBuffer> raw_command_buffers (command_buffers->command_buffers.size ());
-    std::copy (command_buffers->command_buffers.begin (), command_buffers->command_buffers.end (), raw_command_buffers.begin ());
-
-    std::vector<vk::Semaphore> raw_wait_semaphores;
-    raw_wait_semaphores.reserve(wait_semaphores->semaphores.size ());
-
-    for (const auto& semaphore : wait_semaphores->semaphores)
-    {
-        raw_wait_semaphores.push_back (semaphore.semaphore);
-    }
-
-    std::vector<vk::Semaphore> raw_signal_semaphores;
-    raw_signal_semaphores.reserve (signal_semphores->semaphores.size ());
-    for (const auto& semaphore : signal_semphores->semaphores)
-    {
-        raw_signal_semaphores.push_back (semaphore.semaphore);
-    }
-
-    vk::SubmitInfo submit_info (raw_wait_semaphores.size (), raw_wait_semaphores.data (), &wait_stage_flags, raw_command_buffers.size (), raw_command_buffers.data (), raw_signal_semaphores.size (), raw_signal_semaphores.data ());
+    vk::SubmitInfo submit_info (1, &wait_semaphore, &wait_stage_flags, 1, &command_buffer, 1, &signal_semphore);
 
     queue.submit (submit_info, nullptr);
 }
 
-void vk_queue::present (const std::vector<vk::SwapchainKHR>& swapchains, const std::vector<uint32_t>& image_indices, const vk_semaphores* wait_semaphores) const
+void vk_queue::present (const vk::SwapchainKHR& swapchain, const uint32_t& image_index, const vk::Semaphore& wait_semaphore) const
 {
     OutputDebugString (L"vk_queue::present swapchains image_indices wait_semaphores\n");
 
-    std::vector<vk::Semaphore> raw_wait_semaphores;
-    raw_wait_semaphores.reserve (wait_semaphores->semaphores.size ());
-    for (const auto& semaphore : wait_semaphores->semaphores)
-    {
-        raw_wait_semaphores.push_back (semaphore.semaphore);
-    }
-
-    vk::PresentInfoKHR present_info (raw_wait_semaphores.size (), raw_wait_semaphores.data (), swapchains.size (), swapchains.data (), image_indices.data ());
+    vk::PresentInfoKHR present_info (1, &wait_semaphore, 1, &swapchain, &image_index);
     queue.presentKHR (present_info);
 }
 
