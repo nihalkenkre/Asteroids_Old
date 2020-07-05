@@ -32,4 +32,5 @@ void game::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 
 void game::main_loop ()
 {
+    current_scene->main_loop ();
 }

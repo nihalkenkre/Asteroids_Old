@@ -6,7 +6,7 @@
 
 #include <Windows.h>
 
-scene_graphics::scene_graphics (const scene_assets* assets, const common_graphics* c_graphics)
+scene_graphics::scene_graphics (const scene_assets* assets, const common_graphics* c_graphics) : graphics_device (c_graphics->graphics_device.get ()), graphics_queue (c_graphics->device_queues->graphics_queue.get ()), swapchain (c_graphics->swapchain.get ())
 {
     OutputDebugString (L"scene_graphics::scene_graphics assets c_graphics\n");
 
@@ -50,7 +50,7 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
             vb_ib_memory = std::make_unique<vk_device_memory> (c_graphics->graphics_device->graphics_device, vb_ib->buffer, c_graphics->physical_device->memory_properties, vk::MemoryPropertyFlagBits::eDeviceLocal);
 
             vb_ib->bind_memory (vb_ib_memory->device_memory, 0);
-            vb_ib->copy_from_buffer (staging_buffer.buffer, current_data_size, c_graphics->transfer_command_pool->command_pool, c_graphics->device_queues->transfer_queue);
+            vb_ib->copy_from_buffer (staging_buffer.buffer, current_data_size, c_graphics->transfer_command_pool->command_pool, c_graphics->device_queues->transfer_queue->queue);
             
             current_data_size = 0;
             total_data.clear ();
@@ -99,9 +99,9 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
 
             for (const auto& image : images)
             {
-                image->img->change_layout (c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, c_graphics->queue_family_indices->transfer_queue_family_index, c_graphics->queue_family_indices->transfer_queue_family_index, image->img->image, 1, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, vk::AccessFlagBits::eMemoryRead, vk::AccessFlagBits::eTransferWrite, vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer);
-                image->img->copy_from_buffer (c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, image->image_data_offset, staging_image_buffer.buffer, vk::Extent3D (image->width, image->height, 1), 1);
-                image->img->change_layout(c_graphics->device_queues->transfer_queue, c_graphics->transfer_command_pool->command_pool, c_graphics->queue_family_indices->transfer_queue_family_index, c_graphics->queue_family_indices->graphics_queue_family_index, image->img->image, 1, vk::ImageLayout::eUndefined, vk::ImageLayout::eShaderReadOnlyOptimal, vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead, vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader);
+                image->img->change_layout (c_graphics->device_queues->transfer_queue->queue, c_graphics->transfer_command_pool->command_pool, c_graphics->queue_family_indices->transfer_queue_family_index, c_graphics->queue_family_indices->transfer_queue_family_index, image->img->image, 1, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, vk::AccessFlagBits::eMemoryRead, vk::AccessFlagBits::eTransferWrite, vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer);
+                image->img->copy_from_buffer (c_graphics->device_queues->transfer_queue->queue, c_graphics->transfer_command_pool->command_pool, image->image_data_offset, staging_image_buffer.buffer, vk::Extent3D (image->width, image->height, 1), 1);
+                image->img->change_layout(c_graphics->device_queues->transfer_queue->queue, c_graphics->transfer_command_pool->command_pool, c_graphics->queue_family_indices->transfer_queue_family_index, c_graphics->queue_family_indices->graphics_queue_family_index, image->img->image, 1, vk::ImageLayout::eUndefined, vk::ImageLayout::eShaderReadOnlyOptimal, vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead, vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader);
                 image->img_view = std::make_unique<vk_image_view> (c_graphics->graphics_device->graphics_device, image->img->image, vk::Format::eR8G8B8A8Unorm);
             }
         }
@@ -110,14 +110,25 @@ scene_graphics::scene_graphics (const scene_assets* assets, const common_graphic
     render_pass = std::make_unique<vk_render_pass> (c_graphics->graphics_device->graphics_device, c_graphics->surface->surface_format.format);
     framebuffers = std::make_unique<vk_framebuffers> (c_graphics->graphics_device->graphics_device, c_graphics->swapchain->image_views, render_pass->render_pass, c_graphics->surface->surface_extent);
     signal_semaphores = std::make_unique<vk_semaphores> (c_graphics->graphics_device->graphics_device, c_graphics->swapchain->images.size ());
-    wait_semaphore = std::make_unique<vk_semaphore> (c_graphics->graphics_device->graphics_device);
+    wait_semaphores = std::make_unique<vk_semaphores> (c_graphics->graphics_device->graphics_device, 1);
 
     graphics_command_pool = std::make_unique<vk_command_pool> (c_graphics->graphics_device->graphics_device, c_graphics->queue_family_indices->graphics_queue_family_index, vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
     swapchain_command_buffers = std::make_unique<vk_command_buffers> (c_graphics->graphics_device->graphics_device, graphics_command_pool->command_pool, c_graphics->swapchain->images.size ());
 
     swapchain_command_buffers->begin (vk::CommandBufferUsageFlagBits::eSimultaneousUse);
+    swapchain_command_buffers->draw (render_pass->render_pass, framebuffers->framebuffers, vk::Rect2D ({}, { c_graphics->surface->surface_extent }));
+    swapchain_command_buffers->end ();
+    graphics_queue->submit (vk::PipelineStageFlagBits::eColorAttachmentOutput, swapchain_command_buffers.get (), wait_semaphores.get (), signal_semaphores.get ());
 }
 
 void scene_graphics::main_loop ()
 {
+    vk::ResultValue<uint32_t> result = graphics_device->graphics_device.acquireNextImageKHR (swapchain->swapchain, UINT64_MAX, wait_semaphores->semaphores.at (0).semaphore, nullptr);
+
+    if (result.result != vk::Result::eSuccess && result.result != vk::Result::eSuboptimalKHR && result.result != vk::Result::eErrorOutOfDateKHR)
+    {
+        throw "Acquire next image";
+    }
+
+    graphics_queue->present ({ swapchain->swapchain }, { result.value }, wait_semaphores.get ());
 }

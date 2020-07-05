@@ -105,15 +105,16 @@ public:
     vk::Device graphics_device;
 };
 
+class vk_queue;
 
 class vk_device_queues
 {
 public:
     vk_device_queues (const vk::PhysicalDevice& physical_device, const vk::Device& graphics_device, const vk_queue_family_indices* queue_family_indices, const std::vector<uint32_t>& queue_indices);
 
-    vk::Queue graphics_queue;
-    vk::Queue compute_queue;
-    vk::Queue transfer_queue;
+    std::unique_ptr<vk_queue> graphics_queue = nullptr;
+    std::unique_ptr<vk_queue> compute_queue = nullptr;
+    std::unique_ptr<vk_queue> transfer_queue = nullptr;
 };
 
 
@@ -172,6 +173,7 @@ private:
     vk::Device graphics_device;
 };
 
+class vk_framebuffer;
 
 class vk_command_buffers
 {
@@ -185,7 +187,7 @@ public:
     ~vk_command_buffers () noexcept;
 
     void begin (const vk::CommandBufferUsageFlags& flags);
-    void draw (const vk::RenderPass& render_pass, const std::vector<vk::Framebuffer>& framebuffers, const vk::Rect2D& render_area);
+    void draw (const vk::RenderPass& render_pass, const std::vector<vk_framebuffer>& framebuffers, const vk::Rect2D& render_area);
     void end ();
 
     std::vector<vk::CommandBuffer> command_buffers;
@@ -264,17 +266,22 @@ private:
     vk::Device graphics_device;
 };
 
+class vk_command_buffers;
+class vk_semaphores;
 
 class vk_queue
 {
 public:
     vk_queue (const vk::Queue& queue, const vk::Device& graphics_device);
 
-    void submit (const vk::ArrayProxy<vk::CommandBuffer>& command_buffers);
+    void submit (const std::vector<vk::CommandBuffer>& command_buffers) const;
+    void submit (const vk::PipelineStageFlags& wait_stage_flags, const vk_command_buffers* command_buffers, const vk_semaphores* wait_semaphores, const vk_semaphores* signal_semaphores) const;
+    void present (const std::vector<vk::SwapchainKHR>& swapchains, const std::vector<uint32_t>& image_indices, const vk_semaphores* wait_semaphores) const;
+
+    vk::Queue queue;
 
 private:
     vk::Device graphics_device;
-    vk::Queue queue;
 };
 
 

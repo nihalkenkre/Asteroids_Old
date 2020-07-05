@@ -18,4 +18,5 @@ void test_scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 
 void test_scene::main_loop ()
 {
+    graphics->main_loop ();
 }

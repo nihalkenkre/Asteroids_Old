@@ -549,9 +549,9 @@ vk_device_queues::vk_device_queues (const vk::PhysicalDevice& physical_device, c
 
     std::vector<vk::QueueFamilyProperties> queue_family_properties = physical_device.getQueueFamilyProperties ();
 
-    graphics_queue = graphics_device.getQueue (queue_family_indices->graphics_queue_family_index, queue_indices.at (0) > queue_family_properties.at (queue_family_indices->graphics_queue_family_index).queueCount ? queue_family_properties.at (queue_family_indices->graphics_queue_family_index).queueCount - 1 : queue_indices.at (0));
-    compute_queue = graphics_device.getQueue (queue_family_indices->compute_queue_family_index, queue_indices.at (1) > queue_family_properties.at (queue_family_indices->compute_queue_family_index).queueCount ? queue_family_properties.at (queue_family_indices->compute_queue_family_index).queueCount - 1 : queue_indices.at (1));
-    transfer_queue = graphics_device.getQueue (queue_family_indices->transfer_queue_family_index, queue_indices.at (2) > queue_family_properties.at (queue_family_indices->transfer_queue_family_index).queueCount ? queue_family_properties.at (queue_family_indices->transfer_queue_family_index).queueCount - 1 : queue_indices.at (2));
+    graphics_queue = std::make_unique<vk_queue> (graphics_device.getQueue (queue_family_indices->graphics_queue_family_index, queue_indices.at (0) > queue_family_properties.at (queue_family_indices->graphics_queue_family_index).queueCount ? queue_family_properties.at (queue_family_indices->graphics_queue_family_index).queueCount - 1 : queue_indices.at (0)), graphics_device);
+    compute_queue = std::make_unique<vk_queue> (graphics_device.getQueue (queue_family_indices->compute_queue_family_index, queue_indices.at (1) > queue_family_properties.at (queue_family_indices->compute_queue_family_index).queueCount ? queue_family_properties.at (queue_family_indices->compute_queue_family_index).queueCount - 1 : queue_indices.at (1)), graphics_device);
+    transfer_queue = std::make_unique<vk_queue> (graphics_device.getQueue (queue_family_indices->transfer_queue_family_index, queue_indices.at (2) > queue_family_properties.at (queue_family_indices->transfer_queue_family_index).queueCount ? queue_family_properties.at (queue_family_indices->transfer_queue_family_index).queueCount - 1 : queue_indices.at (2)), graphics_device);
 }
 
 vk_queue_info::vk_queue_info (const vk_queue_family_indices* queue_family_indices)
@@ -797,12 +797,12 @@ void vk_device_memory::map_data (const std::vector<unsigned char>& data, const v
 
 vk_command_buffers::vk_command_buffers ()
 {
-    OutputDebugString (L"vk_command_buffer::vk_command_buffer\n");
+    OutputDebugString (L"vk_command_buffers::vk_command_buffers\n");
 }
 
 vk_command_buffers::vk_command_buffers (const vk::Device graphics_device, const vk::CommandPool& command_pool, const uint32_t& num_command_buffers)
 {
-    OutputDebugString (L"vk_command_buffer::vk_comamnd_buffer graphics_device command_pool num_command_buffers\n");
+    OutputDebugString (L"vk_command_buffers::vk_comamnd_buffer graphics_device command_pool num_command_buffers\n");
 
     vk::CommandBufferAllocateInfo allocate_info (command_pool, {}, num_command_buffers);
     command_buffers = graphics_device.allocateCommandBuffers (allocate_info);
@@ -813,14 +813,14 @@ vk_command_buffers::vk_command_buffers (const vk::Device graphics_device, const 
 
 vk_command_buffers::vk_command_buffers (vk_command_buffers&& other) noexcept
 {
-    OutputDebugString (L"vk_command_buffer::vk_command_buffer Move constructor\n");
+    OutputDebugString (L"vk_command_buffers::vk_command_buffers Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_command_buffers& vk_command_buffers::operator= (vk_command_buffers&& other) noexcept
 {
-    OutputDebugString (L"vk_command_buffer::vk_command_buffer Move assignment\n");
+    OutputDebugString (L"vk_command_buffers::vk_command_buffers Move assignment\n");
 
     command_buffers = std::move (other.command_buffers);
     command_pool = other.command_pool;
@@ -834,7 +834,7 @@ vk_command_buffers& vk_command_buffers::operator= (vk_command_buffers&& other) n
 
 vk_command_buffers::~vk_command_buffers () noexcept
 {
-    OutputDebugString (L"vk_command_buffer::~vk_command_buffer\n");
+    OutputDebugString (L"vk_command_buffers::~vk_command_buffers\n");
 
     if (command_pool != nullptr && graphics_device != nullptr)
     {
@@ -854,13 +854,13 @@ void vk_command_buffers::begin (const vk::CommandBufferUsageFlags& flags)
     }
 }
 
-void vk_command_buffers::draw (const vk::RenderPass& render_pass, const std::vector<vk::Framebuffer>& framebuffers, const vk::Rect2D& render_area)
+void vk_command_buffers::draw (const vk::RenderPass& render_pass, const std::vector<vk_framebuffer>& framebuffers, const vk::Rect2D& render_area)
 {
-    OutputDebugString (L"vk_command_buffer::draw render_pass, framebuffers\n");
+    OutputDebugString (L"vk_command_buffers::draw render_pass, framebuffers\n");
 
     std::vector<vk::ClearValue> clear_values;
     vk::ClearValue clear_value;
-    clear_value.color{ 1, 0, 1, 1 };
+    clear_value.color = vk::ClearColorValue (std::array<float, 4> {1, 0, 0, 1});
     clear_values.push_back (clear_value);
 
     vk::RenderPassBeginInfo render_pass_begin_info (render_pass, {}, render_area, clear_values.size (), clear_values.data ());
@@ -868,7 +868,7 @@ void vk_command_buffers::draw (const vk::RenderPass& render_pass, const std::vec
     size_t index = 0;
     for (const auto& command_buffer : command_buffers)
     {
-        render_pass_begin_info.framebuffer = framebuffers.at (index);
+        render_pass_begin_info.framebuffer = framebuffers.at (index).framebuffer;
         command_buffer.beginRenderPass (render_pass_begin_info, vk::SubpassContents::eInline);
         command_buffer.endRenderPass ();
 
@@ -878,7 +878,7 @@ void vk_command_buffers::draw (const vk::RenderPass& render_pass, const std::vec
 
 void vk_command_buffers::end ()
 {
-    OutputDebugString (L"vk_command_buffer::end\n");
+    OutputDebugString (L"vk_command_buffers::end\n");
 
     for (const auto& command_buffer : command_buffers)
     {
@@ -892,7 +892,7 @@ vk_queue::vk_queue (const vk::Queue& queue, const vk::Device& graphics_device) :
     OutputDebugString (L"vk_queue::vk_queue queue graphics_device\n");
 }
 
-void vk_queue::submit (const vk::ArrayProxy<vk::CommandBuffer>& command_buffers)
+void vk_queue::submit (const std::vector<vk::CommandBuffer>& command_buffers) const
 {
     OutputDebugString (L"vk_queue::submit command_buffers\n");
 
@@ -900,6 +900,48 @@ void vk_queue::submit (const vk::ArrayProxy<vk::CommandBuffer>& command_buffers)
 
     queue.submit (submit_info, nullptr);
     queue.waitIdle ();
+}
+
+void vk_queue::submit (const vk::PipelineStageFlags& wait_stage_flags, const vk_command_buffers* command_buffers, const vk_semaphores* wait_semaphores, const vk_semaphores* signal_semphores) const
+{
+    OutputDebugString (L"vk_queue::submit wait_stage_flags command_buffers wait_semaphores signal_semaphores\n");
+
+    std::vector<vk::CommandBuffer> raw_command_buffers (command_buffers->command_buffers.size ());
+    std::copy (command_buffers->command_buffers.begin (), command_buffers->command_buffers.end (), raw_command_buffers.begin ());
+
+    std::vector<vk::Semaphore> raw_wait_semaphores;
+    raw_wait_semaphores.reserve(wait_semaphores->semaphores.size ());
+
+    for (const auto& semaphore : wait_semaphores->semaphores)
+    {
+        raw_wait_semaphores.push_back (semaphore.semaphore);
+    }
+
+    std::vector<vk::Semaphore> raw_signal_semaphores;
+    raw_signal_semaphores.reserve (signal_semphores->semaphores.size ());
+    for (const auto& semaphore : signal_semphores->semaphores)
+    {
+        raw_signal_semaphores.push_back (semaphore.semaphore);
+    }
+
+    vk::SubmitInfo submit_info (raw_wait_semaphores.size (), raw_wait_semaphores.data (), &wait_stage_flags, raw_command_buffers.size (), raw_command_buffers.data (), raw_signal_semaphores.size (), raw_signal_semaphores.data ());
+
+    queue.submit (submit_info, nullptr);
+}
+
+void vk_queue::present (const std::vector<vk::SwapchainKHR>& swapchains, const std::vector<uint32_t>& image_indices, const vk_semaphores* wait_semaphores) const
+{
+    OutputDebugString (L"vk_queue::present swapchains image_indices wait_semaphores\n");
+
+    std::vector<vk::Semaphore> raw_wait_semaphores;
+    raw_wait_semaphores.reserve (wait_semaphores->semaphores.size ());
+    for (const auto& semaphore : wait_semaphores->semaphores)
+    {
+        raw_wait_semaphores.push_back (semaphore.semaphore);
+    }
+
+    vk::PresentInfoKHR present_info (raw_wait_semaphores.size (), raw_wait_semaphores.data (), swapchains.size (), swapchains.data (), image_indices.data ());
+    queue.presentKHR (present_info);
 }
 
 vk_descriptor_pool::vk_descriptor_pool ()
