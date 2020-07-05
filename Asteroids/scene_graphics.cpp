@@ -22,22 +22,34 @@ scene_graphics::scene_graphics (const scene_assets* assets,
         {
             for (auto& primitive : mesh.alpha_graphics_primitives->primitives)
             {
-                total_data.resize (total_data.size () + primitive.positions.size () + primitive.normals.size () + primitive.uv0s.size () + primitive.indices.size ());
+                total_data.resize (total_data.size () + 
+                                   primitive.positions.size () + 
+                                   primitive.normals.size () + 
+                                   primitive.uv0s.size () + 
+                                   primitive.indices.size ());
 
                 primitive.positions_offset = current_data_size;
-                std::copy (primitive.positions.begin (), primitive.positions.end (), total_data.begin () + static_cast<int>(current_data_size));
+                std::copy (primitive.positions.begin (), 
+                           primitive.positions.end (), 
+                           total_data.begin () + static_cast<int>(current_data_size));
                 current_data_size += primitive.positions.size ();
 
                 primitive.normals_offset = current_data_size;
-                std::copy (primitive.normals.begin (), primitive.normals.end (), total_data.begin () + static_cast<int>(current_data_size));
+                std::copy (primitive.normals.begin (), 
+                           primitive.normals.end (), 
+                           total_data.begin () + static_cast<int>(current_data_size));
                 current_data_size += primitive.normals.size ();
 
                 primitive.uv0s_offset = current_data_size;
-                std::copy (primitive.uv0s.begin (), primitive.uv0s.end (), total_data.begin () + static_cast<int>(current_data_size));
+                std::copy (primitive.uv0s.begin (), 
+                           primitive.uv0s.end (), 
+                           total_data.begin () + static_cast<int>(current_data_size));
                 current_data_size += primitive.uv0s.size ();
 
                 primitive.indices_offset = current_data_size;
-                std::copy (primitive.indices.begin (), primitive.indices.end (), total_data.begin () + static_cast<int>(current_data_size));
+                std::copy (primitive.indices.begin (), 
+                           primitive.indices.end (), 
+                           total_data.begin () + static_cast<int>(current_data_size));
                 current_data_size += primitive.indices.size ();
             }
         }
@@ -60,7 +72,8 @@ scene_graphics::scene_graphics (const scene_assets* assets,
             vb_ib = std::make_unique<vk_buffer> (c_graphics->graphics_device->graphics_device, 
                                                  current_data_size, 
                                                  vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eIndexBuffer, 
-                                                 vk::SharingMode::eExclusive, c_graphics->queue_family_indices->transfer_queue_family_index);
+                                                 vk::SharingMode::eExclusive, 
+                                                 c_graphics->queue_family_indices->transfer_queue_family_index);
             vb_ib_memory = std::make_unique<vk_device_memory> (c_graphics->graphics_device->graphics_device, 
                                                                vb_ib->buffer, 
                                                                c_graphics->physical_device->memory_properties, 
@@ -215,7 +228,9 @@ void scene_graphics::main_loop ()
                             swapchain_command_buffers->command_buffers.at (result.value), 
                             wait_semaphore->semaphore, 
                             signal_semaphores->semaphores.at (result.value).semaphore);
-    graphics_queue->present (swapchain->swapchain, result.value, signal_semaphores->semaphores.at (result.value).semaphore);
+    graphics_queue->present (swapchain->swapchain, 
+                             result.value, 
+                             signal_semaphores->semaphores.at (result.value).semaphore);
 }
 
 scene_graphics::~scene_graphics ()
