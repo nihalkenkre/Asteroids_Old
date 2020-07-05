@@ -1,7 +1,11 @@
 # Build
 Debug
 Release
-build*
+build32
 
 # Visual Studio
 .vs
+
+# vim
+*~*
+*.swp*

@@ -4,6 +4,7 @@
 #include "common_graphics.hpp"
 #include "vk_utils.hpp"
 
+#include <iostream>
 #include <Windows.h>
 
 scene_graphics::scene_graphics (const scene_assets* assets, const common_graphics* c_graphics) : graphics_device (c_graphics->graphics_device.get ()), graphics_queue (c_graphics->device_queues->graphics_queue.get ()), swapchain (c_graphics->swapchain.get ())

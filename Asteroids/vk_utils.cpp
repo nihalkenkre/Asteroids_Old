@@ -2,6 +2,7 @@
 #include "common_graphics.hpp"
 #include "image.hpp"
 
+#include <iostream>
 #include <map>
 
 
@@ -106,9 +107,11 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeve
 {
     if (callback_data)
     {
-        wchar_t buff[2048];
-        swprintf_s (buff, 2048, L"Debug Messenger Callback: %hs\n", callback_data->pMessage);
-        OutputDebugString (buff);
+        wchar_t wbuff[2048];
+        swprintf_s (wbuff, 2048, L"Debug Messenger Callback: %hs\n", callback_data->pMessage);
+        OutputDebugString (wbuff);
+    
+        std::cout << "Debug Messenger Callback:" << callback_data->pMessage << "\n";
     }
 
     return VK_FALSE;

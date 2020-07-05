@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <memory>
 #include <iostream>
+#include <cstdio>
+#include <conio.h>
 
 #include "game.hpp"
 
@@ -61,7 +63,8 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	freopen ("CONOUT$", "w", stdout);
     std::cout << "Hello Console\n";
 #endif
-	WNDCLASS wc = { 0 };
+
+    WNDCLASS wc = { 0 };
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc = WindowProc;
@@ -84,7 +87,6 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	ShowWindow (hWnd, cmd_show);
 	UpdateWindow (hWnd);
 
-
 	try
 	{
 		G = std::make_unique<game> (hInstance, hWnd);
@@ -96,11 +98,13 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 		{
 			if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
 			{
-				G->main_loop ();
-
 				TranslateMessage (&msg);
 				DispatchMessage (&msg);
 			}
+            else
+            {
+				G->main_loop ();
+            }
 		}
 	}
 	catch (...)
@@ -110,7 +114,9 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	}
 
 	DestroyWindow (hWnd);
-	FreeConsole ();
-    
+
+    _getch ();
+    FreeConsole ();
+
 	return EXIT_SUCCESS;
 }
