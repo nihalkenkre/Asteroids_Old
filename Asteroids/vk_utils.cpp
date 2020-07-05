@@ -21,20 +21,35 @@ vk_instance::vk_instance (const bool& is_validation_needed)
 
     std::vector<vk::LayerProperties> layer_properties = vk::enumerateInstanceLayerProperties ();
 
-    auto layer_iter = std::find_if (layer_properties.begin (), layer_properties.end (), [&](const vk::LayerProperties& layer_property) { return (strcmp (layer_property.layerName, "VK_LAYER_KHRONOS_validation") == 0); });
+    auto layer_iter = std::find_if (layer_properties.begin (), 
+                                    layer_properties.end (), 
+                                    [&](const vk::LayerProperties& layer_property) 
+                                    { 
+                                        return (strcmp (layer_property.layerName, "VK_LAYER_KHRONOS_validation") == 0); 
+                                    });
     if (layer_iter != layer_properties.end ())
     {
         requested_instance_layers.push_back (layer_iter->layerName);
     }
 
     std::vector<vk::ExtensionProperties> extension_properties = vk::enumerateInstanceExtensionProperties ();
-    auto extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](const vk::ExtensionProperties& extension_property) { return (strcmp (extension_property.extensionName, VK_KHR_SURFACE_EXTENSION_NAME) == 0); });
+    auto extension_iter = std::find_if (extension_properties.begin (), 
+                                        extension_properties.end (), 
+                                        [&](const vk::ExtensionProperties& extension_property) 
+                                        { 
+                                            return (strcmp (extension_property.extensionName, VK_KHR_SURFACE_EXTENSION_NAME) == 0); 
+                                        });
     if (extension_iter != extension_properties.end ())
     {
         requested_instance_extensions.push_back (extension_iter->extensionName);
     }
 
-    extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](const vk::ExtensionProperties& extension_property) { return (strcmp (extension_property.extensionName, "VK_KHR_win32_surface") == 0); });
+    extension_iter = std::find_if (extension_properties.begin (), 
+                                   extension_properties.end (), 
+                                   [&](const vk::ExtensionProperties& extension_property) 
+                                   { 
+                                       return (strcmp (extension_property.extensionName, "VK_KHR_win32_surface") == 0); 
+                                   });
     if (extension_iter != extension_properties.end ())
     {
         requested_instance_extensions.push_back (extension_iter->extensionName);
@@ -42,7 +57,12 @@ vk_instance::vk_instance (const bool& is_validation_needed)
 
     if (is_validation_needed)
     {
-        extension_iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](const vk::ExtensionProperties& extension_property) { return (strcmp (extension_property.extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == 0); });
+        extension_iter = std::find_if (extension_properties.begin (), 
+                                       extension_properties.end (), 
+                                       [&](const vk::ExtensionProperties& extension_property) 
+                                       { 
+                                           return (strcmp (extension_property.extensionName, VK_EXT_DEBUG_UTILS_EXTENSION_NAME) == 0); 
+                                       });
         if (extension_iter != extension_properties.end ())
         {
             requested_instance_extensions.push_back (extension_iter->extensionName);
@@ -50,7 +70,12 @@ vk_instance::vk_instance (const bool& is_validation_needed)
     }
 
     vk::ApplicationInfo application_info ("Asteroids", VK_MAKE_VERSION (1, 0, 0), "AGE", VK_MAKE_VERSION (1, 0, 0), VK_API_VERSION_1_2);
-    vk::InstanceCreateInfo instance_create_info ({}, &application_info, requested_instance_layers.size (), requested_instance_layers.data (), requested_instance_extensions.size (), requested_instance_extensions.data ());
+    vk::InstanceCreateInfo instance_create_info ({}, 
+                                                 &application_info, 
+                                                 requested_instance_layers.size (), 
+                                                 requested_instance_layers.data (), 
+                                                 requested_instance_extensions.size (), 
+                                                 requested_instance_extensions.data ());
 
     instance = vk::createInstance (instance_create_info);
 }
@@ -129,10 +154,17 @@ vk_debug_utils_messenger::vk_debug_utils_messenger (const vk::Instance& instance
     pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance.getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
     pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance.getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
 
-    vk::DebugUtilsMessageSeverityFlagsEXT severity_flags (vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose);
-    vk::DebugUtilsMessageTypeFlagsEXT message_type_flags (vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
+    vk::DebugUtilsMessageSeverityFlagsEXT severity_flags (vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | 
+                                                          vk::DebugUtilsMessageSeverityFlagBitsEXT::eError | 
+                                                          vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose);
+    vk::DebugUtilsMessageTypeFlagsEXT message_type_flags (vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | 
+                                                          vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | 
+                                                          vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation);
 
-    debug_utils_messenger = instance.createDebugUtilsMessengerEXT (vk::DebugUtilsMessengerCreateInfoEXT ({}, severity_flags, message_type_flags, &debug_messenger_callback));
+    debug_utils_messenger = instance.createDebugUtilsMessengerEXT (vk::DebugUtilsMessengerCreateInfoEXT ({}, 
+                                                                                                         severity_flags, 
+                                                                                                         message_type_flags, 
+                                                                                                         &debug_messenger_callback));
     this->instance = instance;
 }
 
@@ -171,7 +203,11 @@ vk_surface::vk_surface ()
     OutputDebugString (L"vk_surface::vk_surface\n");
 }
 
-vk_surface::vk_surface (const vk::Instance& instance, const HINSTANCE& h_instance, const HWND& h_wnd, const vk::PhysicalDevice& physical_device, const uint32_t& graphics_queue_family_index)
+vk_surface::vk_surface (const vk::Instance& instance, 
+                        const HINSTANCE& h_instance, 
+                        const HWND& h_wnd, 
+                        const vk::PhysicalDevice& physical_device, 
+                        const uint32_t& graphics_queue_family_index)
 {
     OutputDebugString (L"vk_surface::vk_surface instance h_instance h_wnd\n");
 
@@ -185,7 +221,12 @@ vk_surface::vk_surface (const vk::Instance& instance, const HINSTANCE& h_instanc
 
     std::vector<vk::SurfaceFormatKHR> surface_formats = physical_device.getSurfaceFormatsKHR (surface);
 
-    auto format_iter = std::find_if (surface_formats.begin (), surface_formats.end (), [&](vk::SurfaceFormatKHR format) { return format == vk::Format::eB8G8R8A8Unorm; });
+    auto format_iter = std::find_if (surface_formats.begin (), 
+                                     surface_formats.end (), 
+                                     [&](vk::SurfaceFormatKHR format) 
+                                     { 
+                                         return format == vk::Format::eB8G8R8A8Unorm; 
+                                     });
     if (format_iter != surface_formats.end ())
     {
         surface_format = *format_iter;
@@ -193,14 +234,24 @@ vk_surface::vk_surface (const vk::Instance& instance, const HINSTANCE& h_instanc
 
     std::vector<vk::PresentModeKHR> present_modes = physical_device.getSurfacePresentModesKHR (surface);
 
-    auto present_mode_iter = std::find_if (present_modes.begin (), present_modes.end (), [&](const vk::PresentModeKHR& present_mode) { return present_mode == vk::PresentModeKHR::eMailbox; });
+    auto present_mode_iter = std::find_if (present_modes.begin (), 
+                                           present_modes.end (), 
+                                           [&](const vk::PresentModeKHR& present_mode) 
+                                           { 
+                                               return present_mode == vk::PresentModeKHR::eMailbox; 
+                                           });
     if (present_mode_iter != present_modes.end ())
     {
         present_mode = *present_mode_iter;
     }
     else
     {
-        auto present_mode_iter = std::find_if (present_modes.begin (), present_modes.end (), [&](const vk::PresentModeKHR& present_mode) { return present_mode == vk::PresentModeKHR::eFifo; });
+        auto present_mode_iter = std::find_if (present_modes.begin (), 
+                                               present_modes.end (), 
+                                               [&](const vk::PresentModeKHR& present_mode) 
+                                               { 
+                                                   return present_mode == vk::PresentModeKHR::eFifo; 
+                                               });
         present_mode = *present_mode_iter;
     }
 
@@ -249,13 +300,24 @@ vk_graphics_device::vk_graphics_device (const vk::PhysicalDevice& physical_devic
     std::vector<const char*> requested_device_extensions;
     std::vector<vk::ExtensionProperties> extension_properties = physical_device.enumerateDeviceExtensionProperties ();
 
-    auto iter = std::find_if (extension_properties.begin (), extension_properties.end (), [&](const vk::ExtensionProperties& extension_property) { return strcmp (extension_property.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0; });
+    auto iter = std::find_if (extension_properties.begin (), 
+                              extension_properties.end (), 
+                              [&](const vk::ExtensionProperties& extension_property) 
+                              { 
+                                  return strcmp (extension_property.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0; 
+                              });
     if (iter != extension_properties.end ())
     {
         requested_device_extensions.push_back (VK_KHR_SWAPCHAIN_EXTENSION_NAME);
     }
 
-    vk::DeviceCreateInfo device_create_info ({}, queue_create_infos.size (), queue_create_infos.data (), 0, nullptr, requested_device_extensions.size (), requested_device_extensions.data ());
+    vk::DeviceCreateInfo device_create_info ({}, 
+                                             queue_create_infos.size (), 
+                                             queue_create_infos.data (), 
+                                             0, 
+                                             nullptr, 
+                                             requested_device_extensions.size (), 
+                                             requested_device_extensions.data ());
     graphics_device = physical_device.createDevice (device_create_info);
 }
 
@@ -296,7 +358,19 @@ vk_swapchain::vk_swapchain (const vk::Device& graphics_device, const vk_surface*
 {
     OutputDebugString (L"vk_swapchain::vk_swapchain graphics_device surface\n");
 
-    vk::SwapchainCreateInfoKHR swapchain_create_info ({}, surface->surface, surface->surface_capabilities.minImageCount + 1, surface->surface_format.format, surface->surface_format.colorSpace, surface->surface_extent, 1, surface->surface_capabilities.supportedUsageFlags, vk::SharingMode::eExclusive, 0, {}, surface->surface_capabilities.currentTransform, vk::CompositeAlphaFlagBitsKHR::eOpaque, surface->present_mode);
+    vk::SwapchainCreateInfoKHR swapchain_create_info ({}, 
+                                                      surface->surface, 
+                                                      surface->surface_capabilities.minImageCount + 1, 
+                                                      surface->surface_format.format, 
+                                                      surface->surface_format.colorSpace, 
+                                                      surface->surface_extent, 
+                                                      1, 
+                                                      surface->surface_capabilities.supportedUsageFlags, 
+                                                      vk::SharingMode::eExclusive, 
+                                                      0, 
+                                                      {}, 
+                                                      surface->surface_capabilities.currentTransform, 
+                                                      vk::CompositeAlphaFlagBitsKHR::eOpaque, surface->present_mode);
     swapchain = graphics_device.createSwapchainKHR (swapchain_create_info);
     
     images = graphics_device.getSwapchainImagesKHR (swapchain);
@@ -344,7 +418,9 @@ vk_command_pool::vk_command_pool ()
     OutputDebugString (L"vk_command_pool::vk_command_pool\n");
 }
 
-vk_command_pool::vk_command_pool (const vk::Device& graphics_device, const size_t& queue_family_index, const vk::CommandPoolCreateFlags& flags)
+vk_command_pool::vk_command_pool (const vk::Device& graphics_device, 
+                                  const size_t& queue_family_index, 
+                                  const vk::CommandPoolCreateFlags& flags)
 {
     OutputDebugString (L"vk_command_pool::vk_command_pool graphics_device queue_family_index flags\n");
 
@@ -388,11 +464,30 @@ vk_image::vk_image ()
     OutputDebugString (L"vk_image::vk_image\n");
 }
 
-vk_image::vk_image (const vk::Device& graphics_device, const uint32_t& queue_family_index, const vk::Extent3D& extent, const uint32_t& array_layers, const vk::Format& format, const vk::ImageLayout& image_layout, vk::SharingMode sharing_mode, vk::ImageUsageFlags usage)
+vk_image::vk_image (const vk::Device& graphics_device, 
+                    const uint32_t& queue_family_index, 
+                    const vk::Extent3D& extent, 
+                    const uint32_t& array_layers, 
+                    const vk::Format& format, 
+                    const vk::ImageLayout& image_layout, 
+                    vk::SharingMode sharing_mode, 
+                    vk::ImageUsageFlags usage)
 {
     OutputDebugString (L"vk_image::vk_image graphics_device queue_family_index extent array_layers format image_layout sharing_mode usage\n");
 
-    vk::ImageCreateInfo create_info ({}, vk::ImageType::e2D, format, extent, 1, array_layers, vk::SampleCountFlagBits::e1 , {}, usage, sharing_mode, 1, &queue_family_index, image_layout);
+    vk::ImageCreateInfo create_info ({}, 
+                                     vk::ImageType::e2D, 
+                                     format, 
+                                     extent, 
+                                     1, 
+                                     array_layers, 
+                                     vk::SampleCountFlagBits::e1 , 
+                                     {}, 
+                                     usage, 
+                                     sharing_mode, 
+                                     1, 
+                                     &queue_family_index, 
+                                     image_layout);
 
     image = graphics_device.createImage (create_info);
 
@@ -418,23 +513,51 @@ vk_image& vk_image::operator= (vk_image&& other) noexcept
     return *this;
 }
 
-void vk_image::change_layout (const vk::Queue& transfer_queue, const vk::CommandPool& transfer_command_pool, const uint32_t& src_queue_family_index, const uint32_t& dst_queue_family_index, const vk::Image& image, const uint32_t& num_layers, const vk::ImageLayout& old_layout, const vk::ImageLayout& new_layout, const vk::AccessFlags& src_access, const vk::AccessFlags& dst_access, const vk::PipelineStageFlags& src_pipeline_stage, const vk::PipelineStageFlags& dst_pipeline_stage)
+void vk_image::change_layout (const vk::Queue& transfer_queue, 
+                              const vk::CommandPool& transfer_command_pool, 
+                              const uint32_t& src_queue_family_index, 
+                              const uint32_t& dst_queue_family_index, 
+                              const vk::Image& image, 
+                              const uint32_t& num_layers, 
+                              const vk::ImageLayout& old_layout, 
+                              const vk::ImageLayout& new_layout, 
+                              const vk::AccessFlags& src_access, 
+                              const vk::AccessFlags& dst_access, 
+                              const vk::PipelineStageFlags& src_pipeline_stage, 
+                              const vk::PipelineStageFlags& dst_pipeline_stage)
 {
     OutputDebugString (L"vk_image::change_layout\n");
 
     vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
-    vk::ImageMemoryBarrier image_memory_barrier (src_access, dst_access, old_layout, new_layout, src_queue_family_index, dst_queue_family_index, image, subresource_range);
+    vk::ImageMemoryBarrier image_memory_barrier (src_access, 
+                                                 dst_access, 
+                                                 old_layout, 
+                                                 new_layout, 
+                                                 src_queue_family_index, 
+                                                 dst_queue_family_index, 
+                                                 image, 
+                                                 subresource_range);
 
     vk_command_buffers one_time_buffer (graphics_device, transfer_command_pool, 1);
     one_time_buffer.begin (vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
-    one_time_buffer.command_buffers.at (0).pipelineBarrier (src_pipeline_stage, dst_pipeline_stage, vk::DependencyFlagBits::eDeviceGroup, {}, {}, image_memory_barrier); 
+    one_time_buffer.command_buffers.at (0).pipelineBarrier (src_pipeline_stage, 
+                                                            dst_pipeline_stage, 
+                                                            vk::DependencyFlagBits::eDeviceGroup, 
+                                                            {}, 
+                                                            {}, 
+                                                            image_memory_barrier); 
     one_time_buffer.end ();
 
     vk_queue one_time_queue (transfer_queue, graphics_device);
     one_time_queue.submit (one_time_buffer.command_buffers);
 }
 
-void vk_image::copy_from_buffer (const vk::Queue & transfer_queue, const vk::CommandPool& transfer_command_pool, const vk::DeviceSize& offset, const vk::Buffer& buffer, const vk::Extent3D& extent, const uint32_t& num_layers)
+void vk_image::copy_from_buffer (const vk::Queue & transfer_queue, 
+                                 const vk::CommandPool& transfer_command_pool, 
+                                 const vk::DeviceSize& offset, 
+                                 const vk::Buffer& buffer, 
+                                 const vk::Extent3D& extent, 
+                                 const uint32_t& num_layers)
 {
     OutputDebugString (L"vk_image::copy_from_buffer\n");
 
@@ -443,7 +566,10 @@ void vk_image::copy_from_buffer (const vk::Queue & transfer_queue, const vk::Com
 
     vk_command_buffers one_time_buffer (graphics_device, transfer_command_pool, 1);
     one_time_buffer.begin (vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
-    one_time_buffer.command_buffers.at (0).copyBufferToImage (buffer, image, vk::ImageLayout::eTransferDstOptimal, buffer_image_copy);
+    one_time_buffer.command_buffers.at (0).copyBufferToImage (buffer, 
+                                                              image, 
+                                                              vk::ImageLayout::eTransferDstOptimal, 
+                                                              buffer_image_copy);
     one_time_buffer.end ();
 
     vk_queue one_time_queue (transfer_queue, graphics_device);
@@ -471,7 +597,12 @@ vk_image_view::vk_image_view (const vk::Device& graphics_device, const vk::Image
 
     vk::ComponentMapping component_mapping (vk::ComponentSwizzle::eIdentity);
     vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
-    vk::ImageViewCreateInfo create_info ({}, image, vk::ImageViewType::e2D, format, component_mapping, subresource_range);
+    vk::ImageViewCreateInfo create_info ({}, 
+                                         image, 
+                                         vk::ImageViewType::e2D, 
+                                         format, 
+                                         component_mapping, 
+                                         subresource_range);
 
     image_view = graphics_device.createImageView (create_info);
     this->graphics_device = graphics_device;
@@ -523,45 +654,104 @@ vk_queue_family_indices::vk_queue_family_indices (const vk::PhysicalDevice& phys
 
     std::vector<vk::QueueFamilyProperties> queue_family_properties = physical_device.getQueueFamilyProperties ();
 
-    graphics_queue_family_index = std::distance (queue_family_properties.begin (), std::find_if (queue_family_properties.begin (), queue_family_properties.end (), [&](const vk::QueueFamilyProperties& family_property) { return (family_property.queueFlags & vk::QueueFlagBits::eGraphics); }));
+    graphics_queue_family_index = std::distance (queue_family_properties.begin (), 
+                                                 std::find_if (queue_family_properties.begin (), 
+                                                               queue_family_properties.end (), 
+                                                               [&](const vk::QueueFamilyProperties& family_property) 
+                                                               { 
+                                                                   return (family_property.queueFlags & vk::QueueFlagBits::eGraphics); 
+                                                               }
+                                                               )
+                                                 );
 
-    auto compute_family_index_iter = std::find_if (queue_family_properties.begin (), queue_family_properties.end (), [&](const vk::QueueFamilyProperties& family_property) { return (family_property.queueFlags & vk::QueueFlagBits::eCompute) && (!(family_property.queueFlags & vk::QueueFlagBits::eGraphics)); });
+    auto compute_family_index_iter = std::find_if (queue_family_properties.begin (), 
+                                                   queue_family_properties.end (), 
+                                                   [&](const vk::QueueFamilyProperties& family_property) 
+                                                   { 
+                                                       return (family_property.queueFlags & vk::QueueFlagBits::eCompute) && (!(family_property.queueFlags & vk::QueueFlagBits::eGraphics));
+                                                   });
     if (compute_family_index_iter != queue_family_properties.end ())
     {
         compute_queue_family_index = std::distance (queue_family_properties.begin (), compute_family_index_iter);
     }
     else
     {
-        compute_queue_family_index = std::distance (queue_family_properties.begin (), std::find_if (queue_family_properties.begin (), queue_family_properties.end (), [&](const vk::QueueFamilyProperties& family_property) { return (family_property.queueFlags & vk::QueueFlagBits::eCompute); }));
+        compute_queue_family_index = std::distance (queue_family_properties.begin (), 
+                                                    std::find_if (queue_family_properties.begin (), 
+                                                                  queue_family_properties.end (), 
+                                                                  [&](const vk::QueueFamilyProperties& family_property) 
+                                                                  { 
+                                                                      return (family_property.queueFlags & vk::QueueFlagBits::eCompute); 
+                                                                  }
+                                                                  )
+                                                    );
     }
 
-    auto transfer_family_index_iter = std::find_if (queue_family_properties.begin (), queue_family_properties.end (), [&](const vk::QueueFamilyProperties& family_property) { return (family_property.queueFlags & vk::QueueFlagBits::eTransfer) && (!(family_property.queueFlags & vk::QueueFlagBits::eGraphics)) && (!(family_property.queueFlags & vk::QueueFlagBits::eCompute)); });
+    auto transfer_family_index_iter = std::find_if (queue_family_properties.begin (), 
+                                                    queue_family_properties.end (), 
+                                                    [&](const vk::QueueFamilyProperties& family_property) 
+                                                    { 
+                                                        return (family_property.queueFlags & vk::QueueFlagBits::eTransfer) && 
+                                                               (!(family_property.queueFlags & vk::QueueFlagBits::eGraphics)) && 
+                                                               (!(family_property.queueFlags & vk::QueueFlagBits::eCompute)); 
+                                                    }
+                                                    );
     if (transfer_family_index_iter != queue_family_properties.end ())
     {
         transfer_queue_family_index = std::distance (queue_family_properties.begin (), transfer_family_index_iter);
     }
     else
     {
-        transfer_queue_family_index = std::distance (queue_family_properties.begin (), std::find_if (queue_family_properties.begin (), queue_family_properties.end (), [&](const vk::QueueFamilyProperties& family_property) { return (family_property.queueFlags & vk::QueueFlagBits::eTransfer); }));
+        transfer_queue_family_index = std::distance (queue_family_properties.begin (), 
+                                                     std::find_if (queue_family_properties.begin (), 
+                                                                   queue_family_properties.end (), 
+                                                                   [&](const vk::QueueFamilyProperties& family_property) 
+                                                                   { 
+                                                                       return (family_property.queueFlags & vk::QueueFlagBits::eTransfer); 
+                                                                   }
+                                                                   )
+                                                     );
     }
 }
 
-vk_device_queues::vk_device_queues (const vk::PhysicalDevice& physical_device, const vk::Device& graphics_device, const vk_queue_family_indices* queue_family_indices, const std::vector<uint32_t>& queue_indices)
+vk_device_queues::vk_device_queues (const vk::PhysicalDevice& physical_device, 
+                                    const vk::Device& graphics_device, 
+                                    const vk_queue_family_indices* queue_family_indices, 
+                                    const std::vector<uint32_t>& queue_indices)
 {
     OutputDebugString (L"vk_device_queues::vk_device_queues physical_device, graphics_device, queue_family_indices, queue_indices\n");
 
     std::vector<vk::QueueFamilyProperties> queue_family_properties = physical_device.getQueueFamilyProperties ();
 
-    graphics_queue = std::make_unique<vk_queue> (graphics_device.getQueue (queue_family_indices->graphics_queue_family_index, queue_indices.at (0) > queue_family_properties.at (queue_family_indices->graphics_queue_family_index).queueCount ? queue_family_properties.at (queue_family_indices->graphics_queue_family_index).queueCount - 1 : queue_indices.at (0)), graphics_device);
-    compute_queue = std::make_unique<vk_queue> (graphics_device.getQueue (queue_family_indices->compute_queue_family_index, queue_indices.at (1) > queue_family_properties.at (queue_family_indices->compute_queue_family_index).queueCount ? queue_family_properties.at (queue_family_indices->compute_queue_family_index).queueCount - 1 : queue_indices.at (1)), graphics_device);
-    transfer_queue = std::make_unique<vk_queue> (graphics_device.getQueue (queue_family_indices->transfer_queue_family_index, queue_indices.at (2) > queue_family_properties.at (queue_family_indices->transfer_queue_family_index).queueCount ? queue_family_properties.at (queue_family_indices->transfer_queue_family_index).queueCount - 1 : queue_indices.at (2)), graphics_device);
+    graphics_queue = std::make_unique<vk_queue> (
+            graphics_device.getQueue (
+                queue_family_indices->graphics_queue_family_index, 
+                queue_indices.at (0) > queue_family_properties.at (queue_family_indices->graphics_queue_family_index).queueCount ? 
+                queue_family_properties.at (queue_family_indices->graphics_queue_family_index).queueCount - 1 : queue_indices.at (0)), 
+                graphics_device);
+    
+    compute_queue = std::make_unique<vk_queue> (
+            graphics_device.getQueue (
+                queue_family_indices->compute_queue_family_index, 
+                queue_indices.at (1) > queue_family_properties.at (queue_family_indices->compute_queue_family_index).queueCount ? 
+                queue_family_properties.at (queue_family_indices->compute_queue_family_index).queueCount - 1 : queue_indices.at (1)),
+                graphics_device);
+
+    transfer_queue = std::make_unique<vk_queue> (
+            graphics_device.getQueue (
+                queue_family_indices->transfer_queue_family_index,
+                queue_indices.at (2) > queue_family_properties.at (queue_family_indices->transfer_queue_family_index).queueCount ? 
+                queue_family_properties.at (queue_family_indices->transfer_queue_family_index).queueCount - 1 : queue_indices.at (2)),
+                graphics_device);
 }
 
 vk_queue_info::vk_queue_info (const vk_queue_family_indices* queue_family_indices)
 {
     OutputDebugString (L"vk_queue_info::vk_queue_info queue_family_indices\n");
 
-    std::vector<size_t> family_indices = { queue_family_indices->graphics_queue_family_index, queue_family_indices->compute_queue_family_index, queue_family_indices->transfer_queue_family_index };
+    std::vector<size_t> family_indices = { queue_family_indices->graphics_queue_family_index, 
+                                           queue_family_indices->compute_queue_family_index, 
+                                           queue_family_indices->transfer_queue_family_index };
     std::map<size_t, size_t> family_indices_queue_count;
 
     for (const auto& family_index : family_indices)
@@ -590,7 +780,11 @@ vk_buffer::vk_buffer ()
     OutputDebugString (L"vk_buffer::vk_buffer\n");
 }
 
-vk_buffer::vk_buffer (const vk::Device& graphics_device, const vk::DeviceSize& size, const vk::BufferUsageFlags& usage, const vk::SharingMode& sharing_mode, const uint32_t& graphics_queue_family_index)
+vk_buffer::vk_buffer (const vk::Device& graphics_device, 
+                      const vk::DeviceSize& size, 
+                      const vk::BufferUsageFlags& usage, 
+                      const vk::SharingMode& sharing_mode, 
+                      const uint32_t& graphics_queue_family_index)
 {
     OutputDebugString (L"vk_buffer::vk_buffer graphics_device size usage sharing_mode graphics_queue_family_index\n");
 
@@ -637,7 +831,10 @@ void vk_buffer::bind_memory (const vk::DeviceMemory& memory, const vk::DeviceSiz
     graphics_device.bindBufferMemory (buffer, memory, offset);
 }
 
-void vk_buffer::copy_from_buffer (const vk::Buffer& src_buffer, const vk::DeviceSize& size, const vk::CommandPool& command_pool, const vk::Queue& transfer_queue)
+void vk_buffer::copy_from_buffer (const vk::Buffer& src_buffer, 
+                                  const vk::DeviceSize& size, 
+                                  const vk::CommandPool& command_pool, 
+                                  const vk::Queue& transfer_queue)
 {
     OutputDebugString (L"vk_buffer::copy_from_buffer src_buffer transfer_queue\n");
 
@@ -657,7 +854,10 @@ vk_device_memory::vk_device_memory ()
     OutputDebugString (L"vk_device_memory::vk_device_memory\n");
 }
 
-vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types)
+vk_device_memory::vk_device_memory (const vk::Device& graphics_device, 
+                                    const vk::Buffer& buffer, 
+                                    const vk::PhysicalDeviceMemoryProperties& memory_properties, 
+                                    vk::MemoryPropertyFlags required_types)
 {
     OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device buffer memory_properties required_types\n");
 
@@ -680,7 +880,10 @@ vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const vk:
     this->graphics_device = graphics_device;
 }
 
-vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const vk::ArrayProxy<vk::Image>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types)
+vk_device_memory::vk_device_memory (const vk::Device& graphics_device, 
+                                    const vk::ArrayProxy<vk::Image>& images, 
+                                    const vk::PhysicalDeviceMemoryProperties& memory_properties, 
+                                    vk::MemoryPropertyFlags required_types)
 {
     OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device images memory_properties required_types\n");
 
@@ -711,7 +914,10 @@ vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const vk:
     this->graphics_device = graphics_device;
 }
 
-vk_device_memory::vk_device_memory (const vk::Device& graphics_device, const std::vector<image*>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types)
+vk_device_memory::vk_device_memory (const vk::Device& graphics_device, 
+                                    const std::vector<image*>& images, 
+                                    const vk::PhysicalDeviceMemoryProperties& memory_properties, 
+                                    vk::MemoryPropertyFlags required_types)
 {
     OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device vk_images memory_properties required_types\n");
 
@@ -803,7 +1009,9 @@ vk_command_buffers::vk_command_buffers ()
     OutputDebugString (L"vk_command_buffers::vk_command_buffers\n");
 }
 
-vk_command_buffers::vk_command_buffers (const vk::Device graphics_device, const vk::CommandPool& command_pool, const uint32_t& num_command_buffers)
+vk_command_buffers::vk_command_buffers (const vk::Device graphics_device, 
+                                        const vk::CommandPool& command_pool, 
+                                        const uint32_t& num_command_buffers)
 {
     OutputDebugString (L"vk_command_buffers::vk_comamnd_buffer graphics_device command_pool num_command_buffers\n");
 
@@ -857,7 +1065,9 @@ void vk_command_buffers::begin (const vk::CommandBufferUsageFlags& flags)
     }
 }
 
-void vk_command_buffers::draw (const vk::RenderPass& render_pass, const std::vector<vk_framebuffer>& framebuffers, const vk::Rect2D& render_area)
+void vk_command_buffers::draw (const vk::RenderPass& render_pass, 
+                               const std::vector<vk_framebuffer>& framebuffers, 
+                               const vk::Rect2D& render_area)
 {
     OutputDebugString (L"vk_command_buffers::draw render_pass, framebuffers\n");
 
@@ -905,7 +1115,10 @@ void vk_queue::submit (const std::vector<vk::CommandBuffer>& command_buffers) co
     queue.waitIdle ();
 }
 
-void vk_queue::submit (const vk::PipelineStageFlags& wait_stage_flags, const vk::CommandBuffer& command_buffer, const vk::Semaphore& wait_semaphore, const vk::Semaphore& signal_semphore) const
+void vk_queue::submit (const vk::PipelineStageFlags& wait_stage_flags, 
+                       const vk::CommandBuffer& command_buffer, 
+                       const vk::Semaphore& wait_semaphore, 
+                       const vk::Semaphore& signal_semphore) const
 {
     OutputDebugString (L"vk_queue::submit wait_stage_flags command_buffers wait_semaphores signal_semaphores\n");
 
@@ -914,7 +1127,9 @@ void vk_queue::submit (const vk::PipelineStageFlags& wait_stage_flags, const vk:
     queue.submit (submit_info, nullptr);
 }
 
-void vk_queue::present (const vk::SwapchainKHR& swapchain, const uint32_t& image_index, const vk::Semaphore& wait_semaphore) const
+void vk_queue::present (const vk::SwapchainKHR& swapchain, 
+                        const uint32_t& image_index, 
+                        const vk::Semaphore& wait_semaphore) const
 {
     OutputDebugString (L"vk_queue::present swapchains image_indices wait_semaphores\n");
 
@@ -927,7 +1142,8 @@ vk_descriptor_pool::vk_descriptor_pool ()
     OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool\n");
 }
 
-vk_descriptor_pool::vk_descriptor_pool (const std::vector<std::pair<vk::DescriptorType, size_t>>& descriptor_types_counts, const uint32_t& max_sets)
+vk_descriptor_pool::vk_descriptor_pool (const std::vector<std::pair<vk::DescriptorType, size_t>>& descriptor_types_counts, 
+                                        const uint32_t& max_sets)
 {
     OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool types_counts max_sets\n");
 
@@ -1022,7 +1238,9 @@ vk_descriptor_sets::vk_descriptor_sets ()
     OutputDebugString (L"vk_descriptor_set::vk_descriptor_set\n");
 }
 
-vk_descriptor_sets::vk_descriptor_sets (const vk::DescriptorPool& descriptor_pool, const std::vector<vk::DescriptorSetLayout>& set_layouts, const uint32_t& num_sets)
+vk_descriptor_sets::vk_descriptor_sets (const vk::DescriptorPool& descriptor_pool, 
+                                        const std::vector<vk::DescriptorSetLayout>& set_layouts, 
+                                        const uint32_t& num_sets)
 {
     OutputDebugString (L"vk_descriptor_set::vk_descriptor_set descriptor_pool set_layouts\n");
 
@@ -1071,7 +1289,15 @@ vk_render_pass::vk_render_pass (const vk::Device& graphics_device, const vk::For
 {
     OutputDebugString (L"vk_render_pass::vk_render_pass graphics_device chosen_format\n");
 
-    vk::AttachmentDescription attachment_description ({}, chosen_format, vk::SampleCountFlagBits::e1, vk::AttachmentLoadOp::eClear , {}, vk::AttachmentLoadOp::eDontCare, vk::AttachmentStoreOp::eDontCare, vk::ImageLayout::eUndefined, vk::ImageLayout::ePresentSrcKHR);
+    vk::AttachmentDescription attachment_description ({}, 
+                                                      chosen_format, 
+                                                      vk::SampleCountFlagBits::e1, 
+                                                      vk::AttachmentLoadOp::eClear, 
+                                                      {}, 
+                                                      vk::AttachmentLoadOp::eDontCare, 
+                                                      vk::AttachmentStoreOp::eDontCare, 
+                                                      vk::ImageLayout::eUndefined, 
+                                                      vk::ImageLayout::ePresentSrcKHR);
     vk::AttachmentReference attachment_reference (0, vk::ImageLayout::eColorAttachmentOptimal);
 
     vk::SubpassDescription subpass_description ({}, vk::PipelineBindPoint::eGraphics, 0, nullptr, 1, &attachment_reference);
@@ -1116,7 +1342,10 @@ vk_framebuffer::vk_framebuffer ()
     OutputDebugString (L"vk_framebuffer::vk_framebuffer\n");
 }
 
-vk_framebuffer::vk_framebuffer (const vk::Device& graphics_device, const vk::ImageView& image_view, const vk::RenderPass& render_pass, const vk::Extent2D& extent)
+vk_framebuffer::vk_framebuffer (const vk::Device& graphics_device, 
+                                const vk::ImageView& image_view, 
+                                const vk::RenderPass& render_pass, 
+                                const vk::Extent2D& extent)
 {
     OutputDebugString (L"vk_framebuffer::vk_framebuffer graphics_device imgae_view render_pass extext");
 
@@ -1157,7 +1386,10 @@ vk_framebuffer::~vk_framebuffer () noexcept
 }
 
 
-vk_framebuffers::vk_framebuffers (const vk::Device& graphics_device, const std::vector<vk_image_view>& image_views, const vk::RenderPass& render_pass, const vk::Extent2D& extent)
+vk_framebuffers::vk_framebuffers (const vk::Device& graphics_device, 
+                                  const std::vector<vk_image_view>& image_views, 
+                                  const vk::RenderPass& render_pass, 
+                                  const vk::Extent2D& extent)
 {
     OutputDebugString (L"vk_framebuffers::vk_framebuffers graphics_device image_views render_pass extent\n");
 

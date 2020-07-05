@@ -64,7 +64,11 @@ class vk_surface
 {
 public:
     vk_surface ();
-    vk_surface (const vk::Instance& instance, const HINSTANCE& h_instance, const HWND& h_wnd, const vk::PhysicalDevice& physical_device, const uint32_t& graphics_queue_family_index);
+    vk_surface (const vk::Instance& instance, 
+                const HINSTANCE& h_instance, 
+                const HWND& h_wnd, 
+                const vk::PhysicalDevice& physical_device, 
+                const uint32_t& graphics_queue_family_index);
     vk_surface (const vk_surface& other) = delete;
     vk_surface& operator= (const vk_surface& other) = delete;
     vk_surface (vk_surface&& other) noexcept;
@@ -110,7 +114,10 @@ class vk_queue;
 class vk_device_queues
 {
 public:
-    vk_device_queues (const vk::PhysicalDevice& physical_device, const vk::Device& graphics_device, const vk_queue_family_indices* queue_family_indices, const std::vector<uint32_t>& queue_indices);
+    vk_device_queues (const vk::PhysicalDevice& physical_device, 
+                      const vk::Device& graphics_device, 
+                      const vk_queue_family_indices* queue_family_indices, 
+                      const std::vector<uint32_t>& queue_indices);
 
     std::unique_ptr<vk_queue> graphics_queue = nullptr;
     std::unique_ptr<vk_queue> compute_queue = nullptr;
@@ -202,15 +209,39 @@ class vk_image
 {
 public:
     vk_image ();
-    vk_image (const vk::Device& graphics_device, const uint32_t& queue_family_index, const vk::Extent3D& extent, const uint32_t& array_layers, const vk::Format& format, const vk::ImageLayout& image_layout, vk::SharingMode sharing_mode, vk::ImageUsageFlags usage);
+    vk_image (const vk::Device& graphics_device, 
+              const uint32_t& queue_family_index, 
+              const vk::Extent3D& extent, 
+              const uint32_t& array_layers, 
+              const vk::Format& format, 
+              const vk::ImageLayout& image_layout, 
+              vk::SharingMode sharing_mode, 
+              vk::ImageUsageFlags usage);
     vk_image (const vk_image& other) = delete;
     vk_image& operator= (const vk_image& other) = delete;
     vk_image (vk_image&& other) noexcept;
     vk_image& operator= (vk_image&& other) noexcept;
     ~vk_image () noexcept;
 
-    void change_layout (const vk::Queue& transfer_queue, const vk::CommandPool& transfer_command_pool, const uint32_t& src_queue_family_index, const uint32_t& dst_queue_family_index, const vk::Image& image, const uint32_t& num_layers, const vk::ImageLayout& old_layout, const vk::ImageLayout& new_layout, const vk::AccessFlags& src_access, const vk::AccessFlags& dst_access, const vk::PipelineStageFlags& src_pipeline_stage, const vk::PipelineStageFlags& dst_pipeline_stage);
-    void copy_from_buffer (const vk::Queue & transfer_queue, const vk::CommandPool& transfer_command_pool, const vk::DeviceSize& offset, const vk::Buffer& buffer, const vk::Extent3D& extent, const uint32_t& num_layers);
+    void change_layout (const vk::Queue& transfer_queue, 
+                        const vk::CommandPool& transfer_command_pool, 
+                        const uint32_t& src_queue_family_index, 
+                        const uint32_t& dst_queue_family_index, 
+                        const vk::Image& image, 
+                        const uint32_t& num_layers, 
+                        const vk::ImageLayout& old_layout, 
+                        const vk::ImageLayout& new_layout, 
+                        const vk::AccessFlags& src_access, 
+                        const vk::AccessFlags& dst_access, 
+                        const vk::PipelineStageFlags& src_pipeline_stage, 
+                        const vk::PipelineStageFlags& dst_pipeline_stage);
+    
+    void copy_from_buffer (const vk::Queue & transfer_queue, 
+                           const vk::CommandPool& transfer_command_pool, 
+                           const vk::DeviceSize& offset, 
+                           const vk::Buffer& buffer, 
+                           const vk::Extent3D& extent, 
+                           const uint32_t& num_layers);
     void copy_to () {}
 
     vk::Image image;
@@ -224,7 +255,11 @@ class vk_buffer
 {
 public:
     vk_buffer ();
-    vk_buffer (const vk::Device& graphics_device, const vk::DeviceSize& size, const vk::BufferUsageFlags& usage, const vk::SharingMode& sharing_mode, const uint32_t& graphics_queue_family_index);
+    vk_buffer (const vk::Device& graphics_device, 
+               const vk::DeviceSize& size, 
+               const vk::BufferUsageFlags& usage, 
+               const vk::SharingMode& sharing_mode, 
+               const uint32_t& graphics_queue_family_index);
     vk_buffer (const vk_buffer& other) = delete;
     vk_buffer& operator= (const vk_buffer& other) = delete;
     vk_buffer (vk_buffer&& other) noexcept;
@@ -247,9 +282,18 @@ class vk_device_memory
 {
 public:
     vk_device_memory ();
-    vk_device_memory (const vk::Device& graphics_device, const vk::Buffer& buffer, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
-    vk_device_memory (const vk::Device& graphics_device, const vk::ArrayProxy<vk::Image>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
-    vk_device_memory (const vk::Device& graphics_device, const std::vector<image*>& images, const vk::PhysicalDeviceMemoryProperties& memory_properties, vk::MemoryPropertyFlags required_types);
+    vk_device_memory (const vk::Device& graphics_device, 
+                      const vk::Buffer& buffer, 
+                      const vk::PhysicalDeviceMemoryProperties& memory_properties, 
+                      vk::MemoryPropertyFlags required_types);
+    vk_device_memory (const vk::Device& graphics_device, 
+                      const vk::ArrayProxy<vk::Image>& images, 
+                      const vk::PhysicalDeviceMemoryProperties& memory_properties, 
+                      vk::MemoryPropertyFlags required_types);
+    vk_device_memory (const vk::Device& graphics_device, 
+                      const std::vector<image*>& images, 
+                      const vk::PhysicalDeviceMemoryProperties& memory_properties, 
+                      vk::MemoryPropertyFlags required_types);
     vk_device_memory (const vk_device_memory& other) = delete;
     vk_device_memory& operator= (const vk_device_memory& other) = delete;
     vk_device_memory (vk_device_memory&& other) noexcept;
@@ -275,7 +319,10 @@ public:
     vk_queue (const vk::Queue& queue, const vk::Device& graphics_device);
 
     void submit (const std::vector<vk::CommandBuffer>& command_buffers) const;
-    void submit (const vk::PipelineStageFlags& wait_stage_flags, const vk::CommandBuffer& command_buffer, const vk::Semaphore& wait_semaphore, const vk::Semaphore& signal_semphore) const;
+    void submit (const vk::PipelineStageFlags& wait_stage_flags, 
+                 const vk::CommandBuffer& command_buffer, 
+                 const vk::Semaphore& wait_semaphore, 
+                 const vk::Semaphore& signal_semphore) const;
     void present (const vk::SwapchainKHR& swapchain, const uint32_t& image_index, const vk::Semaphore& wait_semaphore) const;
 
     vk::Queue queue;
@@ -325,7 +372,9 @@ class vk_descriptor_sets
 {
 public:
     vk_descriptor_sets ();
-    vk_descriptor_sets (const vk::DescriptorPool& descriptor_pool, const std::vector<vk::DescriptorSetLayout>& set_layouts, const uint32_t& num_sets);
+    vk_descriptor_sets (const vk::DescriptorPool& descriptor_pool, 
+                        const std::vector<vk::DescriptorSetLayout>& set_layouts, 
+                        const uint32_t& num_sets);
     vk_descriptor_sets (const vk_descriptor_sets& other) = delete;
     vk_descriptor_sets& operator= (const vk_descriptor_sets& other) = delete;
     vk_descriptor_sets (vk_descriptor_sets&& other) noexcept;
@@ -362,7 +411,10 @@ class vk_framebuffer
 {
 public:
     vk_framebuffer ();
-    vk_framebuffer (const vk::Device& graphics_device, const vk::ImageView& image_view, const vk::RenderPass& render_pass, const vk::Extent2D& extent);
+    vk_framebuffer (const vk::Device& graphics_device, 
+                    const vk::ImageView& image_view, 
+                    const vk::RenderPass& render_pass, 
+                    const vk::Extent2D& extent);
     vk_framebuffer (const vk_framebuffer& other) = delete;
     vk_framebuffer& operator= (const vk_framebuffer& other) = delete;
     vk_framebuffer (vk_framebuffer&& other) noexcept;
@@ -379,7 +431,10 @@ private:
 class vk_framebuffers
 {
 public:
-    vk_framebuffers (const vk::Device& graphics_device, const std::vector<vk_image_view>& image_views, const vk::RenderPass& render_pass, const vk::Extent2D& extent);
+    vk_framebuffers (const vk::Device& graphics_device, 
+                     const std::vector<vk_image_view>& image_views, 
+                     const vk::RenderPass& render_pass, 
+                     const vk::Extent2D& extent);
 
     std::vector<vk_framebuffer> framebuffers;
 };

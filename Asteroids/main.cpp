@@ -61,7 +61,7 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 #ifdef DEBUG
 	AllocConsole ();
 	freopen ("CONOUT$", "w", stdout);
-    std::cout << "Hello Console\n";
+    std::cout << __FILE__ << " " << __FUNCTION__ << " " << __LINE__ << " Hello Console\n";
 #endif
 
     WNDCLASS wc = { 0 };
