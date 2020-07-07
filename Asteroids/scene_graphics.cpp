@@ -199,6 +199,7 @@ scene_graphics::scene_graphics (const scene_assets* assets,
     graphics_command_pool = std::make_unique<vk_command_pool> (c_graphics->graphics_device->graphics_device, 
                                                                c_graphics->queue_family_indices->graphics_queue_family_index, 
                                                                vk::CommandPoolCreateFlagBits::eResetCommandBuffer);
+    
     swapchain_command_buffers = std::make_unique<vk_command_buffers> (c_graphics->graphics_device->graphics_device, 
                                                                       graphics_command_pool->command_pool, 
                                                                       c_graphics->swapchain->images.size ());

@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <map>
-
+#include <fstream>
 
 vk_instance::vk_instance ()
 {
@@ -1490,5 +1490,70 @@ vk_semaphores::vk_semaphores (const vk::Device& graphics_device, const size_t& n
     for (size_t i = 0; i < num_semaphores; ++i)
     {
         semaphores.emplace_back (vk_semaphore (graphics_device));
+    }
+}
+
+
+vk_shader_module::vk_shader_module ()
+{
+    OutputDebugString (L"vk_shader_module::vk_shader_module\n");
+}
+
+vk_shader_module::vk_shader_module (const full_file_path& shader_path, const vk::Device& graphics_device, const vk::ShaderStageFlags& flags)
+{
+    OutputDebugString (L"vk_shader_module::vk_shader_module shader_path graphics_device flags\n");
+
+    std::ifstream shader_file (shader_path.path, std::ios::in | std::ios::binary | std::ios::ate);
+    
+    if (!shader_file.good ())
+    {
+        throw shader_path.path + " file not good";
+    }
+
+    if (!shader_file.is_open ())
+    {
+        throw "could not open " + shader_path.path;
+    }
+
+    uint32_t size = (uint32_t) shader_file.tellg ();
+
+    std::vector<char> buff (size);
+    shader_file.seekg (0, std::ios::beg);
+    shader_file.read (buff.data (), size);
+    shader_file.close ();
+
+    vk::ShaderModuleCreateInfo create_info ({}, size, reinterpret_cast<uint32_t*> (buff.data ()));
+
+    shader_module = graphics_device.createShaderModule (create_info);
+    this->graphics_device = graphics_device;
+}
+
+vk_shader_module::vk_shader_module (vk_shader_module&& other) noexcept
+{
+    OutputDebugString (L"vk_shader_module Move constructor\n");
+    
+    *this = std::move (other);
+}
+
+vk_shader_module& vk_shader_module::operator =(vk_shader_module&& other) noexcept
+{
+    OutputDebugString (L"vk_shader_module Move assignment\n");
+
+    shader_module = other.shader_module;
+    graphics_device = other.graphics_device;
+
+    other.shader_module = nullptr;
+    other.graphics_device = nullptr;
+
+    return *this;
+}
+
+vk_shader_module::~vk_shader_module ()
+{
+    OutputDebugString (L"vk_shader_module::~vk_shader_module\n");
+
+    if (shader_module != nullptr && graphics_device != nullptr)
+    {
+        graphics_device.destroyShaderModule (shader_module);
     }
 }

@@ -481,3 +481,23 @@ public:
 
     std::vector<vk_semaphore> semaphores;
 };
+
+
+#include "utils.hpp"
+
+class vk_shader_module
+{
+public:
+    vk_shader_module ();
+    vk_shader_module (const full_file_path& shader_path, const vk::Device& graphics_device, const vk::ShaderStageFlags& flags);
+    vk_shader_module (const vk_shader_module& other) = delete;
+    vk_shader_module& operator =(const vk_shader_module& other) = delete;
+    vk_shader_module (vk_shader_module&& other) noexcept;
+    vk_shader_module& operator =(vk_shader_module&& other) noexcept;
+    ~vk_shader_module () noexcept;
+
+    vk::ShaderModule shader_module;
+
+private:
+    vk::Device graphics_device;
+};

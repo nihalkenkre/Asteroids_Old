@@ -29,6 +29,9 @@ private:
     std::unique_ptr<vk_command_pool> graphics_command_pool;
     std::unique_ptr<vk_command_buffers> swapchain_command_buffers;
 
+    std::unique_ptr<vk_shader_module> vertex_shader_module;
+    std::unique_ptr<vk_shader_module> fragment_shader_module;
+
     const vk_graphics_device* graphics_device;
     const vk_swapchain* swapchain;
     const vk_queue* graphics_queue;
