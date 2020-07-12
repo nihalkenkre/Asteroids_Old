@@ -15,6 +15,8 @@ public:
 
     void main_loop ();
 
+    void update_command_buffers (const vk::Extent2D& extent);
+
 private:
     std::unique_ptr<vk_buffer> vb_ib;
     std::unique_ptr<vk_device_memory> vb_ib_memory;

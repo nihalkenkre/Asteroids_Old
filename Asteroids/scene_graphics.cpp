@@ -204,8 +204,14 @@ scene_graphics::scene_graphics (const scene_assets* assets,
                                                                       graphics_command_pool->command_pool, 
                                                                       c_graphics->swapchain->images.size ());
 
+    vertex_shader_module = std::make_unique<vk_shader_module> (full_file_path ("pbr_opaque.vert.spv"), c_graphics->graphics_device->graphics_device, vk::ShaderStageFlagBits::eVertex);
+    fragment_shader_module = std::make_unique<vk_shader_module> (full_file_path ("pbr_opaque.frag.spv"), c_graphics->graphics_device->graphics_device, vk::ShaderStageFlagBits::eFragment);
+}
+
+void scene_graphics::update_command_buffers (const vk::Extent2D& surface_extent)
+{
     swapchain_command_buffers->begin (vk::CommandBufferUsageFlagBits::eSimultaneousUse);
-    swapchain_command_buffers->draw (render_pass->render_pass, framebuffers->framebuffers, vk::Rect2D ({}, { c_graphics->surface->surface_extent }));
+    swapchain_command_buffers->draw (render_pass->render_pass, framebuffers->framebuffers, vk::Rect2D ({}, { surface_extent }));
     swapchain_command_buffers->end ();
 }
 

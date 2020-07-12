@@ -17,6 +17,8 @@ scene::scene (const game* obj, const common_graphics* c_graphics) : game_obj (ob
 
     physics = std::make_unique<scene_physics> ();
     graphics = std::make_unique<scene_graphics> (assets.get (), c_graphics);
+
+    graphics->update_command_buffers (c_graphics->surface->surface_extent);
 }
 
 void scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)

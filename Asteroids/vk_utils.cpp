@@ -1504,7 +1504,7 @@ vk_shader_module::vk_shader_module (const full_file_path& shader_path, const vk:
     OutputDebugString (L"vk_shader_module::vk_shader_module shader_path graphics_device flags\n");
 
     std::ifstream shader_file (shader_path.path, std::ios::in | std::ios::binary | std::ios::ate);
-    
+   
     if (!shader_file.good ())
     {
         throw shader_path.path + " file not good";
@@ -1515,7 +1515,7 @@ vk_shader_module::vk_shader_module (const full_file_path& shader_path, const vk:
         throw "could not open " + shader_path.path;
     }
 
-    uint32_t size = (uint32_t) shader_file.tellg ();
+    uint32_t size = static_cast<uint32_t>(shader_file.tellg ());
 
     std::vector<char> buff (size);
     shader_file.seekg (0, std::ios::beg);
