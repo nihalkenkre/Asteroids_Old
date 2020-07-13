@@ -10,9 +10,10 @@
 scene_graphics::scene_graphics (const scene_assets* assets, 
                                 const common_graphics* c_graphics) : graphics_device (c_graphics->graphics_device.get ()), 
                                                                      graphics_queue (c_graphics->device_queues->graphics_queue.get ()), 
-                                                                     swapchain (c_graphics->swapchain.get ())
+                                                                     swapchain (c_graphics->swapchain.get ()),
+                                                                     assets (assets)
 {
-    OutputDebugString (L"scene_graphics::scene_graphics assets c_graphics\n");
+    //OutputDebugString (L"scene_graphics::scene_graphics assets c_graphics\n");
 
     vk::DeviceSize current_data_size = 0;
     std::vector<unsigned char> total_data;
@@ -215,6 +216,14 @@ void scene_graphics::update_command_buffers (const vk::Extent2D& surface_extent)
     swapchain_command_buffers->end ();
 }
 
+void scene_graphics::update_command_buffers (const vk::Extent2D& extent, const std::string& actor_name)
+{
+    for (const auto& asset : assets->static_meshes)
+    {
+        std::cout << asset.name << "\n";
+    }
+}
+
 void scene_graphics::main_loop ()
 {
     vk::ResultValue<uint32_t> result = graphics_device->graphics_device.acquireNextImageKHR (swapchain->swapchain, UINT64_MAX, wait_semaphore->semaphore, nullptr);
@@ -242,7 +251,7 @@ void scene_graphics::main_loop ()
 
 scene_graphics::~scene_graphics ()
 {
-    OutputDebugString (L"scene_graphics::~scene_graphics\n");
+    //OutputDebugString (L"scene_graphics::~scene_graphics\n");
 
     graphics_queue->queue.waitIdle ();
 }

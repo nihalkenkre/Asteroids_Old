@@ -16,6 +16,7 @@ public:
     void main_loop ();
 
     void update_command_buffers (const vk::Extent2D& extent);
+    void update_command_buffers (const vk::Extent2D& extent, const std::string& actor_name);
 
 private:
     std::unique_ptr<vk_buffer> vb_ib;
@@ -37,4 +38,6 @@ private:
     const vk_graphics_device* graphics_device;
     const vk_swapchain* swapchain;
     const vk_queue* graphics_queue;
+
+    const scene_assets* assets;
 };

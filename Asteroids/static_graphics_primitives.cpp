@@ -5,7 +5,7 @@
 
 static_graphics_primitives::static_graphics_primitives (const tinygltf::Node& graphics_node, const MATERIAL_ALPHA_MODE& material_mode, const tinygltf::Model& model)
 {
-    OutputDebugString (L"static_graphics_primitives::static_graphics_primitives graphics_node model\n");
+    //OutputDebugString (L"static_graphics_primitives::static_graphics_primitives graphics_node model\n");
 
     primitives.reserve (5);
 

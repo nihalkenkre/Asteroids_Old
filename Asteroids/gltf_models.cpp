@@ -10,7 +10,7 @@
 
 gltf_models::gltf_models (const std::string& folder_path)
 {
-    OutputDebugString (L"gltf_models::gltf_models folder_path\n");
+    //OutputDebugString (L"gltf_models::gltf_models folder_path\n");
 
     models.reserve (5);
 

@@ -8,7 +8,7 @@
 
 common_graphics::common_graphics (HINSTANCE h_instance, HWND h_wnd)
 {
-    OutputDebugString (L"common_graphics::common_graphics h_instance h_wnd\n");
+    //OutputDebugString (L"common_graphics::common_graphics h_instance h_wnd\n");
 #ifdef _DEBUG
     is_validation_needed = true;
 #endif

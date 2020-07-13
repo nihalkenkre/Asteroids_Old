@@ -9,11 +9,11 @@
 
 scene::scene (const game* obj, const common_graphics* c_graphics) : game_obj (obj)
 {
-    OutputDebugString (L"scene::scene game\n");
+    //OutputDebugString (L"scene::scene game\n");
 
     gltf_models models ("");
 
-    assets = std::make_unique<scene_assets> (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid"});
+    assets = std::make_unique<scene_assets> (models, std::vector<std::string> {"PlayerShip", "LargeAsteroid", "SmallAsteroid"});
 
     physics = std::make_unique<scene_physics> ();
     graphics = std::make_unique<scene_graphics> (assets.get (), c_graphics);
@@ -23,7 +23,7 @@ scene::scene (const game* obj, const common_graphics* c_graphics) : game_obj (ob
 
 void scene::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 {
-    OutputDebugString (L"scene::process_keyboard_input\n");
+    //OutputDebugString (L"scene::process_keyboard_input\n");
 }
 
 void scene::main_loop ()

@@ -18,7 +18,7 @@ LRESULT CALLBACK WindowProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_QUIT:
-		OutputDebugString (L"WM_QUIT\n");
+		//OutputDebugString (L"WM_QUIT\n");
 
 		break;
 
@@ -62,6 +62,10 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	AllocConsole ();
 	freopen ("CONOUT$", "w", stdout);
     std::cout << __FILE__ << " " << __FUNCTION__ << " " << __LINE__ << " Hello Console\n";
+#elif _DEBUG
+	AllocConsole ();
+	freopen ("CONOUT$", "w", stdout);
+	std::cout << __FILE__ << " " << __FUNCTION__ << " " << __LINE__ << " Hello Console\n";
 #endif
 
     WNDCLASS wc = { 0 };
@@ -109,7 +113,7 @@ int WINAPI wWinMain (_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE previous_insta
 	}
 	catch (...)
 	{
-		OutputDebugString (L"Caught something\n");
+		//OutputDebugString (L"Caught something\n");
 		std::cout << "Caught something\n";
 	}
 

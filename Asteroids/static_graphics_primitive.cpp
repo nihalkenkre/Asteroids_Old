@@ -4,7 +4,7 @@
 
 static_graphics_primitive::static_graphics_primitive (const tinygltf::Primitive& primitive, const tinygltf::Model& model)
 {
-    OutputDebugString (L"static_graphics_primitive::static_graphics_primitive primitive model\n");
+    //OutputDebugString (L"static_graphics_primitive::static_graphics_primitive primitive model\n");
 
     auto position_attribute = primitive.attributes.find ("POSITION");
     if (position_attribute != primitive.attributes.end ())

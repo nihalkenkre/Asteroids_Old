@@ -8,12 +8,12 @@
 
 vk_instance::vk_instance ()
 {
-    OutputDebugString (L"vk_instance::vk_instance\n");
+    //OutputDebugString (L"vk_instance::vk_instance\n");
 }
 
 vk_instance::vk_instance (const bool& is_validation_needed)
 {
-    OutputDebugString (L"vk_instance::vk_instance is_validation_needed\n");
+    //OutputDebugString (L"vk_instance::vk_instance is_validation_needed\n");
 
     std::vector<const char*> requested_instance_layers;
     std::vector<const char*> requested_instance_extensions;
@@ -82,14 +82,14 @@ vk_instance::vk_instance (const bool& is_validation_needed)
 
 vk_instance::vk_instance (vk_instance&& other) noexcept
 {
-    OutputDebugString (L"vk_instance::vk_instance Move constructor\n");
+    //OutputDebugString (L"vk_instance::vk_instance Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_instance& vk_instance::operator=(vk_instance&& other) noexcept
 {
-    OutputDebugString (L"vk_instance::vk_instance Move assignment\n");
+    //OutputDebugString (L"vk_instance::vk_instance Move assignment\n");
 
     instance = other.instance;
     other.instance = nullptr;
@@ -99,7 +99,7 @@ vk_instance& vk_instance::operator=(vk_instance&& other) noexcept
 
 vk_instance::~vk_instance ()
 {
-    OutputDebugString (L"vk_instance::~vk_instance\n");
+    //OutputDebugString (L"vk_instance::~vk_instance\n");
 
     if (instance != nullptr)
     {
@@ -134,7 +134,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeve
     {
         wchar_t wbuff[2048];
         swprintf_s (wbuff, 2048, L"Debug Messenger Callback: %hs\n", callback_data->pMessage);
-        OutputDebugString (wbuff);
+        //OutputDebugString (wbuff);
     
         std::cout << "Debug Messenger Callback:" << callback_data->pMessage << "\n";
     }
@@ -144,12 +144,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback (VkDebugUtilsMessageSeve
 
 vk_debug_utils_messenger::vk_debug_utils_messenger ()
 {
-    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger\n");
+    //OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger\n");
 }
 
 vk_debug_utils_messenger::vk_debug_utils_messenger (const vk::Instance& instance)
 {
-    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger instance\n");
+    //OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger instance\n");
 
     pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(instance.getProcAddr ("vkCreateDebugUtilsMessengerEXT"));
     pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(instance.getProcAddr ("vkDestroyDebugUtilsMessengerEXT"));
@@ -170,14 +170,14 @@ vk_debug_utils_messenger::vk_debug_utils_messenger (const vk::Instance& instance
 
 vk_debug_utils_messenger::vk_debug_utils_messenger (vk_debug_utils_messenger&& other) noexcept
 {
-    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger Move constructor\n");
+    //OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_debug_utils_messenger& vk_debug_utils_messenger::operator=(vk_debug_utils_messenger&& other) noexcept
 {
-    OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger Move assignment\n");
+    //OutputDebugString (L"vk_debug_utils_messenger::vk_debug_utils_messenger Move assignment\n");
 
     debug_utils_messenger = other.debug_utils_messenger;
     instance = other.instance;
@@ -190,7 +190,7 @@ vk_debug_utils_messenger& vk_debug_utils_messenger::operator=(vk_debug_utils_mes
 
 vk_debug_utils_messenger::~vk_debug_utils_messenger ()
 {
-    OutputDebugString (L"vk_debug_utils_messenger::~vk_debug_utils_messenger\n");
+    //OutputDebugString (L"vk_debug_utils_messenger::~vk_debug_utils_messenger\n");
 
     if (instance != nullptr && debug_utils_messenger != nullptr)
     {
@@ -200,7 +200,7 @@ vk_debug_utils_messenger::~vk_debug_utils_messenger ()
 
 vk_surface::vk_surface ()
 {
-    OutputDebugString (L"vk_surface::vk_surface\n");
+    //OutputDebugString (L"vk_surface::vk_surface\n");
 }
 
 vk_surface::vk_surface (const vk::Instance& instance, 
@@ -209,7 +209,7 @@ vk_surface::vk_surface (const vk::Instance& instance,
                         const vk::PhysicalDevice& physical_device, 
                         const uint32_t& graphics_queue_family_index)
 {
-    OutputDebugString (L"vk_surface::vk_surface instance h_instance h_wnd\n");
+    //OutputDebugString (L"vk_surface::vk_surface instance h_instance h_wnd\n");
 
     vk::Win32SurfaceCreateInfoKHR create_info ({}, h_instance, h_wnd);
     surface = instance.createWin32SurfaceKHR (create_info);
@@ -260,14 +260,14 @@ vk_surface::vk_surface (const vk::Instance& instance,
 
 vk_surface::vk_surface (vk_surface&& other) noexcept
 {
-    OutputDebugString (L"vk_surface::vk_surface Move constructor\n");
+    //OutputDebugString (L"vk_surface::vk_surface Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_surface& vk_surface::operator=(vk_surface&& other) noexcept
 {
-    OutputDebugString (L"vk_surface::vk_surface Move assignment\n");
+    //OutputDebugString (L"vk_surface::vk_surface Move assignment\n");
     
     surface = other.surface;
     instance = other.instance;
@@ -280,7 +280,7 @@ vk_surface& vk_surface::operator=(vk_surface&& other) noexcept
 
 vk_surface::~vk_surface ()
 {
-    OutputDebugString (L"vk_surface::~vk_surface\n");
+    //OutputDebugString (L"vk_surface::~vk_surface\n");
 
     if (instance != nullptr && surface != nullptr)
     {
@@ -290,12 +290,12 @@ vk_surface::~vk_surface ()
 
 vk_graphics_device::vk_graphics_device ()
 {
-    OutputDebugString (L"vk_graphics_device::vk_graphics_device\n");
+    //OutputDebugString (L"vk_graphics_device::vk_graphics_device\n");
 }
 
 vk_graphics_device::vk_graphics_device (const vk::PhysicalDevice& physical_device, const std::vector<vk::DeviceQueueCreateInfo>& queue_create_infos)
 {
-    OutputDebugString (L"vk_graphics_device::vk_graphics_device physical_device queue_create_infos\n");
+    //OutputDebugString (L"vk_graphics_device::vk_graphics_device physical_device queue_create_infos\n");
 
     std::vector<const char*> requested_device_extensions;
     std::vector<vk::ExtensionProperties> extension_properties = physical_device.enumerateDeviceExtensionProperties ();
@@ -323,14 +323,14 @@ vk_graphics_device::vk_graphics_device (const vk::PhysicalDevice& physical_devic
 
 vk_graphics_device::vk_graphics_device (vk_graphics_device&& other) noexcept
 {
-    OutputDebugString (L"vk_graphics_device::vk_graphics_device Move constructor\n");
+    //OutputDebugString (L"vk_graphics_device::vk_graphics_device Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_graphics_device& vk_graphics_device::operator=(vk_graphics_device&& other) noexcept
 {
-    OutputDebugString (L"vk_graphics_device::vk_graphics_device Move assignment\n");
+    //OutputDebugString (L"vk_graphics_device::vk_graphics_device Move assignment\n");
 
     graphics_device = other.graphics_device;
 
@@ -341,7 +341,7 @@ vk_graphics_device& vk_graphics_device::operator=(vk_graphics_device&& other) no
 
 vk_graphics_device::~vk_graphics_device ()
 {
-    OutputDebugString (L"vk_graphics_device::~vk_graphics_device\n");
+    //OutputDebugString (L"vk_graphics_device::~vk_graphics_device\n");
 
     if (graphics_device != nullptr)
     {
@@ -351,12 +351,12 @@ vk_graphics_device::~vk_graphics_device ()
 
 vk_swapchain::vk_swapchain ()
 {
-    OutputDebugString (L"vk_swapchain::vk_swapchain\n");
+    //OutputDebugString (L"vk_swapchain::vk_swapchain\n");
 }
 
 vk_swapchain::vk_swapchain (const vk::Device& graphics_device, const vk_surface* surface)
 {
-    OutputDebugString (L"vk_swapchain::vk_swapchain graphics_device surface\n");
+    //OutputDebugString (L"vk_swapchain::vk_swapchain graphics_device surface\n");
 
     vk::SwapchainCreateInfoKHR swapchain_create_info ({}, 
                                                       surface->surface, 
@@ -385,14 +385,14 @@ vk_swapchain::vk_swapchain (const vk::Device& graphics_device, const vk_surface*
 
 vk_swapchain::vk_swapchain (vk_swapchain&& other) noexcept
 {
-    OutputDebugString (L"vk_swapchain::vk_swapchain Move constructor\n");
+    //OutputDebugString (L"vk_swapchain::vk_swapchain Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_swapchain& vk_swapchain::operator=(vk_swapchain&& other) noexcept
 {
-    OutputDebugString (L"vk_swapchain::vk_swapchain Move assignment\n");
+    //OutputDebugString (L"vk_swapchain::vk_swapchain Move assignment\n");
 
     swapchain = other.swapchain;
     graphics_device = other.graphics_device;
@@ -405,7 +405,7 @@ vk_swapchain& vk_swapchain::operator=(vk_swapchain&& other) noexcept
 
 vk_swapchain::~vk_swapchain ()
 {
-    OutputDebugString (L"vk_swapchain::~vk_swapchain\n");
+    //OutputDebugString (L"vk_swapchain::~vk_swapchain\n");
 
     if (graphics_device != nullptr && swapchain != nullptr)
     {
@@ -415,14 +415,14 @@ vk_swapchain::~vk_swapchain ()
 
 vk_command_pool::vk_command_pool ()
 {
-    OutputDebugString (L"vk_command_pool::vk_command_pool\n");
+    //OutputDebugString (L"vk_command_pool::vk_command_pool\n");
 }
 
 vk_command_pool::vk_command_pool (const vk::Device& graphics_device, 
                                   const size_t& queue_family_index, 
                                   const vk::CommandPoolCreateFlags& flags)
 {
-    OutputDebugString (L"vk_command_pool::vk_command_pool graphics_device queue_family_index flags\n");
+    //OutputDebugString (L"vk_command_pool::vk_command_pool graphics_device queue_family_index flags\n");
 
     vk::CommandPoolCreateInfo create_info (flags, queue_family_index);
     command_pool = graphics_device.createCommandPool (create_info);
@@ -431,14 +431,14 @@ vk_command_pool::vk_command_pool (const vk::Device& graphics_device,
 
 vk_command_pool::vk_command_pool (vk_command_pool&& other) noexcept
 {
-    OutputDebugString (L"vk_command_pool::vk_command_pool Move constructor\n");
+    //OutputDebugString (L"vk_command_pool::vk_command_pool Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_command_pool& vk_command_pool::operator=(vk_command_pool&& other) noexcept
 {
-    OutputDebugString (L"vk_command_pool::vk_command_pool Move assignment\n");
+    //OutputDebugString (L"vk_command_pool::vk_command_pool Move assignment\n");
 
     command_pool = other.command_pool;
     graphics_device = other.graphics_device;
@@ -451,7 +451,7 @@ vk_command_pool& vk_command_pool::operator=(vk_command_pool&& other) noexcept
 
 vk_command_pool::~vk_command_pool ()
 {
-    OutputDebugString (L"vk_command_pool::~vk_command_pool\n");
+    //OutputDebugString (L"vk_command_pool::~vk_command_pool\n");
 
     if (graphics_device != nullptr && command_pool != nullptr)
     {
@@ -461,7 +461,7 @@ vk_command_pool::~vk_command_pool ()
 
 vk_image::vk_image ()
 {
-    OutputDebugString (L"vk_image::vk_image\n");
+    //OutputDebugString (L"vk_image::vk_image\n");
 }
 
 vk_image::vk_image (const vk::Device& graphics_device, 
@@ -473,7 +473,7 @@ vk_image::vk_image (const vk::Device& graphics_device,
                     vk::SharingMode sharing_mode, 
                     vk::ImageUsageFlags usage)
 {
-    OutputDebugString (L"vk_image::vk_image graphics_device queue_family_index extent array_layers format image_layout sharing_mode usage\n");
+    //OutputDebugString (L"vk_image::vk_image graphics_device queue_family_index extent array_layers format image_layout sharing_mode usage\n");
 
     vk::ImageCreateInfo create_info ({}, 
                                      vk::ImageType::e2D, 
@@ -496,14 +496,14 @@ vk_image::vk_image (const vk::Device& graphics_device,
 
 vk_image::vk_image (vk_image&& other) noexcept
 {
-    OutputDebugString (L"vk_image::vk_image Move constructor\n");
+    //OutputDebugString (L"vk_image::vk_image Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_image& vk_image::operator= (vk_image&& other) noexcept
 {
-    OutputDebugString (L"vk_image::vk_image Move assignment\n");
+    //OutputDebugString (L"vk_image::vk_image Move assignment\n");
     image = other.image;
     graphics_device = other.graphics_device;
 
@@ -526,7 +526,7 @@ void vk_image::change_layout (const vk::Queue& transfer_queue,
                               const vk::PipelineStageFlags& src_pipeline_stage, 
                               const vk::PipelineStageFlags& dst_pipeline_stage)
 {
-    OutputDebugString (L"vk_image::change_layout\n");
+    //OutputDebugString (L"vk_image::change_layout\n");
 
     vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
     vk::ImageMemoryBarrier image_memory_barrier (src_access, 
@@ -559,7 +559,7 @@ void vk_image::copy_from_buffer (const vk::Queue & transfer_queue,
                                  const vk::Extent3D& extent, 
                                  const uint32_t& num_layers)
 {
-    OutputDebugString (L"vk_image::copy_from_buffer\n");
+    //OutputDebugString (L"vk_image::copy_from_buffer\n");
 
     vk::ImageSubresourceLayers subresource_layers (vk::ImageAspectFlagBits::eColor, 0, 0, num_layers);
     vk::BufferImageCopy buffer_image_copy (offset, {}, {}, subresource_layers, {}, extent);
@@ -578,7 +578,7 @@ void vk_image::copy_from_buffer (const vk::Queue & transfer_queue,
 
 vk_image::~vk_image () 
 {
-    OutputDebugString (L"vk_image::~vk_image\n");
+    //OutputDebugString (L"vk_image::~vk_image\n");
 
     if (graphics_device != nullptr && image != nullptr)
     {
@@ -588,12 +588,12 @@ vk_image::~vk_image ()
 
 vk_image_view::vk_image_view ()
 {
-    OutputDebugString (L"vk_image_view::vk_image_view\n");
+    //OutputDebugString (L"vk_image_view::vk_image_view\n");
 }
 
 vk_image_view::vk_image_view (const vk::Device& graphics_device, const vk::Image& image, const vk::Format& format)
 {
-    OutputDebugString (L"vk_image_view::vk_image_view graphics_device image format\n");
+    //OutputDebugString (L"vk_image_view::vk_image_view graphics_device image format\n");
 
     vk::ComponentMapping component_mapping (vk::ComponentSwizzle::eIdentity);
     vk::ImageSubresourceRange subresource_range (vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1);
@@ -610,14 +610,14 @@ vk_image_view::vk_image_view (const vk::Device& graphics_device, const vk::Image
 
 vk_image_view::vk_image_view (vk_image_view&& other) noexcept
 {
-    OutputDebugString (L"vk_image_view::vk_image_view Move constructor\n");
+    //OutputDebugString (L"vk_image_view::vk_image_view Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_image_view& vk_image_view::operator=(vk_image_view&& other) noexcept
 {
-    OutputDebugString (L"vk_image_view::vk_image_view Move assignment\n");
+    //OutputDebugString (L"vk_image_view::vk_image_view Move assignment\n");
 
     image_view = other.image_view;
     graphics_device = other.graphics_device;
@@ -630,7 +630,7 @@ vk_image_view& vk_image_view::operator=(vk_image_view&& other) noexcept
 
 vk_image_view::~vk_image_view ()
 {
-    OutputDebugString (L"vk_image_view::~vk_image_view\n");
+    //OutputDebugString (L"vk_image_view::~vk_image_view\n");
 
     if (graphics_device != nullptr && image_view != nullptr)
     {
@@ -640,7 +640,7 @@ vk_image_view::~vk_image_view ()
 
 vk_physical_device::vk_physical_device (const vk::Instance& instance)
 {
-    OutputDebugString (L"vk_physical_device::vk_physical_device\n");
+    //OutputDebugString (L"vk_physical_device::vk_physical_device\n");
 
     physical_device = instance.enumeratePhysicalDevices ().at (0);
 
@@ -650,7 +650,7 @@ vk_physical_device::vk_physical_device (const vk::Instance& instance)
 
 vk_queue_family_indices::vk_queue_family_indices (const vk::PhysicalDevice& physical_device)
 {
-    OutputDebugString (L"vk_queue_family_indices::vk_queue_family_indices physical_device\n");
+    //OutputDebugString (L"vk_queue_family_indices::vk_queue_family_indices physical_device\n");
 
     std::vector<vk::QueueFamilyProperties> queue_family_properties = physical_device.getQueueFamilyProperties ();
 
@@ -719,7 +719,7 @@ vk_device_queues::vk_device_queues (const vk::PhysicalDevice& physical_device,
                                     const vk_queue_family_indices* queue_family_indices, 
                                     const std::vector<uint32_t>& queue_indices)
 {
-    OutputDebugString (L"vk_device_queues::vk_device_queues physical_device, graphics_device, queue_family_indices, queue_indices\n");
+    //OutputDebugString (L"vk_device_queues::vk_device_queues physical_device, graphics_device, queue_family_indices, queue_indices\n");
 
     std::vector<vk::QueueFamilyProperties> queue_family_properties = physical_device.getQueueFamilyProperties ();
 
@@ -747,7 +747,7 @@ vk_device_queues::vk_device_queues (const vk::PhysicalDevice& physical_device,
 
 vk_queue_info::vk_queue_info (const vk_queue_family_indices* queue_family_indices)
 {
-    OutputDebugString (L"vk_queue_info::vk_queue_info queue_family_indices\n");
+    //OutputDebugString (L"vk_queue_info::vk_queue_info queue_family_indices\n");
 
     std::vector<size_t> family_indices = { queue_family_indices->graphics_queue_family_index, 
                                            queue_family_indices->compute_queue_family_index, 
@@ -767,17 +767,16 @@ vk_queue_info::vk_queue_info (const vk_queue_family_indices* queue_family_indice
         }
     }
 
-    float queue_priorities = 1.f;
-
     for (const auto& family_index_queue_count : family_indices_queue_count)
     {
-        queue_create_infos.emplace_back (vk::DeviceQueueCreateInfo ({}, family_index_queue_count.first, family_index_queue_count.second, &queue_priorities));
+        std::vector<float> queue_priorities (family_index_queue_count.second, 1);
+        queue_create_infos.emplace_back (vk::DeviceQueueCreateInfo ({}, family_index_queue_count.first, family_index_queue_count.second, queue_priorities.data ()));
     }
 }
 
 vk_buffer::vk_buffer ()
 {
-    OutputDebugString (L"vk_buffer::vk_buffer\n");
+    //OutputDebugString (L"vk_buffer::vk_buffer\n");
 }
 
 vk_buffer::vk_buffer (const vk::Device& graphics_device, 
@@ -786,7 +785,7 @@ vk_buffer::vk_buffer (const vk::Device& graphics_device,
                       const vk::SharingMode& sharing_mode, 
                       const uint32_t& graphics_queue_family_index)
 {
-    OutputDebugString (L"vk_buffer::vk_buffer graphics_device size usage sharing_mode graphics_queue_family_index\n");
+    //OutputDebugString (L"vk_buffer::vk_buffer graphics_device size usage sharing_mode graphics_queue_family_index\n");
 
     vk::BufferCreateInfo create_info ({}, size, usage, sharing_mode);
 
@@ -796,14 +795,14 @@ vk_buffer::vk_buffer (const vk::Device& graphics_device,
 
 vk_buffer::vk_buffer (vk_buffer&& other) noexcept
 {
-    OutputDebugString (L"vk_buffer::vk_buffer Move constructor\n");
+    //OutputDebugString (L"vk_buffer::vk_buffer Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_buffer& vk_buffer::operator=(vk_buffer&& other) noexcept
 {
-    OutputDebugString (L"vk_buffer::vk_buffer Move assignment\n");
+    //OutputDebugString (L"vk_buffer::vk_buffer Move assignment\n");
 
     buffer = other.buffer;
     graphics_device = other.graphics_device;
@@ -816,7 +815,7 @@ vk_buffer& vk_buffer::operator=(vk_buffer&& other) noexcept
 
 vk_buffer::~vk_buffer ()
 {
-    OutputDebugString (L"vk_buffer::~vk_buffer\n");
+    //OutputDebugString (L"vk_buffer::~vk_buffer\n");
 
     if (graphics_device != nullptr && buffer != nullptr)
     {
@@ -826,7 +825,7 @@ vk_buffer::~vk_buffer ()
 
 void vk_buffer::bind_memory (const vk::DeviceMemory& memory, const vk::DeviceSize& offset)
 {
-    OutputDebugString (L"vk_buffer::bind_memory memory offset\n");
+    //OutputDebugString (L"vk_buffer::bind_memory memory offset\n");
 
     graphics_device.bindBufferMemory (buffer, memory, offset);
 }
@@ -836,7 +835,7 @@ void vk_buffer::copy_from_buffer (const vk::Buffer& src_buffer,
                                   const vk::CommandPool& command_pool, 
                                   const vk::Queue& transfer_queue)
 {
-    OutputDebugString (L"vk_buffer::copy_from_buffer src_buffer transfer_queue\n");
+    //OutputDebugString (L"vk_buffer::copy_from_buffer src_buffer transfer_queue\n");
 
     vk::BufferCopy buffer_copy (0, 0, size);
 
@@ -851,7 +850,7 @@ void vk_buffer::copy_from_buffer (const vk::Buffer& src_buffer,
 
 vk_device_memory::vk_device_memory ()
 {
-    OutputDebugString (L"vk_device_memory::vk_device_memory\n");
+    //OutputDebugString (L"vk_device_memory::vk_device_memory\n");
 }
 
 vk_device_memory::vk_device_memory (const vk::Device& graphics_device, 
@@ -859,7 +858,7 @@ vk_device_memory::vk_device_memory (const vk::Device& graphics_device,
                                     const vk::PhysicalDeviceMemoryProperties& memory_properties, 
                                     vk::MemoryPropertyFlags required_types)
 {
-    OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device buffer memory_properties required_types\n");
+    //OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device buffer memory_properties required_types\n");
 
     vk::MemoryRequirements memory_requirements = graphics_device.getBufferMemoryRequirements (buffer);
 
@@ -885,7 +884,7 @@ vk_device_memory::vk_device_memory (const vk::Device& graphics_device,
                                     const vk::PhysicalDeviceMemoryProperties& memory_properties, 
                                     vk::MemoryPropertyFlags required_types)
 {
-    OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device images memory_properties required_types\n");
+    //OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device images memory_properties required_types\n");
 
     vk::DeviceSize total_size = 0;
     uint32_t memory_type_bits = 0;
@@ -919,7 +918,7 @@ vk_device_memory::vk_device_memory (const vk::Device& graphics_device,
                                     const vk::PhysicalDeviceMemoryProperties& memory_properties, 
                                     vk::MemoryPropertyFlags required_types)
 {
-    OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device vk_images memory_properties required_types\n");
+    //OutputDebugString (L"vk_device_memory::vk_device_memory graphics_device vk_images memory_properties required_types\n");
 
     vk::DeviceSize total_size = 0;
     uint32_t memory_type_bits = 0;
@@ -950,14 +949,14 @@ vk_device_memory::vk_device_memory (const vk::Device& graphics_device,
 
 vk_device_memory::vk_device_memory (vk_device_memory&& other) noexcept
 {
-    OutputDebugString (L"vk_device_memory::vk_device_memory Move constructor\n");
+    //OutputDebugString (L"vk_device_memory::vk_device_memory Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_device_memory& vk_device_memory::operator=(vk_device_memory&& other) noexcept
 {
-    OutputDebugString (L"vk_device_memory::vk_device_memory Move assignment\n");
+    //OutputDebugString (L"vk_device_memory::vk_device_memory Move assignment\n");
 
     device_memory = other.device_memory;
     graphics_device = other.graphics_device;
@@ -970,7 +969,7 @@ vk_device_memory& vk_device_memory::operator=(vk_device_memory&& other) noexcept
 
 vk_device_memory::~vk_device_memory () noexcept
 {
-    OutputDebugString (L"vk_device_memory::~vk_device_memory\n");
+    //OutputDebugString (L"vk_device_memory::~vk_device_memory\n");
 
     if (graphics_device != nullptr && device_memory != nullptr)
     {
@@ -980,14 +979,14 @@ vk_device_memory::~vk_device_memory () noexcept
 
 void vk_device_memory::bind_buffer (const vk::Buffer& buffer, const vk::DeviceSize& offset)
 {
-    OutputDebugString (L"vk_device_memory::bind_buffer buffer offset\n");
+    //OutputDebugString (L"vk_device_memory::bind_buffer buffer offset\n");
 
     graphics_device.bindBufferMemory (buffer, device_memory, offset);
 }
 
 void vk_device_memory::bind_images (const std::map<vk::Image, vk::DeviceSize>& images_offsets)
 {
-    OutputDebugString (L"vk_device_memory::bind_images images offsets\n");
+    //OutputDebugString (L"vk_device_memory::bind_images images offsets\n");
 
     for (const auto& image_offset : images_offsets)
     {
@@ -997,7 +996,7 @@ void vk_device_memory::bind_images (const std::map<vk::Image, vk::DeviceSize>& i
 
 void vk_device_memory::map_data (const std::vector<unsigned char>& data, const vk::DeviceSize& offset)
 {
-    OutputDebugString (L"vk_device_memory::map_data data\n");
+    //OutputDebugString (L"vk_device_memory::map_data data\n");
 
     HANDLE mapped_data = graphics_device.mapMemory (device_memory, offset, data.size ());
     std::memcpy (mapped_data, data.data (), data.size ());
@@ -1006,14 +1005,14 @@ void vk_device_memory::map_data (const std::vector<unsigned char>& data, const v
 
 vk_command_buffers::vk_command_buffers ()
 {
-    OutputDebugString (L"vk_command_buffers::vk_command_buffers\n");
+    //OutputDebugString (L"vk_command_buffers::vk_command_buffers\n");
 }
 
 vk_command_buffers::vk_command_buffers (const vk::Device graphics_device, 
                                         const vk::CommandPool& command_pool, 
                                         const uint32_t& num_command_buffers)
 {
-    OutputDebugString (L"vk_command_buffers::vk_comamnd_buffer graphics_device command_pool num_command_buffers\n");
+    //OutputDebugString (L"vk_command_buffers::vk_comamnd_buffer graphics_device command_pool num_command_buffers\n");
 
     vk::CommandBufferAllocateInfo allocate_info (command_pool, {}, num_command_buffers);
     command_buffers = graphics_device.allocateCommandBuffers (allocate_info);
@@ -1024,14 +1023,14 @@ vk_command_buffers::vk_command_buffers (const vk::Device graphics_device,
 
 vk_command_buffers::vk_command_buffers (vk_command_buffers&& other) noexcept
 {
-    OutputDebugString (L"vk_command_buffers::vk_command_buffers Move constructor\n");
+    //OutputDebugString (L"vk_command_buffers::vk_command_buffers Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_command_buffers& vk_command_buffers::operator= (vk_command_buffers&& other) noexcept
 {
-    OutputDebugString (L"vk_command_buffers::vk_command_buffers Move assignment\n");
+    //OutputDebugString (L"vk_command_buffers::vk_command_buffers Move assignment\n");
 
     command_buffers = std::move (other.command_buffers);
     command_pool = other.command_pool;
@@ -1045,7 +1044,7 @@ vk_command_buffers& vk_command_buffers::operator= (vk_command_buffers&& other) n
 
 vk_command_buffers::~vk_command_buffers () noexcept
 {
-    OutputDebugString (L"vk_command_buffers::~vk_command_buffers\n");
+    //OutputDebugString (L"vk_command_buffers::~vk_command_buffers\n");
 
     if (command_pool != nullptr && graphics_device != nullptr)
     {
@@ -1055,7 +1054,7 @@ vk_command_buffers::~vk_command_buffers () noexcept
 
 void vk_command_buffers::begin (const vk::CommandBufferUsageFlags& flags)
 {
-    OutputDebugString (L"vk_command_buffers::begin flags\n");
+    //OutputDebugString (L"vk_command_buffers::begin flags\n");
 
     vk::CommandBufferBeginInfo begin_info (flags);
 
@@ -1069,7 +1068,7 @@ void vk_command_buffers::draw (const vk::RenderPass& render_pass,
                                const std::vector<vk_framebuffer>& framebuffers, 
                                const vk::Rect2D& render_area)
 {
-    OutputDebugString (L"vk_command_buffers::draw render_pass, framebuffers\n");
+    //OutputDebugString (L"vk_command_buffers::draw render_pass, framebuffers\n");
 
     std::vector<vk::ClearValue> clear_values;
     vk::ClearValue clear_value;
@@ -1091,7 +1090,7 @@ void vk_command_buffers::draw (const vk::RenderPass& render_pass,
 
 void vk_command_buffers::end ()
 {
-    OutputDebugString (L"vk_command_buffers::end\n");
+    //OutputDebugString (L"vk_command_buffers::end\n");
 
     for (const auto& command_buffer : command_buffers)
     {
@@ -1102,12 +1101,12 @@ void vk_command_buffers::end ()
 
 vk_queue::vk_queue (const vk::Queue& queue, const vk::Device& graphics_device) : queue (queue), graphics_device (graphics_device)
 {
-    OutputDebugString (L"vk_queue::vk_queue queue graphics_device\n");
+    //OutputDebugString (L"vk_queue::vk_queue queue graphics_device\n");
 }
 
 void vk_queue::submit (const std::vector<vk::CommandBuffer>& command_buffers) const
 {
-    OutputDebugString (L"vk_queue::submit command_buffers\n");
+    //OutputDebugString (L"vk_queue::submit command_buffers\n");
 
     vk::SubmitInfo submit_info ({}, {}, {}, command_buffers.size (), command_buffers.data ());
 
@@ -1120,7 +1119,7 @@ void vk_queue::submit (const vk::PipelineStageFlags& wait_stage_flags,
                        const vk::Semaphore& wait_semaphore, 
                        const vk::Semaphore& signal_semphore) const
 {
-    OutputDebugString (L"vk_queue::submit wait_stage_flags command_buffers wait_semaphores signal_semaphores\n");
+    //OutputDebugString (L"vk_queue::submit wait_stage_flags command_buffers wait_semaphores signal_semaphores\n");
 
     vk::SubmitInfo submit_info (1, &wait_semaphore, &wait_stage_flags, 1, &command_buffer, 1, &signal_semphore);
 
@@ -1131,7 +1130,7 @@ void vk_queue::present (const vk::SwapchainKHR& swapchain,
                         const uint32_t& image_index, 
                         const vk::Semaphore& wait_semaphore) const
 {
-    OutputDebugString (L"vk_queue::present swapchains image_indices wait_semaphores\n");
+    //OutputDebugString (L"vk_queue::present swapchains image_indices wait_semaphores\n");
 
     vk::PresentInfoKHR present_info (1, &wait_semaphore, 1, &swapchain, &image_index);
     queue.presentKHR (present_info);
@@ -1139,13 +1138,13 @@ void vk_queue::present (const vk::SwapchainKHR& swapchain,
 
 vk_descriptor_pool::vk_descriptor_pool ()
 {
-    OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool\n");
+    //OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool\n");
 }
 
 vk_descriptor_pool::vk_descriptor_pool (const std::vector<std::pair<vk::DescriptorType, size_t>>& descriptor_types_counts, 
                                         const uint32_t& max_sets)
 {
-    OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool types_counts max_sets\n");
+    //OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool types_counts max_sets\n");
 
     std::vector<vk::DescriptorPoolSize> pool_sizes;
     pool_sizes.reserve (descriptor_types_counts.size ());
@@ -1161,14 +1160,14 @@ vk_descriptor_pool::vk_descriptor_pool (const std::vector<std::pair<vk::Descript
 
 vk_descriptor_pool::vk_descriptor_pool (vk_descriptor_pool&& other) noexcept
 {
-    OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool Move constructor\n");
+    //OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_descriptor_pool& vk_descriptor_pool::operator=(vk_descriptor_pool&& other) noexcept
 {
-    OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool Move assignment\n");
+    //OutputDebugString (L"vk_descriptor_pool::vk_descriptor_pool Move assignment\n");
 
     descriptor_pool = other.descriptor_pool;
     graphics_device = other.graphics_device;
@@ -1181,7 +1180,7 @@ vk_descriptor_pool& vk_descriptor_pool::operator=(vk_descriptor_pool&& other) no
 
 vk_descriptor_pool::~vk_descriptor_pool () noexcept
 {
-    OutputDebugString (L"vk_descriptor_pool::~vk_descriptor_pool\n");
+    //OutputDebugString (L"vk_descriptor_pool::~vk_descriptor_pool\n");
 
     if (descriptor_pool != nullptr && graphics_device != nullptr)
     {
@@ -1191,12 +1190,12 @@ vk_descriptor_pool::~vk_descriptor_pool () noexcept
 
 vk_descriptor_set_layout::vk_descriptor_set_layout ()
 {
-    OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout\n");
+    //OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout\n");
 }
 
 vk_descriptor_set_layout::vk_descriptor_set_layout (const std::vector<vk::DescriptorSetLayoutBinding>& bindings)
 {
-    OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout bindings\n");
+    //OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout bindings\n");
 
     vk::DescriptorSetLayoutCreateInfo create_info ({}, bindings.size (), bindings.data ());
 
@@ -1205,14 +1204,14 @@ vk_descriptor_set_layout::vk_descriptor_set_layout (const std::vector<vk::Descri
 
 vk_descriptor_set_layout::vk_descriptor_set_layout (vk_descriptor_set_layout&& other) noexcept
 {
-    OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout Move constructor\n");
+    //OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_descriptor_set_layout& vk_descriptor_set_layout::operator=(vk_descriptor_set_layout&& other) noexcept
 {
-    OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout Move assignment\n");
+    //OutputDebugString (L"vk_descriptor_set_layout::vk_descriptor_set_layout Move assignment\n");
 
     descriptor_set_layout = other.descriptor_set_layout;
     graphics_device = other.graphics_device;
@@ -1225,7 +1224,7 @@ vk_descriptor_set_layout& vk_descriptor_set_layout::operator=(vk_descriptor_set_
 
 vk_descriptor_set_layout::~vk_descriptor_set_layout () noexcept
 {
-    OutputDebugString (L"vk_descriptor_set_layout::~vk_descriptor_set_layout\n");
+    //OutputDebugString (L"vk_descriptor_set_layout::~vk_descriptor_set_layout\n");
 
     if (descriptor_set_layout != nullptr && graphics_device != nullptr)
     {
@@ -1235,14 +1234,14 @@ vk_descriptor_set_layout::~vk_descriptor_set_layout () noexcept
 
 vk_descriptor_sets::vk_descriptor_sets ()
 {
-    OutputDebugString (L"vk_descriptor_set::vk_descriptor_set\n");
+    //OutputDebugString (L"vk_descriptor_set::vk_descriptor_set\n");
 }
 
 vk_descriptor_sets::vk_descriptor_sets (const vk::DescriptorPool& descriptor_pool, 
                                         const std::vector<vk::DescriptorSetLayout>& set_layouts, 
                                         const uint32_t& num_sets)
 {
-    OutputDebugString (L"vk_descriptor_set::vk_descriptor_set descriptor_pool set_layouts\n");
+    //OutputDebugString (L"vk_descriptor_set::vk_descriptor_set descriptor_pool set_layouts\n");
 
     vk::DescriptorSetAllocateInfo allocate_info (descriptor_pool, set_layouts.size (), set_layouts.data ());
 
@@ -1251,14 +1250,14 @@ vk_descriptor_sets::vk_descriptor_sets (const vk::DescriptorPool& descriptor_poo
 
 vk_descriptor_sets::vk_descriptor_sets (vk_descriptor_sets&& other) noexcept
 {
-    OutputDebugString (L"vk_descriptor_set::vk_descriptor_set Move constructor\n");
+    //OutputDebugString (L"vk_descriptor_set::vk_descriptor_set Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_descriptor_sets& vk_descriptor_sets::operator=(vk_descriptor_sets&& other) noexcept
 {
-    OutputDebugString (L"vk_descriptor_set::vk_descriptor_set Move assignment\n");
+    //OutputDebugString (L"vk_descriptor_set::vk_descriptor_set Move assignment\n");
 
     descriptor_sets = std::move (other.descriptor_sets);
     descriptor_pool = other.descriptor_pool;
@@ -1272,7 +1271,7 @@ vk_descriptor_sets& vk_descriptor_sets::operator=(vk_descriptor_sets&& other) no
 
 vk_descriptor_sets::~vk_descriptor_sets () noexcept
 {
-    OutputDebugString (L"vk_descriptor_set::~vk_descriptor_set\n");
+    //OutputDebugString (L"vk_descriptor_set::~vk_descriptor_set\n");
 
     if (descriptor_pool != nullptr && graphics_device != nullptr)
     {
@@ -1282,12 +1281,12 @@ vk_descriptor_sets::~vk_descriptor_sets () noexcept
 
 vk_render_pass::vk_render_pass ()
 {
-    OutputDebugString (L"vk_render_pass::vk_render_pass\n");
+    //OutputDebugString (L"vk_render_pass::vk_render_pass\n");
 }
 
 vk_render_pass::vk_render_pass (const vk::Device& graphics_device, const vk::Format& chosen_format)
 {
-    OutputDebugString (L"vk_render_pass::vk_render_pass graphics_device chosen_format\n");
+    //OutputDebugString (L"vk_render_pass::vk_render_pass graphics_device chosen_format\n");
 
     vk::AttachmentDescription attachment_description ({}, 
                                                       chosen_format, 
@@ -1309,14 +1308,14 @@ vk_render_pass::vk_render_pass (const vk::Device& graphics_device, const vk::For
 
 vk_render_pass::vk_render_pass (vk_render_pass&& other) noexcept
 {
-    OutputDebugString (L"vk_render_pass::vk_render_pass Move constructor\n");
+    //OutputDebugString (L"vk_render_pass::vk_render_pass Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_render_pass& vk_render_pass::operator=(vk_render_pass&& other) noexcept
 {
-    OutputDebugString (L"vk_render_pass::vk_render_pass Move assignment\n");
+    //OutputDebugString (L"vk_render_pass::vk_render_pass Move assignment\n");
 
     render_pass = other.render_pass;
     graphics_device = other.graphics_device;
@@ -1329,7 +1328,7 @@ vk_render_pass& vk_render_pass::operator=(vk_render_pass&& other) noexcept
 
 vk_render_pass::~vk_render_pass () noexcept
 {
-    OutputDebugString (L"vk_render_pass::~vk_render_pass\n");
+    //OutputDebugString (L"vk_render_pass::~vk_render_pass\n");
 
     if (render_pass != nullptr && graphics_device != nullptr)
     {
@@ -1339,7 +1338,7 @@ vk_render_pass::~vk_render_pass () noexcept
 
 vk_framebuffer::vk_framebuffer ()
 {
-    OutputDebugString (L"vk_framebuffer::vk_framebuffer\n");
+    //OutputDebugString (L"vk_framebuffer::vk_framebuffer\n");
 }
 
 vk_framebuffer::vk_framebuffer (const vk::Device& graphics_device, 
@@ -1347,7 +1346,7 @@ vk_framebuffer::vk_framebuffer (const vk::Device& graphics_device,
                                 const vk::RenderPass& render_pass, 
                                 const vk::Extent2D& extent)
 {
-    OutputDebugString (L"vk_framebuffer::vk_framebuffer graphics_device imgae_view render_pass extext");
+    //OutputDebugString (L"vk_framebuffer::vk_framebuffer graphics_device imgae_view render_pass extext");
 
     vk::FramebufferCreateInfo create_info ({}, render_pass, 1, &image_view, extent.width, extent.height, 1);
     
@@ -1357,14 +1356,14 @@ vk_framebuffer::vk_framebuffer (const vk::Device& graphics_device,
 
 vk_framebuffer::vk_framebuffer (vk_framebuffer&& other) noexcept
 {
-    OutputDebugString (L"vk_framebuffer::vk_framebuffer Move constructor\n");
+    //OutputDebugString (L"vk_framebuffer::vk_framebuffer Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_framebuffer& vk_framebuffer::operator=(vk_framebuffer&& other) noexcept
 {
-    OutputDebugString (L"vk_framebuffer::vk_framebuffer Move assignment\n");
+    //OutputDebugString (L"vk_framebuffer::vk_framebuffer Move assignment\n");
 
     framebuffer = other.framebuffer;
     graphics_device = other.graphics_device;
@@ -1377,7 +1376,7 @@ vk_framebuffer& vk_framebuffer::operator=(vk_framebuffer&& other) noexcept
 
 vk_framebuffer::~vk_framebuffer () noexcept
 {
-    OutputDebugString (L"vk_framebuffer::~vk_framebuffer\n");
+    //OutputDebugString (L"vk_framebuffer::~vk_framebuffer\n");
 
     if (framebuffer != nullptr && graphics_device != nullptr)
     {
@@ -1391,7 +1390,7 @@ vk_framebuffers::vk_framebuffers (const vk::Device& graphics_device,
                                   const vk::RenderPass& render_pass, 
                                   const vk::Extent2D& extent)
 {
-    OutputDebugString (L"vk_framebuffers::vk_framebuffers graphics_device image_views render_pass extent\n");
+    //OutputDebugString (L"vk_framebuffers::vk_framebuffers graphics_device image_views render_pass extent\n");
 
     framebuffers.reserve (image_views.size ());
 
@@ -1404,19 +1403,19 @@ vk_framebuffers::vk_framebuffers (const vk::Device& graphics_device,
 
 vk_graphics_pipeline::vk_graphics_pipeline ()
 {
-    OutputDebugString (L"vk_graphics_pipeline::vk_graphics_pipeline\n");
+    //OutputDebugString (L"vk_graphics_pipeline::vk_graphics_pipeline\n");
 }
 
 vk_graphics_pipeline::vk_graphics_pipeline (vk_graphics_pipeline&& other) noexcept
 {
-    OutputDebugString (L"vk_graphics_pipeline::vk_graphics_pipeline Move constructor\n");
+    //OutputDebugString (L"vk_graphics_pipeline::vk_graphics_pipeline Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_graphics_pipeline& vk_graphics_pipeline::operator=(vk_graphics_pipeline&& other) noexcept
 {
-    OutputDebugString (L"vk_graphics_pipeline::vk_graphics_pipeline Move assignment\n");
+    //OutputDebugString (L"vk_graphics_pipeline::vk_graphics_pipeline Move assignment\n");
 
     graphics_pipeline = other.graphics_pipeline;
     graphics_device = other.graphics_device;
@@ -1429,7 +1428,7 @@ vk_graphics_pipeline& vk_graphics_pipeline::operator=(vk_graphics_pipeline&& oth
 
 vk_graphics_pipeline::~vk_graphics_pipeline () noexcept
 {
-    OutputDebugString (L"vk_graphics_pipeline::~vk_graphics_pipeline\n");
+    //OutputDebugString (L"vk_graphics_pipeline::~vk_graphics_pipeline\n");
 
     if (graphics_pipeline != nullptr && graphics_device != nullptr)
     {
@@ -1439,12 +1438,12 @@ vk_graphics_pipeline::~vk_graphics_pipeline () noexcept
 
 vk_semaphore::vk_semaphore ()
 {
-    OutputDebugString (L"vk_semaphore::vk_semaphore\n");
+    //OutputDebugString (L"vk_semaphore::vk_semaphore\n");
 }
 
 vk_semaphore::vk_semaphore (const vk::Device& graphics_device)
 {
-    OutputDebugString (L"vk_semaphore::vk_semaphore graphics_device\n");
+    //OutputDebugString (L"vk_semaphore::vk_semaphore graphics_device\n");
 
     semaphore = graphics_device.createSemaphore (vk::SemaphoreCreateInfo ());
     this->graphics_device = graphics_device;
@@ -1452,14 +1451,14 @@ vk_semaphore::vk_semaphore (const vk::Device& graphics_device)
 
 vk_semaphore::vk_semaphore (vk_semaphore&& other) noexcept
 {
-    OutputDebugString (L"vk_semaphore::vk_semaphore Move constructor\n");
+    //OutputDebugString (L"vk_semaphore::vk_semaphore Move constructor\n");
 
     *this = std::move (other);
 }
 
 vk_semaphore& vk_semaphore::operator= (vk_semaphore&& other) noexcept
 {
-    OutputDebugString (L"vk_semaphore::vk_semaphore Move assignment\n");
+    //OutputDebugString (L"vk_semaphore::vk_semaphore Move assignment\n");
 
     semaphore = other.semaphore;
     graphics_device = other.graphics_device;
@@ -1472,7 +1471,7 @@ vk_semaphore& vk_semaphore::operator= (vk_semaphore&& other) noexcept
 
 vk_semaphore::~vk_semaphore () noexcept
 {
-    OutputDebugString (L"vk_semaphore::~vk_semaphore\n");
+    //OutputDebugString (L"vk_semaphore::~vk_semaphore\n");
 
     if (semaphore != nullptr && graphics_device != nullptr)
     {
@@ -1483,7 +1482,7 @@ vk_semaphore::~vk_semaphore () noexcept
 
 vk_semaphores::vk_semaphores (const vk::Device& graphics_device, const size_t& num_semaphores)
 {
-    OutputDebugString (L"vk_semaphores::vk_semaphores graphics_device\n");
+    //OutputDebugString (L"vk_semaphores::vk_semaphores graphics_device\n");
 
     semaphores.reserve (num_semaphores);
 
@@ -1496,12 +1495,12 @@ vk_semaphores::vk_semaphores (const vk::Device& graphics_device, const size_t& n
 
 vk_shader_module::vk_shader_module ()
 {
-    OutputDebugString (L"vk_shader_module::vk_shader_module\n");
+    //OutputDebugString (L"vk_shader_module::vk_shader_module\n");
 }
 
 vk_shader_module::vk_shader_module (const full_file_path& shader_path, const vk::Device& graphics_device, const vk::ShaderStageFlags& flags)
 {
-    OutputDebugString (L"vk_shader_module::vk_shader_module shader_path graphics_device flags\n");
+    //OutputDebugString (L"vk_shader_module::vk_shader_module shader_path graphics_device flags\n");
 
     std::ifstream shader_file (shader_path.path, std::ios::in | std::ios::binary | std::ios::ate);
    
@@ -1530,14 +1529,14 @@ vk_shader_module::vk_shader_module (const full_file_path& shader_path, const vk:
 
 vk_shader_module::vk_shader_module (vk_shader_module&& other) noexcept
 {
-    OutputDebugString (L"vk_shader_module Move constructor\n");
+    //OutputDebugString (L"vk_shader_module Move constructor\n");
     
     *this = std::move (other);
 }
 
 vk_shader_module& vk_shader_module::operator =(vk_shader_module&& other) noexcept
 {
-    OutputDebugString (L"vk_shader_module Move assignment\n");
+    //OutputDebugString (L"vk_shader_module Move assignment\n");
 
     shader_module = other.shader_module;
     graphics_device = other.graphics_device;
@@ -1550,7 +1549,7 @@ vk_shader_module& vk_shader_module::operator =(vk_shader_module&& other) noexcep
 
 vk_shader_module::~vk_shader_module ()
 {
-    OutputDebugString (L"vk_shader_module::~vk_shader_module\n");
+    //OutputDebugString (L"vk_shader_module::~vk_shader_module\n");
 
     if (shader_module != nullptr && graphics_device != nullptr)
     {

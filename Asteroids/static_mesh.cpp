@@ -3,7 +3,7 @@
 
 static_mesh::static_mesh (const tinygltf::Node& graphics_node, const std::vector<tinygltf::Node>& physics_nodes, const tinygltf::Model& model)
 {
-    OutputDebugString (L"static_mesh::static_mesh graphics_node physics_node model\n");
+    //OutputDebugString (L"static_mesh::static_mesh graphics_node physics_node model\n");
 
     name = graphics_node.name;
 

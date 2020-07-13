@@ -8,7 +8,7 @@
 
 full_file_path::full_file_path (const std::string& partial_file_path)
 {
-	OutputDebugString (L"full_file_path::full_file_path partial_file_path\n");
+	//OutputDebugString (L"full_file_path::full_file_path partial_file_path\n");
 
 	char path[MAX_PATH];
 
@@ -29,7 +29,7 @@ full_file_path::full_file_path (const std::string& partial_file_path)
 
 files_in_folder::files_in_folder (const std::string& full_folder_path)
 {
-	OutputDebugString (L"files_in_folder::files_in_folder full_folder_path\n");
+	//OutputDebugString (L"files_in_folder::files_in_folder full_folder_path\n");
 
 	files.reserve (5);
 

@@ -3,7 +3,7 @@
 
 game::game (const HINSTANCE& h_instance, const HWND& h_wnd)
 {
-    OutputDebugString (L"game::game h_instance h_wnd\n");
+    //OutputDebugString (L"game::game h_instance h_wnd\n");
 
     graphics = std::make_unique<common_graphics> (h_instance, h_wnd);
     set_current_scene (SCENE_TYPE::TEST_SCENE);
@@ -25,7 +25,7 @@ void game::set_current_scene (SCENE_TYPE type)
 
 void game::process_keyboard_input (WPARAM WParam, LPARAM LParam)
 {
-    OutputDebugString (L"game::process_keyboard_input\n");
+    //OutputDebugString (L"game::process_keyboard_input\n");
 
     current_scene->process_keyboard_input (WParam, LParam);
 }
