@@ -1,5 +1,6 @@
 Vulkan rendition of Asteroids
 
+Using modern C++ patterns, RAII, smart pointers.
 
 Current status: 
 
